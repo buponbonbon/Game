@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width,initial-scale=1,maximum-scale=1,viewport-fit=cover"
+    />
+    <meta name="theme-color" content="#101a24" />
+    <meta
+      name="description"
+      content="VAN DAO: IMMORTAL WAR — an original pixel-art lane-defense game powered by Python."
+    />
+    <title>VAN DAO: IMMORTAL WAR</title>
+    <link rel="icon" href="data:," />
+    <link rel="stylesheet" href="/style.css" />
+  </head>
+  <body>
+    <main id="game-shell" aria-label="Van Dao: Immortal War game">
+      <canvas
+        id="game"
+        width="384"
+        height="216"
+        tabindex="0"
+        aria-label="Van Dao game. Use the mouse or touch to select a hero, then a battlefield tile. Number keys select heroes; Space pauses; Q uses the selected hero's ultimate."
+      ></canvas>
+      <p id="live-status" class="sr-only" aria-live="polite">
+        Loading the game.
+      </p>
+      <div id="loading" role="status">
+        VAN DAO <span>Awakening the spirit gate…</span>
+      </div>
+    </main>
+    <input
+      id="import-save"
+      type="file"
+      accept="application/json,.json"
+      hidden
+    />
+    <noscript
+      >This game needs JavaScript enabled. Start the Python server with python
+      run.py and open its local page.</noscript
+    >
+    <script src="/game.js" defer></script>
+  </body>
+</html>
