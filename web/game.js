@@ -57,7 +57,13 @@
     enemies = {},
     stages = {},
     images = {},
-    atlas = {};
+    atlas = {},
+    cultivators = {},
+    guardianAtlas = {},
+    previews = {},
+    previewSignature = "",
+    previewEpoch = 0;
+  let voiceCaption = null;
   let scene = "title",
     overlay = null,
     selectedHero = null,
@@ -69,6 +75,12 @@
     toast = null;
   let archiveEnemy = "tide",
     archivePage = 0;
+  let rangeMode = "basic",
+    libraryTab = "skill",
+    libraryEnemy = false,
+    libraryHero = "sword",
+    rosterMode = "talents",
+    selectedNode = { branch: "A", rank: 1 };
   let battleEpoch = 0;
   let selectionEpoch = 0;
   let seenEffects = new Set();
@@ -99,6 +111,7 @@
       master: 0.6,
       music: 0.28,
       sfx: 0.65,
+      voice: 0.8,
       shake: true,
       integer: false,
     },
@@ -122,10 +135,20 @@
       : [];
     d.stones = Math.max(0, Math.min(999999, Number(v.stones) || 0));
     d.insight = Math.max(0, Math.min(999999, Number(v.insight) || 0));
-    for (const [k, b] of Object.entries(v.upgrades || {}))
-      if (heroOrder.includes(k) && ["A", "B"].includes(b)) d.upgrades[k] = b;
+    for (const [k, b] of Object.entries(v.upgrades || {})) {
+      if (!heroOrder.includes(k)) continue;
+      if (["A", "B"].includes(b)) d.upgrades[k] = b;
+      else if (
+        b &&
+        ["A", "B"].includes(b.branch) &&
+        Number.isInteger(b.rank) &&
+        b.rank >= 0 &&
+        b.rank <= 5
+      )
+        d.upgrades[k] = { branch: b.branch, rank: b.rank };
+    }
     d.best = v.best && typeof v.best === "object" ? v.best : {};
-    for (const k of ["master", "music", "sfx"]) {
+    for (const k of ["master", "music", "sfx", "voice"]) {
       const value = Number(v.settings?.[k] ?? d.settings[k]);
       d.settings[k] = Number.isFinite(value)
         ? Math.max(0, Math.min(1, value))
@@ -148,6 +171,7 @@
       notify("SAVE STORAGE IS FULL. EXPORT YOUR SAVE.", C.red, 6);
     }
     mirrorSave();
+    refreshPreviews();
   }
   let saveDB = null;
   try {
@@ -274,7 +298,51 @@
       ctx.fillRect(0, 0, W, H);
     }
   }
-  function sprite(id, x, y, scale = 1, frame = null, alpha = 1) {
+  function sprite(
+    id,
+    x,
+    y,
+    scale = 1,
+    frame = null,
+    alpha = 1,
+    action = "idle",
+    started = 0,
+  ) {
+    const hero = cultivators[id];
+    if (hero && images.cultivators) {
+      const pose =
+        hero.states[action === "deploy" ? "skill" : action] || hero.states.idle;
+      const clock = scene === "battle" ? state?.time || 0 : now / 1000;
+      const duration =
+        action === "ultimate"
+          ? 1.2
+          : action === "attack"
+            ? (previews[id]?.windup || 0.35) + 0.25
+            : 0.5;
+      const f =
+        action !== "idle" && scene === "battle"
+          ? Math.min(
+              pose.frames - 1,
+              Math.floor(
+                (Math.max(0, clock - started) / duration) * pose.frames,
+              ),
+            )
+          : Math.floor(clock * pose.fps) % pose.frames;
+      ctx.globalAlpha = alpha;
+      ctx.drawImage(
+        images.cultivators,
+        pose.x + f * hero.w,
+        pose.y,
+        hero.w,
+        hero.h,
+        Math.round(x),
+        Math.round(y),
+        32 * scale,
+        32 * scale,
+      );
+      ctx.globalAlpha = 1;
+      return;
+    }
     const s = atlas[id] || atlas[id?.replaceAll("_", "")];
     if (!s || !images.sprites) return;
     const f =
@@ -367,47 +435,99 @@
   }
   function drawTitle() {
     bg("title");
-    text("THE LAST IMMORTAL GATE", 24, 14, C.muted);
-    line(24, 29, 206, 29, C.edge);
-    text("VAN DAO", 25, 43, C.deep, 3);
-    text("VAN DAO", 23, 41, C.cream, 3);
-    text("IMMORTAL WAR", 25, 82, C.gold, 1.3);
+    const t = now / 1000;
+    for (let i = 0; i < 6; i++) {
+      const x = (i * 97 + t * 5) % W,
+        y = 35 + i * 18;
+      ctx.globalAlpha = 0.12;
+      rect(x, y, 38, 2, C.jade);
+      rect(x + 9, y - 2, 23, 2, C.cream);
+      ctx.globalAlpha = 1;
+    }
+    text("THE LAST IMMORTAL GATE", 28, 18, C.muted);
+    text("VAN DAO", 29, 43, C.deep, 3);
+    text("VAN DAO", 27, 41, C.cream, 3);
+    text("IMMORTAL WAR", 29, 82, C.gold, 1.35);
     wrapped(
-      "The gate is failing. Your formation is its last light.",
-      25,
-      112,
-      164,
+      "Study the Dao. Shape your formation. Keep the immortal gate alive.",
+      29,
+      110,
+      190,
       C.jade,
       14,
       3,
     );
-    button("begin", "BEGIN CAMPAIGN", 24, 164, 174, 27, () => {
-      scene = "campaign";
-      audio.play("confirm");
-    });
-    button("roster", "CULTIVATORS", 24, 198, 174, 24, () => (scene = "roster"));
-    button("saves", "SAVE SLOTS", 24, 229, 84, 24, () => (overlay = "saves"));
     button(
-      "settings",
-      "SETTINGS",
-      114,
-      229,
-      84,
-      24,
-      () => (overlay = "settings"),
+      "begin",
+      profile.completed.length ? "CONTINUE CAMPAIGN" : "BEGIN CAMPAIGN",
+      28,
+      160,
+      194,
+      28,
+      () => {
+        scene = "campaign";
+        audio.play("confirm");
+      },
     );
+    button("roster", "CULTIVATION / TALENTS", 28, 194, 194, 25, () => {
+      scene = "roster";
+    });
     button(
       "archive",
       "MONSTER ARCHIVE",
-      278,
-      241,
-      210,
-      23,
+      28,
+      225,
+      194,
+      25,
       () => (scene = "archive"),
     );
-    text("Original art / Offline play", W - 16, H - 13, C.muted, 0.95, "right");
+    button("saves", "CHRONICLES", 28, 257, 94, 22, () => (overlay = "saves"));
+    button(
+      "settings",
+      "SETTINGS",
+      128,
+      257,
+      94,
+      22,
+      () => (overlay = "settings"),
+    );
+    panel(271, 39, 216, 57, C.edge, "#122833d9");
+    text("KEEPER'S SANCTUARY", 379, 47, C.gold, 1.2, "center");
+    text(
+      `Chronicle ${slot + 1} / ${profile.completed.length} of 9 encounters`,
+      379,
+      70,
+      C.cream,
+      1,
+      "center",
+    );
+    sprite("sword", 304, 132 + Math.sin(t * 1.4) * 2, 2.6);
+    for (let i = 0; i < 5; i++) {
+      const a = t * 0.5 + i * 1.26;
+      rect(
+        350 + Math.cos(a) * 48,
+        177 + Math.sin(a) * 22,
+        2,
+        2,
+        i % 2 ? C.jade : C.gold,
+      );
+    }
+    const names = ["LANTERN WHARF", "AZURE TERRACES", "BONE MAUSOLEUM"];
+    names.forEach((name, i) => {
+      const x = 278 + i * 68;
+      panel(x, 227, 64, 28, [C.jade, C.ice, C.violet][i]);
+      text(
+        ["RIVER", "SKY", "TOMB"][i],
+        x + 32,
+        236,
+        [C.jade, C.ice, C.violet][i],
+        0.95,
+        "center",
+      );
+    });
+    text("Guqin / Guzheng / Dizi", 379, 264, C.muted, 0.95, "center");
     if (battleId && state && isPlaying(state))
-      button("resume", "RESUME BATTLE", 278, 211, 210, 24, () => {
+      button("resume", "RESUME BATTLE", 281, 103, 196, 24, () => {
         scene = "battle";
         command({ action: "pause", paused: false });
       });
@@ -532,79 +652,245 @@
         "center",
       );
   }
+  function talentProgress(id) {
+    const value = profile.upgrades[id];
+    return typeof value === "string"
+      ? { branch: value, rank: 3 }
+      : value || { branch: null, rank: 0 };
+  }
+  async function refreshPreviews() {
+    if (!catalog.heroes.length) return;
+    const signature = JSON.stringify(profile.upgrades);
+    if (signature === previewSignature) return;
+    previewSignature = signature;
+    const epoch = ++previewEpoch;
+    try {
+      const result = await api("/api/hero-preview", {
+        upgrades: profile.upgrades,
+      });
+      if (epoch === previewEpoch)
+        previews = Object.fromEntries(result.heroes.map((h) => [h.id, h]));
+    } catch (e) {
+      previewSignature = "";
+      notify("Restart the Python server to load the new rules.", C.red, 5);
+    }
+  }
+  function showSkills(id, enemy = false) {
+    libraryHero = id || "sword";
+    libraryEnemy = enemy;
+    libraryTab = "skill";
+    if (scene === "battle" && isPlaying(state))
+      command({ action: "pause", paused: true });
+    overlay = "skills";
+  }
+  function skillDetails(h, tab, x, y, width) {
+    const ability =
+      tab === "basic" ? h.basic : tab === "ultimate" ? h.ultimate : h.skill;
+    if (!ability) return;
+    text(ability.name, x, y, C.gold, 1.15);
+    const cd =
+      tab === "basic"
+        ? h.id === "gatherer"
+          ? h.orb_interval
+          : h.id === "herbalist"
+            ? h.heal_interval
+            : h.interval
+        : ability.cooldown;
+    text(
+      `${tab === "basic" && h.id === "formation" ? "Continuous aura / base interval" : "Cooldown"} ${Number(cd || 0).toFixed(1)}s / Mana ${ability.mana_cost || 0}` +
+        (tab === "ultimate" ? ` / Qi ${ability.qi_cost} / Dao 100` : ""),
+      x,
+      y + 18,
+      C.ice,
+    );
+    wrapped(
+      `Scaling: ${ability.scaling || "Fixed effect"}` +
+        (ability.power ? ` = ${ability.power} before armor` : ""),
+      x,
+      y + 34,
+      width,
+      C.cream,
+      12,
+      2,
+    );
+    wrapped(
+      ability.geometry?.description || "Self only.",
+      x,
+      y + 61,
+      width,
+      C.jade,
+      12,
+      2,
+    );
+    const target = ability.targets || ability.geometry?.targets;
+    text(
+      `Targets: ${target >= 99 ? "all eligible" : target || 1}`,
+      x,
+      y + 87,
+      C.muted,
+    );
+    wrapped(
+      ability.description || h.description,
+      x,
+      y + 103,
+      width,
+      C.cream,
+      12,
+      4,
+    );
+  }
+  function buyTalent(id) {
+    const h = heroes[id],
+      current = talentProgress(id),
+      { branch, rank } = selectedNode;
+    if (battleId && isPlaying(state))
+      return notify(
+        "Finish or leave the current battle before changing talents.",
+        C.gold,
+      );
+    if (!unlocked(h)) return notify("Clear the required chapter first.", C.red);
+    if (current.branch && current.branch !== branch)
+      return notify("This cultivator follows the other path.", C.red);
+    if (rank !== current.rank + 1)
+      return notify("Unlock the preceding node first.", C.red);
+    const node = h.talents[branch][rank - 1];
+    if (profile.stones < node.cost)
+      return notify(
+        `Need ${node.cost - profile.stones} more Spirit Stones.`,
+        C.red,
+      );
+    profile.stones -= node.cost;
+    profile.upgrades[id] = { branch, rank };
+    saveProfile();
+    audio.play("upgrade");
+    notify(node.name + " awakened.", C.jade);
+  }
   function drawRoster() {
     bg("title", 0.75);
     header("CULTIVATION HALL", () => (scene = "campaign"));
-    const h = heroes[rosterHero] || catalog.heroes[0];
+    const h = previews[rosterHero] || heroes[rosterHero] || catalog.heroes[0];
     heroOrder.forEach((id, i) => {
       button(
         "hero-" + id,
         shortNames[id] + (unlocked(heroes[id]) ? "" : " / LOCK"),
-        10,
-        35 + i * 29,
-        100,
-        26,
-        () => (rosterHero = id),
+        8,
+        34 + i * 30,
+        104,
+        27,
+        () => {
+          rosterHero = id;
+          selectedNode = {
+            branch: talentProgress(id).branch || "A",
+            rank: Math.min(5, talentProgress(id).rank + 1),
+          };
+        },
         { active: rosterHero === id },
       );
-      sprite(id, 10, 29 + i * 29, 0.8);
+      sprite(id, 8, 28 + i * 30, 0.8);
     });
-    panel(120, 34, 380, 240, C.edge);
-    sprite(h.id, 132, 41, 2);
-    text(h.name, 208, 44, C.gold, 1.35);
-    text(h.title, 208, 65, C.jade);
-    text(`${h.hp} HP / ${h.armor} armor / ${h.cost} Qi`, 208, 82);
-    wrapped(h.description, 132, 113, 351, C.cream, 13, 3);
-    wrapped(
-      h.skill.name + ": " + h.skill.description,
-      132,
-      155,
-      350,
-      C.jade,
-      13,
-      2,
+    panel(121, 32, 382, 247, C.edge);
+    sprite(h.id, 130, 37, 1.7);
+    text(h.name, 193, 39, C.gold, 1.25);
+    text(`${h.hp} HP / ${h.damage} ATK / ${h.cost} Qi`, 193, 57);
+    text(
+      `Mana ${h.mana_max} / Regen ${h.mana_regen.toFixed(2)}/s`,
+      193,
+      74,
+      C.ice,
     );
-    wrapped(
-      h.ultimate.name + ": " + h.ultimate.description,
-      132,
-      184,
-      350,
-      C.gold,
-      13,
-      2,
+    button(
+      "roster-talents",
+      "TALENT TREE",
+      131,
+      96,
+      173,
+      21,
+      () => (rosterMode = "talents"),
+      { active: rosterMode === "talents" },
     );
-    if (!unlocked(h)) {
-      wrapped(
-        "Unlock: Clear " + (stages[h.unlock]?.name || h.unlock),
-        132,
-        230,
-        350,
-        C.gold,
-        14,
-        2,
-      );
+    button(
+      "roster-skills",
+      "SKILL DETAILS",
+      310,
+      96,
+      182,
+      21,
+      () => showSkills(h.id),
+      { active: rosterMode === "skills" },
+    );
+    if (rosterMode === "skills") {
+      for (const [i, tab] of ["basic", "skill", "ultimate"].entries())
+        button(
+          "roster-tab-" + tab,
+          tab,
+          132 + i * 120,
+          122,
+          116,
+          20,
+          () => (libraryTab = tab),
+          { active: libraryTab === tab },
+        );
+      skillDetails(h, libraryTab, 134, 150, 350);
       return;
     }
-    const current = profile.upgrades[h.id];
-    for (const [i, key] of ["A", "B"].entries()) {
-      const b = h.branches[key],
-        x = 130 + i * 181;
-      button(
-        "branch-" + key,
-        (current === key ? "* " : "") + key + " " + b.name,
-        x,
-        217,
-        174,
-        22,
-        () => buyBranch(h.id, key, b.cost),
-        { disabled: !!current && current !== key, active: current === key },
+    const progress = talentProgress(h.id);
+    for (const [i, branch] of ["A", "B"].entries()) {
+      const x = 132 + i * 181;
+      text(
+        "PATH " + branch,
+        x + 85,
+        122,
+        progress.branch === branch ? C.gold : C.jade,
+        1,
+        "center",
       );
-      wrapped(b.description, x + 2, 243, 170, C.muted, 11, 2);
+      for (const node of h.talents[branch]) {
+        const y = 137 + (node.rank - 1) * 21,
+          owned = progress.branch === branch && progress.rank >= node.rank;
+        if (node.rank > 1) line(x + 8, y - 3, x + 8, y + 1, C.edge);
+        button(
+          "talent-" + branch + node.rank,
+          (owned ? "* " : node.kind === "special" ? "+ " : "") +
+            node.rank +
+            " " +
+            node.name,
+          x,
+          y,
+          172,
+          19,
+          () => (selectedNode = { branch, rank: node.rank }),
+          {
+            active:
+              selectedNode.branch === branch && selectedNode.rank === node.rank,
+            color: node.kind === "special" ? C.gold : C.cream,
+            disabled: !!progress.branch && progress.branch !== branch,
+          },
+        );
+      }
     }
+    const node = h.talents[selectedNode.branch][selectedNode.rank - 1];
+    wrapped(node.description, 133, 247, 270, C.jade, 11, 2);
+    button(
+      "buy-talent",
+      "BUY " + node.cost,
+      410,
+      249,
+      82,
+      25,
+      () => buyTalent(h.id),
+      {
+        disabled:
+          !unlocked(h) ||
+          (progress.branch && progress.branch !== selectedNode.branch) ||
+          selectedNode.rank !== progress.rank + 1 ||
+          profile.stones < node.cost,
+      },
+    );
   }
   function drawArchive() {
     bg("tomb", 0.75);
     header("MONSTER ARCHIVE", () => (scene = "campaign"));
+    button("archive-ranks", "RANKS", 204, 4, 65, 19, () => (overlay = "ranks"));
     const list = catalog.enemies,
       visible = list.slice(archivePage * 6, archivePage * 6 + 6);
     visible.forEach((e, i) => {
@@ -658,7 +944,11 @@
     sprite(e.id, 205, 42, 2, Math.floor(now / 240) % 4);
     wrapped(e.name, 276, 47, 214, C.gold, 16, 2);
     text(e.boss ? "BOSS / 3 PHASES" : e.role, 276, 86, C.jade);
-    text(`HP ${e.hp} / Armor ${e.armor} / Shield ${e.shield || 0}`, 207, 115);
+    text(
+      `Base HP ${e.hp} / Armor ${e.armor} / Shield ${e.shield || 0}`,
+      207,
+      115,
+    );
     text(`ATK ${e.damage} ${e.damage_type} / ${e.interval}s`, 207, 132);
     text(`Speed ${e.speed} tiles/s / Reach ${e.range}`, 207, 149);
     const resist = Object.entries(e.resistances || {})
@@ -716,6 +1006,127 @@
     const mix = clamp((now - stateReceived) / 55, 0, 1);
     return B.x + (before.x + (unit.x - before.x) * mix) * B.cw;
   }
+  function drawRanges(s) {
+    let actor = (s.heroes || []).find(
+      (u) =>
+        Math.abs(unitX(u) - pointer.x) < 16 &&
+        pointer.y > unitY(u) - 32 &&
+        pointer.y < unitY(u) + 3,
+    );
+    let h = actor?.stats,
+      anchor = actor ? { x: actor.x, lane: actor.lane } : null;
+    if (!actor && selectedHero) {
+      h = previews[selectedHero] || heroes[selectedHero];
+      const tile = tileAt(pointer);
+      if (tile) anchor = { x: tile.col + 0.5, lane: tile.lane };
+    }
+    if (!actor && !h && pointer.y >= 241) {
+      const index = Math.floor((pointer.x - 88) / 52);
+      if (index >= 0 && index < 8) {
+        h = previews[heroOrder[index]] || heroes[heroOrder[index]];
+        anchor = { x: 2.5, lane: 2 };
+      }
+    }
+    let enemy = false;
+    if (!h) {
+      actor = (s.enemies || []).find(
+        (u) =>
+          Math.abs(unitX(u) - pointer.x) < 16 &&
+          pointer.y > unitY(u) - 32 &&
+          pointer.y < unitY(u) + 3,
+      );
+      if (actor) {
+        h = enemies[actor.type];
+        anchor = { x: actor.x, lane: actor.lane };
+        enemy = true;
+      }
+    }
+    if (!h || !anchor) return;
+    const ability = enemy
+      ? rangeMode === "basic"
+        ? { geometry: h.basic_geometry }
+        : h.abilities?.[0]
+      : rangeMode === "basic"
+        ? h.basic
+        : h[rangeMode];
+    const scope = ability?.geometry;
+    if (!scope) return;
+    const color = enemy
+      ? C.red
+      : rangeMode === "ultimate"
+        ? C.gold
+        : rangeMode === "skill"
+          ? C.ice
+          : C.jade;
+    for (let row = 0; row < 5; row++)
+      for (let col = 1; col <= 11; col++) {
+        const dx = col + 0.5 - anchor.x,
+          dy = row - anchor.lane,
+          r = scope.radius;
+        const lanes =
+          enemy && scope.shape === "lanes"
+            ? actor.type === "riverlord"
+              ? [actor.lane, (actor.lane + 1) % 5]
+              : actor.type === "mountainlord"
+                ? [...Array(5).keys()]
+                    .sort(
+                      (a, b) =>
+                        s.heroes.filter((h) => h.lane === b).length -
+                          s.heroes.filter((h) => h.lane === a).length || b - a,
+                    )
+                    .slice(0, 2)
+                : s.telegraphs.find((t) => t.kind === "ROYAL DECREE")
+                    ?.lanes || [0, 1, 2, 3, 4]
+            : [];
+        const match =
+          (scope.shape === "lanes" && lanes.includes(row)) ||
+          scope.shape === "field" ||
+          (scope.shape === "lane"
+            ? dy === 0
+            : scope.shape === "self"
+              ? Math.abs(dx) < 0.1 && dy === 0
+              : scope.shape === "circle"
+                ? Math.hypot(dx, dy) <= r
+                : scope.shape === "front_circle"
+                  ? dx >= -0.3 && Math.hypot(dx, dy) <= r
+                  : dy === 0 &&
+                    (enemy ? dx <= 0.3 && -dx <= r : dx >= -0.3 && dx <= r));
+        if (match && !(scope.exclude_self && Math.abs(dx) < 0.1 && dy === 0)) {
+          ctx.globalAlpha = 0.17;
+          rect(
+            B.x + col * B.cw + 1,
+            B.y + row * B.ch + 1,
+            B.cw - 2,
+            B.ch - 2,
+            color,
+          );
+          ctx.globalAlpha = 1;
+          line(
+            B.x + col * B.cw + 2,
+            B.y + row * B.ch + 2,
+            B.x + (col + 1) * B.cw - 3,
+            B.y + row * B.ch + 2,
+            color,
+          );
+        }
+      }
+    const label =
+      scope.shape === "circle"
+        ? `radius ${scope.radius} / ${scope.offsets.length} centers`
+        : scope.shape === "line"
+          ? `same lane / ${scope.radius} tiles`
+          : scope.shape === "lanes"
+            ? "marked lanes"
+            : scope.shape === "lane"
+              ? "whole lane"
+              : scope.shape === "field"
+                ? "whole board"
+                : scope.shape === "front_circle"
+                  ? `front arc ${scope.radius} tiles`
+                  : "self";
+    panel(130, 221, 373, 17, color);
+    text(h.name + " / " + rangeMode + " / " + label, 137, 224, color, 0.78);
+  }
   function drawBattle() {
     const s = state;
     if (!s) {
@@ -724,6 +1135,7 @@
       return;
     }
     bg(s.region || "wharf");
+    drawRanges(s);
     // Tile and range indicators sit behind the sprites, never over attack feedback.
     for (let lane = 0; lane < 5; lane++)
       for (let col = 1; col <= 9; col++) {
@@ -773,8 +1185,17 @@
           "star",
           B.x + tile.col * B.cw + 13,
           B.y + tile.lane * B.ch + 9,
-          C.jade,
+          tile.corrupted ? C.red : C.jade,
         );
+        if (tile.corrupted)
+          text(
+            "CORRUPT",
+            B.x + tile.col * B.cw + 16,
+            B.y + tile.lane * B.ch + 23,
+            C.red,
+            0.6,
+            "center",
+          );
       }
       if (
         tile.blocked ||
@@ -819,6 +1240,7 @@
       }
     }
     drawDefenses(s);
+    drawMapEffects(s);
     drawAmbient(s.region || "wharf");
     const units = [
       ...(s.heroes || []).map((x) => ({ ...x, friendly: true })),
@@ -850,6 +1272,8 @@
         size / 32,
         null,
         u.hidden ? 0.42 : 1,
+        u.action,
+        u.action_started || 0,
       );
       const hp = clamp(Number(u.hp || 0) / Number(u.max_hp || u.hp || 1), 0, 1);
       rect(x - 11, y - 29, 22, 3, C.deep);
@@ -863,6 +1287,8 @@
           C.ice,
         );
       if (u.friendly) {
+        rect(x - 11, y - 23, 22, 2, C.deep);
+        rect(x - 11, y - 23, 22 * clamp(u.mana / u.mana_max, 0, 1), 2, C.ice);
         rect(x - 10, y + 2, 20, 2, "#13222b");
         rect(
           x - 10,
@@ -876,6 +1302,15 @@
         rect(x + 8, y - 15, 2, 4, "#ed8d4c");
         rect(x + 9, y - 17, 2, 4, C.gold);
       }
+      if (u.rank && u.rank !== "normal")
+        text(
+          u.rank === "captain" ? "CAPT" : "ELITE",
+          x,
+          y - 36,
+          C.gold,
+          0.65,
+          "center",
+        );
       if (u.phase > 1) text("P" + u.phase, x, y - 38, C.violet, 1, "center");
     }
     for (const p of s.projectiles || []) {
@@ -915,6 +1350,62 @@
       text("ROTATE FOR A WIDER BATTLEFIELD", 192, 9, C.gold, 1, "center");
     }
   }
+  function drawMapEffects(s) {
+    const t = s.time;
+    if (s.region === "wharf") {
+      for (let i = 0; i < 16; i++) {
+        const x = (i * 37 + t * 10) % 512,
+          y = 222 + (i % 3) * 3;
+        ctx.globalAlpha = 0.22;
+        rect(x, y, 10, 1, C.ice);
+        ctx.globalAlpha = 1;
+      }
+      const flooded = ["HIGH TIDE", "RISING"].includes(s.hazard.phase);
+      for (const tile of s.hazard.tiles || [])
+        if (tile.type === "water") {
+          const x = B.x + tile.col * 32,
+            y = B.y + tile.lane * 32;
+          for (let n = 0; n < 3; n++)
+            line(
+              x + 3 + n * 8,
+              y + 13 + Math.sin(t * 2 + n) * 2,
+              x + 9 + n * 8,
+              y + 13 + Math.sin(t * 2 + n) * 2,
+              flooded ? "#6ba5b8" : "#456d77",
+            );
+        }
+    } else if (s.region === "terrace") {
+      const direction = s.hazard.phase === "WEST WIND" ? -1 : 1;
+      for (let i = 0; i < 18; i++) {
+        const x = (((i * 57 + t * direction * 18) % 512) + 512) % 512,
+          y = 55 + ((i * 17) % 175);
+        line(x, y, x + 4, y - 2, C.jade);
+      }
+      for (const node of s.nodes || []) {
+        const x = B.x + (node.col + 0.5) * 32,
+          y = B.y + (node.lane + 0.5) * 32;
+        ctx.globalAlpha = 0.15 + 0.05 * Math.sin(t * 3);
+        rect(x - 12, y - 11, 24, 22, node.corrupted ? C.red : C.jade);
+        ctx.globalAlpha = 1;
+      }
+    } else if (s.hazard.phase === "GRAVE MIST") {
+      for (const lane of stages[s.stage]?.mist_lanes || []) {
+        ctx.globalAlpha = 0.12;
+        rect(B.x, B.y + lane * 32, 384, 32, "#7d96a5");
+        ctx.globalAlpha = 1;
+        for (let i = 0; i < 7; i++) {
+          const x = B.x + ((i * 73 + t * 7) % 380);
+          line(
+            x,
+            B.y + lane * 32 + 25,
+            x + 28,
+            B.y + lane * 32 + 25,
+            "#728590",
+          );
+        }
+      }
+    }
+  }
   function drawAmbient(region) {
     const t = now / 1000;
     ctx.globalAlpha = 0.45;
@@ -946,12 +1437,23 @@
         line(B.x + 23, y - 5, B.x + 9, y + 5, C.dim);
         continue;
       }
-      const color = ward.status === "sweeping" ? C.cream : C.gold;
-      rect(x - 6, y - 10, 12, 19, "#22424c");
-      line(x - 8, y - 4, x + 8, y + 4, color);
-      line(x - 8, y + 4, x + 8, y - 4, color);
-      rect(x - 2, y - 13, 4, 25, color);
-      rect(x - 9, y - 1, 18, 3, C.jade);
+      const color = ward.status === "sweeping" ? C.cream : C.gold,
+        g = guardianAtlas[s.region];
+      if (g && images.guardians) {
+        const frame =
+          Math.floor((s.paused ? s.time : now / 1000) * 6) % g.frames;
+        ctx.drawImage(
+          images.guardians,
+          g.x + frame * g.w,
+          g.y,
+          g.w,
+          g.h,
+          x - 18,
+          y - 19,
+          36,
+          36,
+        );
+      }
       if (ward.status === "sweeping") {
         for (let i = 1; i < 5; i++) rect(x - i * 7, y - 7 + i * 3, 5, 2, C.ice);
       }
@@ -976,11 +1478,11 @@
     rect(0, 0, W, 27, "#10202a");
     rect(0, 26, W, 1, C.edge);
     icon("qi", 8, 8, C.gold);
-    text(Math.floor(s.qi || 0), 22, 8, C.gold);
+    text(Math.floor(s.qi || 0) + "/" + (s.qi_cap || 320), 22, 8, C.gold);
     icon("gate", 80, 8, C.jade);
     text(s.gate ?? 3, 94, 8);
     text("Wave " + (s.wave || 0) + "/" + (s.wave_count || 0), 126, 8);
-    text(formatTime(s.time), 237, 8, C.muted);
+    text(formatTime(s.time), 197, 8, C.muted);
     button("pause", s.paused ? ">" : "II", 303, 4, 28, 19, () =>
       command({ action: "pause", paused: !s.paused }),
     );
@@ -999,6 +1501,16 @@
       command({ action: "pause", paused: true });
       overlay = "controls";
     });
+    text(
+      { setup: "SETUP", pressure: "PRESSURE", onslaught: "ONSLAUGHT" }[
+        s.encounter?.id
+      ] || "SETUP",
+      289,
+      8,
+      C.gold,
+      0.8,
+      "right",
+    );
     rect(0, 28, W, 25, "#10202ae8");
     text(stages[s.stage]?.name || s.stage, 8, 32, C.jade);
     text(
@@ -1009,24 +1521,63 @@
       1,
       "right",
     );
+    button(
+      "range-mode",
+      "Range: " + rangeMode,
+      366,
+      44,
+      137,
+      14,
+      () =>
+        (rangeMode = ["basic", "skill", "ultimate"][
+          (["basic", "skill", "ultimate"].indexOf(rangeMode) + 1) % 3
+        ]),
+    );
+    const ritualLabel = { wharf: "Calm", terrace: "Purify", tomb: "Mirror" }[
+      s.region
+    ];
+    button(
+      "ritual",
+      ritualLabel +
+        " " +
+        (s.ritual_cd > 0 ? Math.ceil(s.ritual_cd) + "s" : "35Q"),
+      4,
+      267,
+      78,
+      19,
+      () => command({ action: "ritual" }),
+      { disabled: s.paused || s.ritual_cd > 0 || s.qi < 35 },
+    );
+    if (pointer.x < 85 && pointer.y > 265) {
+      panel(90, 245, 414, 40, C.gold);
+      wrapped(
+        stages[s.stage].ritual.description + " Cooldown 30s.",
+        97,
+        251,
+        400,
+        C.cream,
+        12,
+        2,
+      );
+    }
     for (let i = 0; i < realm(); i++)
       button(
         "relic-" + i,
         ["1", "2", "3"][i],
         5 + i * 27,
-        251,
+        245,
         24,
-        22,
+        18,
         () => command({ action: "relic", slot: i }),
         { disabled: s.relics_used?.includes(catalog.relics[i]?.id) },
       );
     const boss = s.enemies?.find((e) => e.boss);
     if (boss) {
-      panel(158, 47, 270, 13, C.violet);
-      rect(161, 50, 264 * clamp(boss.hp / boss.max_hp, 0, 1), 6, "#a65874");
+      panel(96, 47, 264, 13, C.violet);
+      rect(99, 50, 258 * clamp(boss.hp / boss.max_hp, 0, 1), 6, "#a65874");
       text(
         (enemies[boss.type]?.name || "Boss") + " / Phase " + boss.phase,
-        293,
+        228,
         49,
         C.cream,
         0.9,
@@ -1088,35 +1639,63 @@
     }
   }
   function drawInspect(u) {
-    const h = heroes[u.type] || {};
-    const x = 200,
-      y = 184;
-    panel(x, y, 177, 47, C.gold);
-    text((h.name || u.type).slice(0, 20), x + 6, y + 5, C.gold);
+    const h = u.stats || previews[u.type] || heroes[u.type],
+      ult = h.ultimate;
+    panel(135, 164, 369, 75, C.gold);
+    text(h.name + ` / HP ${Math.ceil(u.hp)}/${u.max_hp}`, 142, 169, C.gold);
     text(
-      "HP " +
-        Math.ceil(u.hp) +
-        "  DAO " +
-        Math.floor(u.resonance || 0) +
-        "/100",
-      x + 6,
-      y + 15,
-      C.muted,
+      `Mana ${Math.floor(u.mana)}/${u.mana_max} (+${Number(u.mana_regen ?? h.mana_regen).toFixed(1)}/s) / Dao ${Math.floor(u.resonance)}/100`,
+      142,
+      183,
+      C.ice,
     );
+    text(
+      `Ult: ${ult.mana_cost} MP / ${ult.qi_cost} Qi / 100 Dao / CD ${u.ultimate_cd > 0 ? Math.ceil(u.ultimate_cd) + "s" : "ready"}`,
+      142,
+      199,
+      C.muted,
+      0.85,
+    );
+    const ready =
+      u.resonance >= 100 &&
+      u.mana >= ult.mana_cost &&
+      state.qi >= ult.qi_cost &&
+      u.ultimate_cd <= 0 &&
+      !state.paused;
     button(
       "ultimate",
-      "Q ULTIMATE",
-      x + 5,
-      y + 27,
-      103,
-      16,
+      `Q ULT ${ult.mana_cost}MP`,
+      142,
+      215,
+      100,
+      19,
       () => command({ action: "ultimate", unit: u.id }),
-      { disabled: u.resonance < 100 },
+      { disabled: !ready },
     );
-    button("recall", "RECALL", x + 112, y + 27, 59, 16, () => {
-      command({ action: "sell", unit: u.id });
-      inspectUnit = null;
-    });
+    button(
+      "auto-skill",
+      u.auto_skill ? "AUTO ON" : "AUTO OFF",
+      246,
+      215,
+      78,
+      19,
+      () =>
+        command({ action: "auto_skill", unit: u.id, enabled: !u.auto_skill }),
+    );
+    button("unit-skills", "SKILLS", 328, 215, 78, 19, () => showSkills(u.type));
+    button(
+      "recall",
+      "RECALL",
+      410,
+      215,
+      87,
+      19,
+      () => {
+        command({ action: "sell", unit: u.id });
+        inspectUnit = null;
+      },
+      { disabled: state.paused },
+    );
   }
   function drawEffects(s) {
     for (const e of s.effects || []) {
@@ -1234,7 +1813,145 @@
   function drawOverlay() {
     if (!overlay) return;
     ctx.fillStyle = "rgba(6,12,19,.8)";
-    ctx.fillRect(0, 0, W, H);
+    ctx.fillRect(-(W - 384) / 2, -(H - 216) / 2, W, H);
+    if (overlay === "ranks") {
+      panel(-45, -17, 474, 252, C.gold);
+      text("MONSTER RANKS & ESCALATION", -31, -3, C.gold, 1.2);
+      const notes = [
+        "Base HP rises 5% multiplicatively after every campaign encounter. The archive lists unscaled base stats; live enemy health bars use the scaled value.",
+        "ELITE: 25% more HP, +2 armor, 10% more attack damage. Elite Lantern Demons grant 35 shield instead of 25 in the same radius-1.5 circle.",
+        "CAPTAIN: 50% more HP, +3 armor, 15% more attack damage. Other enemies within radius 1.5 gain 10% movement speed. Appears in the final wave of non-boss encounters.",
+        "Setup waves use ordinary enemies. Pressure adds one elite per pack; Onslaught makes about half each pack elite. Bosses keep their mandatory HP phases and visible warning lanes.",
+      ];
+      let y = 24;
+      for (const note of notes)
+        y += wrapped(note, -31, y, 440, C.cream, 12, 4) * 12 + 12;
+      button(
+        "ranks-close",
+        "BACK",
+        142,
+        209,
+        100,
+        20,
+        () => (overlay = scene === "archive" ? null : "skills"),
+      );
+      return;
+    }
+    if (overlay === "skills") {
+      // This library uses the full logical viewport, rather than the legacy small modals.
+      const list = libraryEnemy ? catalog.enemies : catalog.heroes;
+      panel(-55, -23, 494, 266, C.gold);
+      text(
+        libraryEnemy ? "MONSTER FIELD MANUAL" : "CULTIVATOR FIELD MANUAL",
+        -43,
+        -11,
+        C.gold,
+        1.15,
+      );
+      button("library-heroes", "HEROES", 198, -14, 73, 21, () => {
+        libraryEnemy = false;
+        libraryHero = "sword";
+      });
+      button("library-enemies", "ENEMIES", 275, -14, 77, 21, () => {
+        libraryEnemy = true;
+        libraryHero = "tide";
+      });
+      button(
+        "library-close",
+        "BACK",
+        357,
+        -14,
+        71,
+        21,
+        () => (overlay = scene === "battle" ? "battleMenu" : null),
+      );
+      const current = libraryEnemy
+        ? enemies[libraryHero]
+        : state?.heroes?.find((u) => u.type === libraryHero)?.stats ||
+          previews[libraryHero] ||
+          heroes[libraryHero];
+      list.forEach((h, i) =>
+        button(
+          "library-" + h.id,
+          libraryEnemy ? h.name : shortNames[h.id],
+          -46,
+          17 + i * (libraryEnemy ? 17 : 26),
+          107,
+          libraryEnemy ? 16 : 24,
+          () => (libraryHero = h.id),
+          { active: libraryHero === h.id },
+        ),
+      );
+      if (!current) return;
+      if (libraryEnemy)
+        button(
+          "library-ranks",
+          "RANKS",
+          128,
+          -14,
+          64,
+          21,
+          () => (overlay = "ranks"),
+        );
+      text(current.name, 73, 18, C.gold, 1.2);
+      text(
+        libraryEnemy
+          ? `${current.hp} HP / ${current.armor} ARM / ${current.damage} ATK`
+          : `${current.mana_max} max mana / +${current.mana_regen.toFixed(2)}/s / ${current.cost} Qi deployment`,
+        73,
+        39,
+        C.ice,
+        0.95,
+      );
+      if (libraryEnemy) {
+        const a = current.abilities[0];
+        text(
+          `Base / basic reach ${current.range} left / attack ${current.interval}s`,
+          73,
+          55,
+          C.muted,
+          0.9,
+        );
+        text(a.name, 73, 72, C.gold);
+        wrapped(a.description, 73, 91, 348, C.cream, 12, 4);
+        text(
+          a.cooldown
+            ? `Ability cycle ${current.boss ? "10 / 9 / 8" : a.cooldown}s / windup ${a.windup}s`
+            : "Passive ability",
+          73,
+          145,
+          C.ice,
+          0.9,
+        );
+        wrapped(a.geometry.description, 73, 160, 348, C.jade, 13, 3);
+        wrapped(
+          "Counter: " + current.counterplay,
+          73,
+          202,
+          348,
+          C.muted,
+          12,
+          3,
+        );
+      } else {
+        for (const [i, tab] of ["basic", "skill", "ultimate"].entries())
+          button(
+            "library-tab-" + tab,
+            tab,
+            73 + i * 117,
+            60,
+            112,
+            22,
+            () => {
+              libraryTab = tab;
+              rangeMode = tab;
+            },
+            { active: libraryTab === tab },
+          );
+        skillDetails(current, libraryTab, 73, 84, 346);
+      }
+      return;
+    }
     if (overlay === "stage") {
       const s = stagePreview;
       panel(55, 35, 274, 150, regionColor[s.region]);
@@ -1246,7 +1963,15 @@
       );
       text(s.name, 70, 62, C.gold);
       wrapped(s.description, 70, 78, 242, C.cream, 11, 4);
-      wrapped(s.mechanic, 70, 124, 242, C.muted, 10, 2);
+      wrapped(
+        s.mechanic + " / HP x" + s.hp_multiplier.toFixed(2),
+        70,
+        124,
+        242,
+        C.muted,
+        10,
+        2,
+      );
       text(
         `${s.waves.length} waves / ${s.enemy_count} foes / ${s.duration_label}`,
         70,
@@ -1261,9 +1986,9 @@
       return;
     }
     if (overlay === "settings") {
-      panel(69, 28, 246, 164, C.gold);
-      text("SOUND & DISPLAY", 192, 40, C.gold, 1, "center");
-      for (const [i, key] of ["master", "music", "sfx"].entries()) {
+      panel(69, 10, 246, 198, C.gold);
+      text("SOUND & DISPLAY", 192, 23, C.gold, 1, "center");
+      for (const [i, key] of ["master", "music", "sfx", "voice"].entries()) {
         const y = 61 + i * 24;
         text(key.toUpperCase(), 82, y + 4, C.muted);
         const val = profile.settings[key];
@@ -1287,7 +2012,7 @@
         "shake",
         "SHAKE " + (profile.settings.shake ? "ON" : "OFF"),
         81,
-        135,
+        158,
         107,
         18,
         () => {
@@ -1299,7 +2024,7 @@
         "pixel-mode",
         profile.settings.integer ? "INTEGER PIXEL" : "FIT DISPLAY",
         195,
-        135,
+        158,
         107,
         18,
         () => {
@@ -1308,35 +2033,102 @@
           resize();
         },
       );
-      button("close", "BACK", 128, 163, 128, 18, () => (overlay = null));
+      button("close", "BACK", 128, 185, 128, 18, () => (overlay = null));
       return;
     }
     if (overlay === "battleMenu") {
-      panel(108, 40, 168, 137, C.gold);
-      text("SPIRIT REST", 192, 52, C.gold, 1, "center");
-      button("resume", "RESUME", 122, 71, 140, 20, () => {
+      panel(84, 22, 216, 207, C.gold);
+      text("SPIRIT REST", 192, 32, C.gold, 1.2, "center");
+      button("resume", "RESUME", 95, 52, 194, 22, () => {
         overlay = null;
         command({ action: "pause", paused: false });
       });
       button(
+        "battle-skills",
+        "CULTIVATOR / ENEMY SKILLS",
+        95,
+        78,
+        194,
+        22,
+        () =>
+          showSkills(
+            inspectUnit
+              ? state.heroes.find((u) => u.id === inspectUnit)?.type
+              : "sword",
+          ),
+      );
+      button(
+        "region-guide",
+        "REGION MECHANICS",
+        95,
+        104,
+        194,
+        22,
+        () => (overlay = "region-guide"),
+      );
+      button(
         "settings",
-        "SETTINGS",
-        122,
-        96,
-        140,
-        19,
+        "SOUND / VOICES",
+        95,
+        130,
+        194,
+        22,
         () => (overlay = "settings"),
       );
       button(
         "controls",
         "HOW TO PLAY",
-        122,
-        120,
-        140,
-        19,
+        95,
+        156,
+        194,
+        22,
         () => (overlay = "controls"),
       );
-      button("leave", "LEAVE BATTLE", 122, 144, 140, 19, () => leaveBattle());
+      button("leave", "LEAVE BATTLE", 95, 182, 194, 22, () => leaveBattle());
+      return;
+    }
+    if (overlay === "region-guide") {
+      const region = state?.region || "wharf",
+        stage = stages[state?.stage];
+      panel(-45, -17, 474, 252, regionColor[region]);
+      text(regionNames[region], -31, -3, regionColor[region], 1.25);
+      const sections = {
+        wharf: [
+          "Tide: 48s cycle. Low 0-20s, rising 20-28s, high 28-40s, receding 40-48s.",
+          "Water cells: columns 3-4 in the marked lanes. Rising/high tide reduces attack speed 15%; high tide seals placement and deals 15 Water damage every 6s.",
+          "Tide Miao move 15% faster at high tide. Fire and lightning can hit submerged corpses.",
+          "Calm the River: 35 Qi, 30s cooldown. Suppresses floods for 12s.",
+          "Jade River Ark: one rescue per lane; purges normal enemies, deals 35% boss max HP subject to phase gates and slows it.",
+        ],
+        terrace: [
+          "Healthy ley node: heroes on it or one orthogonal cell away gain 12% attack speed and 20% mana regeneration.",
+          "A Drainer within radius 1 corrupts a node after 2s. Corrupted nodes heal nearby enemies 3% max HP every 8s, radius 2.",
+          "After the Drainer leaves, stand beside the node for 3s to purify it. Wind changes every 20s and affects projectile travel.",
+          "Purify the Ley: 35 Qi, 30s cooldown. Purifies all nodes, locks wind 10s, restores 15 mana beside nodes.",
+          "Heaven Sword Array: one rescue per lane; purges normal enemies, damages bosses and shields allies it passes.",
+        ],
+        tomb: [
+          "Grave mist lasts the last 6s of each 24s cycle. In mist lanes, mana regeneration falls 30%; blades cannot target beyond 2.8 cells without reveal.",
+          "Fire/lightning pierce ghost fades. Three curse stacks reduce attack speed 20% for 8s; cleansing counters this.",
+          "Final encounter: three targetable altars resurrect dead souls after 6s at 35% HP and enable boss shields. Destroy the altars first.",
+          "Soul Mirror: 35 Qi, 30s cooldown. Reveals ghosts, stops resurrection 6s and cleanses allied curses.",
+          "Soul-Sealing Bell: one rescue per lane; purges souls and reveals the field during its sweep and for 6s afterward.",
+        ],
+      }[region];
+      let y = 22;
+      for (let i = 0; i < sections.length; i++) {
+        text(String(i + 1) + ".", -31, y, C.gold);
+        y += wrapped(sections[i], -13, y, 420, C.cream, 11, 4) * 11 + 6;
+      }
+      button(
+        "region-close",
+        "BACK",
+        142,
+        209,
+        100,
+        20,
+        () => (overlay = "battleMenu"),
+      );
       return;
     }
     if (overlay === "controls") {
@@ -1344,14 +2136,14 @@
       text("KEEPER'S FIELD GUIDE", 192, 39, C.gold, 1, "center");
       const guide = [
         "1. CHOOSE A HERO. TAP AN EMPTY TILE.",
-        "2. GATHERERS CREATE QI FOR YOUR ARMY.",
+        "2. QI CAP 320; THREE YUN: 100/80/60% YIELD.",
         "3. SWORDS SHOOT RIGHT. MONKS BLOCK.",
-        "4. SELECT A HERO. Q CASTS A FULL ULTIMATE.",
+        "4. Q ULT: 100 DAO + HERO MANA + SHARED QI.",
         "5. SPACE PAUSES. ESC CANCELS SELECTION.",
         "6. EACH LANE HAS ONE GUARDIAN SEAL RESCUE.",
         "7. COLUMN 0 IS RESERVED. DEPLOY IN 1-9.",
-        "TIP: YUN IN THE MIDDLE, SHEN AHEAD OF HIM.",
-        "FIRST THREATS: MIDDLE, THEN UPPER-MIDDLE.",
+        "UPKEEP: 1 QI / 6 HEROES, ROUNDED UP / 24S.",
+        "MENU > SKILLS: COSTS, RANGES, SCALING.",
       ];
       guide.forEach((t, i) =>
         text(t, 61, 55 + i * 11, i >= 6 ? C.jade : C.muted),
@@ -1425,7 +2217,7 @@
           ? toast.message.slice(0, 56) + "..."
           : toast.message,
       w = Math.min(372, message.length * 6 + 16),
-      y = scene === "battle" ? 45 : 4;
+      y = overlay ? 0 : scene === "battle" ? 45 : 4;
     panel((W - w) / 2, y, w, 18, toast.color, "#14232c");
     text(message, W / 2, y + 5, toast.color, 1, "center");
   }
@@ -1457,6 +2249,11 @@
       }
     }
     drawToast();
+    if (!overlay && voiceCaption && now < voiceCaption.until) {
+      const captionY = inspectUnit !== null ? 60 : 221;
+      panel(126, captionY, 378, 17, C.edge, "#10232bef");
+      text(voiceCaption.text, 132, captionY + 3, C.cream, 0.82);
+    }
     canvas.dataset.scene =
       overlay === "settings"
         ? "settings"
@@ -1475,6 +2272,7 @@
     return col >= 1 && col <= 9 && lane >= 0 && lane < 5 ? { col, lane } : null;
   }
   function leaveBattle() {
+    audio.stopVoices();
     battleEpoch++;
     const old = battleId;
     battleId = null;
@@ -1516,6 +2314,7 @@
     return out;
   }
   async function startBattle(id) {
+    audio.stopVoices();
     const epoch = ++battleEpoch;
     const old = battleId;
     battleId = null;
@@ -1649,7 +2448,14 @@
       if (Number(e.seq || 0) <= lastEvent) continue;
       lastEvent = Math.max(lastEvent, Number(e.seq || 0));
       const kind = e.kind || "";
-      if (e.actor) audio.hero(e.actor, kind);
+      if (e.actor) {
+        audio.hero(e.actor, kind);
+        if (
+          (kind === "place" || kind === "ultimate") &&
+          s.time - (e.time || 0) < 1
+        )
+          audio.voice(e.actor, kind === "place" ? "summon" : "ultimate");
+      }
       if (
         [
           "warning",
@@ -1710,6 +2516,8 @@
           const reward = s.rewards || stages[s.stage]?.reward || {};
           profile.stones += Number(reward.stones ?? reward.spirit_stones ?? 0);
           profile.insight += Number(reward.insight || 0);
+        } else {
+          profile.stones += Number(s.rewards?.replay_stones || 0);
         }
         const old = profile.best[s.stage];
         if (!old || s.time < old.time)
@@ -1769,6 +2577,20 @@
     heroCounts: {},
     theme: "lobby",
     nextNote: 0,
+    voiceEpoch: 0,
+    voiceGain: null,
+    voiceManifest: null,
+    musicManifest: null,
+    buffers: {},
+    loadingMusic: "",
+    currentMusic: null,
+    musicPhase: "setup",
+    musicEpoch: 0,
+    voiceQueue: [],
+    voiceBusy: false,
+    voiceSource: null,
+    playedVoices: {},
+    playedThemes: {},
     init() {
       if (this.context) {
         if (this.context.state === "suspended") this.context.resume();
@@ -1779,6 +2601,8 @@
         this.master = this.context.createGain();
         this.musicGain = this.context.createGain();
         this.sfxGain = this.context.createGain();
+        this.voiceGain = this.context.createGain();
+        this.voiceGain.connect(this.master);
         this.musicGain.connect(this.master);
         this.sfxGain.connect(this.master);
         const limiter = this.context.createDynamicsCompressor();
@@ -1796,8 +2620,23 @@
     update() {
       if (!this.context) return;
       const t = this.context.currentTime;
-      this.master.gain.setTargetAtTime(profile.settings.master * 0.4, t, 0.08);
-      this.musicGain.gain.setTargetAtTime(profile.settings.music, t, 0.08);
+      this.master.gain.setTargetAtTime(
+        profile.settings.master * 0.4 * (document.hidden ? 0 : 1),
+        t,
+        0.08,
+      );
+      this.musicGain.gain.setTargetAtTime(
+        profile.settings.music *
+          (this.voiceBusy ? 0.24 : 1) *
+          (scene === "battle" && state?.paused ? 0 : 1),
+        t,
+        0.18,
+      );
+      this.voiceGain.gain.setTargetAtTime(
+        profile.settings.voice ?? 0.8,
+        t,
+        0.08,
+      );
       this.sfxGain.gain.setTargetAtTime(profile.settings.sfx, t, 0.08);
     },
     tone(f, d = 0.12, type = "triangle", volume = 0.2, bus = "sfx", delay = 0) {
@@ -1815,6 +2654,17 @@
       g.gain.exponentialRampToValueAtTime(0.001, t + d);
       o.start(t);
       o.stop(t + d + 0.02);
+    },
+    pluck(frequency, duration, volume, delay = 0) {
+      for (let n = 1; n <= 7; n++)
+        this.tone(
+          frequency * n * (1 + 0.0001 * n * n),
+          duration / (1 + n * 0.3),
+          "sine",
+          volume / n ** 1.6,
+          "sfx",
+          delay,
+        );
     },
     noise(duration = 0.09, volume = 0.08, filter = 1800) {
       if (!this.context) return;
@@ -1921,106 +2771,145 @@
         warning: [196, 0.28, "square", 0.16],
       };
       if (kind === "victory") {
-        [523, 659, 784, 1047].forEach((n, i) =>
-          this.tone(n, 0.35, "triangle", 0.25, "sfx", i * 0.13),
+        [587.33, 659.25, 880, 1174.66].forEach((n, i) =>
+          this.pluck(n, 0.6, 0.19, i * 0.15),
         );
         return;
       }
       if (kind === "defeat") {
-        [262, 247, 196].forEach((n, i) =>
-          this.tone(n, 0.45, "triangle", 0.22, "sfx", i * 0.2),
+        [440, 349.23, 293.66].forEach((n, i) =>
+          this.pluck(n, 0.8, 0.17, i * 0.24),
         );
         return;
       }
       if (sounds[kind]) this.tone(...sounds[kind]);
     },
-    music() {
-      if (!this.context || !profile.settings.music || document.hidden) return;
-      if (scene === "battle" && state?.paused) return;
-      const theme = scene === "battle" ? state?.region || "wharf" : "lobby";
-      if (theme !== this.theme) {
-        this.theme = theme;
-        this.step = 0;
-        this.nextNote = 0;
+    async buffer(url) {
+      if (this.buffers[url]) return this.buffers[url];
+      const promise = fetch(url)
+        .then((r) => {
+          if (!r.ok) throw Error("Missing audio asset");
+          return r.arrayBuffer();
+        })
+        .then((b) => this.context.decodeAudioData(b));
+      this.buffers[url] = promise;
+      try {
+        return await promise;
+      } catch (e) {
+        delete this.buffers[url];
+        throw e;
       }
-      const scores = {
-        lobby: {
-          bpm: 76,
-          root: 48,
-          lead: "triangle",
-          melody: [
-            12, 16, 19, 24, 19, 16, 14, 16, 12, 7, 12, 14, 16, 19, 16, 7, 9, 12,
-            16, 21, 19, 16, 14, 12, 7, 9, 12, 16, 14, 7, 4, 7,
-          ],
-        },
-        wharf: {
-          bpm: 104,
-          root: 45,
-          lead: "triangle",
-          melody: [
-            12, 15, 19, 22, 24, 19, 15, 12, 10, 12, 15, 19, 22, 19, 15, 7, 12,
-            15, 17, 24, 22, 19, 17, 15, 10, 7, 10, 15, 19, 17, 15, 12,
-          ],
-        },
-        terrace: {
-          bpm: 90,
-          root: 50,
-          lead: "sine",
-          melody: [
-            12, 19, 24, 26, 24, 19, 16, 14, 12, 16, 19, 21, 24, 21, 19, 16, 14,
-            19, 21, 26, 28, 26, 24, 19, 16, 14, 12, 7, 9, 12, 16, 19,
-          ],
-        },
-        tomb: {
-          bpm: 84,
-          root: 38,
-          lead: "triangle",
-          melody: [
-            12, 13, 19, 24, 22, 19, 13, 12, 7, 12, 15, 19, 18, 15, 13, 7, 12,
-            19, 25, 24, 19, 18, 15, 13, 12, 7, 6, 7, 12, 13, 7, 0,
-          ],
-        },
+    },
+    stopVoices() {
+      this.voiceEpoch++;
+      this.voiceQueue = [];
+      voiceCaption = null;
+      if (this.voiceSource) {
+        try {
+          this.voiceSource.stop();
+        } catch {}
+      }
+    },
+    voice(hero, action) {
+      if (!this.context || !this.voiceManifest) return;
+      const line = this.voiceManifest.characters[hero]?.[action];
+      if (!line) return;
+      const item = { hero, action, line, epoch: this.voiceEpoch };
+      if (action === "ultimate") this.voiceQueue.unshift(item);
+      else if (this.voiceQueue.length < 3) this.voiceQueue.push(item);
+      this.pumpVoice();
+    },
+    async pumpVoice() {
+      if (this.voiceBusy || !this.voiceQueue.length) return;
+      this.voiceBusy = true;
+      this.update();
+      const item = this.voiceQueue.shift();
+      voiceCaption = {
+        text: (heroes[item.hero]?.name || item.hero) + ": " + item.line.text,
+        until: performance.now() + (item.line.duration + 1) * 1000,
       };
-      const score = scores[theme],
-        ac = this.context;
-      if (this.nextNote > ac.currentTime + 0.12) return;
-      if (this.nextNote < ac.currentTime) this.nextNote = ac.currentTime + 0.02;
-      const i = this.step++,
-        beat = 60 / score.bpm / 2,
-        delay = this.nextNote - ac.currentTime,
-        hz = (n) => 440 * 2 ** ((score.root + n - 69) / 12);
-      this.tone(
-        hz(score.melody[i % 32]),
-        theme === "terrace" ? 0.38 : 0.22,
-        score.lead,
-        0.1,
-        "music",
-        delay,
-      );
-      if (i % 4 === 0) {
-        this.tone(
-          hz([0, 5, 7, 0][Math.floor(i / 8) % 4] - 12),
-          beat * 3.6,
-          "sine",
-          0.12,
-          "music",
-          delay,
+      try {
+        const buffer = await this.buffer(
+          "/assets/audio/voices/" + item.line.file,
         );
-        this.tone(55, 0.09, "sine", 0.12, "music", delay);
+        if (
+          item.epoch === this.voiceEpoch &&
+          (profile.settings.voice ?? 0.8) > 0
+        ) {
+          await new Promise((resolve) => {
+            const source = this.context.createBufferSource();
+            source.buffer = buffer;
+            source.connect(this.voiceGain);
+            this.voiceSource = source;
+            source.onended = resolve;
+            source.start();
+            this.playedVoices[item.hero + "_" + item.action] =
+              (this.playedVoices[item.hero + "_" + item.action] || 0) + 1;
+          });
+        }
+      } catch (e) {
+        notify("Voice unavailable; dialogue remains in subtitles.", C.muted, 2);
+      } finally {
+        this.voiceBusy = false;
+        this.voiceSource = null;
+        this.update();
+        this.pumpVoice();
       }
-      if (i % 8 === 4)
-        this.tone(hz(7), 0.05, "triangle", 0.045, "music", delay);
-      if (i % 16 === 0) {
-        this.tone(hz(12), beat * 7, "sine", 0.025, "music", delay);
-        this.tone(hz(19), beat * 7, "sine", 0.02, "music", delay);
-      }
+    },
+    music() {
+      if (!this.context || !this.musicManifest) return;
+      this.update();
+      const battle = scene === "battle" && isPlaying(state),
+        region = battle ? state.region : "lobby",
+        phase = battle ? state.encounter?.id || "setup" : "setup";
+      this.theme = region;
+      this.musicPhase = phase;
+      const key = region + "_" + phase;
       if (
-        scene === "battle" &&
-        state?.enemies?.some((e) => e.boss) &&
-        i % 2 === 0
+        document.hidden ||
+        (state?.paused && battle) ||
+        this.loadingMusic === key ||
+        this.currentMusic?.key === key
       )
-        this.tone(73, 0.07, "triangle", 0.09, "music", delay);
-      this.nextNote += beat;
+        return;
+      const epoch = ++this.musicEpoch;
+      this.loadingMusic = key;
+      const track = this.musicManifest.tracks[key];
+      if (!track) return;
+      const probe = document.createElement("audio"),
+        file = probe.canPlayType('audio/ogg; codecs="vorbis"')
+          ? track.ogg
+          : track.mp3;
+      this.buffer("/assets/audio/music/" + file)
+        .then((buffer) => {
+          if (epoch !== this.musicEpoch) return;
+          const t = this.context.currentTime,
+            source = this.context.createBufferSource(),
+            gain = this.context.createGain();
+          source.buffer = buffer;
+          source.loop = true;
+          source.loopEnd = Math.min(track.duration, buffer.duration);
+          source.connect(gain);
+          gain.connect(this.musicGain);
+          gain.gain.setValueAtTime(0.001, t);
+          gain.gain.linearRampToValueAtTime(0.9, t + 1.1);
+          source.start();
+          if (this.currentMusic) {
+            this.currentMusic.gain.gain.cancelScheduledValues(t);
+            this.currentMusic.gain.gain.setTargetAtTime(0.001, t, 0.3);
+            this.currentMusic.source.stop(t + 1.3);
+          }
+          this.currentMusic = { key, source, gain };
+          this.loadingMusic = "";
+          this.playedThemes[key] = true;
+          const musicKeys = Object.keys(this.buffers).filter((k) =>
+            k.includes("/music/"),
+          );
+          while (musicKeys.length > 3) delete this.buffers[musicKeys.shift()];
+        })
+        .catch(() => {
+          if (epoch === this.musicEpoch) this.loadingMusic = "";
+        });
     },
   };
   function point(event) {
@@ -2053,10 +2942,9 @@
       return;
     }
     if (overlay) return;
-    if (scene !== "battle" || !state || !isPlaying(state) || state.paused)
-      return;
+    if (scene !== "battle" || !state || !isPlaying(state)) return;
     const tile = tileAt(pointer);
-    if (selectedHero && tile) {
+    if (selectedHero && tile && !state.paused) {
       await command({
         action: "place",
         hero: selectedHero,
@@ -2150,13 +3038,23 @@
       await document.fonts.load("13px VT323");
       await document.fonts.ready;
       catalog = await api("/api/catalog");
+      if (catalog.version !== "1.2.0")
+        throw Error("Stop the old Python server and run the updated run.py.");
       for (const key of ["heroes", "enemies", "stages", "relics"])
         if (!Array.isArray(catalog[key]))
           catalog[key] = Object.values(catalog[key] || {});
       heroes = Object.fromEntries(catalog.heroes.map((h) => [h.id, h]));
       enemies = Object.fromEntries(catalog.enemies.map((h) => [h.id, h]));
       stages = Object.fromEntries(catalog.stages.map((s) => [s.id, s]));
-      const names = ["title", "wharf", "terrace", "tomb", "sprites"];
+      const names = [
+        "title",
+        "wharf",
+        "terrace",
+        "tomb",
+        "sprites",
+        "cultivators",
+        "guardians",
+      ];
       const assets = await Promise.all(
         names.map((name) => loadImage("/assets/" + name + ".png")),
       );
@@ -2166,6 +3064,15 @@
         atlas = await r.json();
         if (atlas.sprites) atlas = atlas.sprites;
       } catch {}
+      cultivators = await (await fetch("/assets/cultivators.json")).json();
+      guardianAtlas = await (await fetch("/assets/guardians.json")).json();
+      audio.voiceManifest = await (
+        await fetch("/assets/audio/voices/voices.json")
+      ).json();
+      audio.musicManifest = await (
+        await fetch("/assets/audio/music/music.json")
+      ).json();
+      await refreshPreviews();
       document.getElementById("loading").hidden = true;
       resize();
       requestAnimationFrame(render);
@@ -2214,6 +3121,29 @@
         h,
         disabled,
       }));
+    },
+    get previews() {
+      return JSON.parse(JSON.stringify(previews));
+    },
+    get rangeMode() {
+      return rangeMode;
+    },
+    get library() {
+      return {
+        hero: libraryHero,
+        tab: libraryTab,
+        enemy: libraryEnemy,
+        open: overlay === "skills",
+      };
+    },
+    get voiceEvents() {
+      return { ...audio.playedVoices };
+    },
+    get musicTracks() {
+      return { ...audio.playedThemes };
+    },
+    get musicPhase() {
+      return audio.musicPhase;
     },
     get audioTheme() {
       return audio.theme;

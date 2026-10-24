@@ -41,7 +41,7 @@ class CombatTests(unittest.TestCase):
     def test_pause_freezes_wave_projectile_and_resource_clocks(self):
         battle = Battle("wharf-1")
         self.place(battle, "gatherer")
-        battle.advance(7.9)
+        battle.advance(9.9)
         battle.command({"action": "pause", "paused": True})
         before = battle.snapshot()
         battle.advance(90)
@@ -85,22 +85,23 @@ class CombatTests(unittest.TestCase):
     def test_gatherer_produces_finite_qi_and_he_cannot_attack(self):
         battle = Battle("wharf-1")
         self.place(battle, "gatherer", lane=0, col=1)
-        battle.advance(9.3)
-        self.assertEqual(battle.qi, 125)
-        self.assertEqual(battle.metrics["qi"]["gatherer"], 25)
+        battle.advance(11.3)
+        self.assertEqual(battle.qi, 120)
+        self.assertEqual(battle.metrics["qi"]["gatherer"], 20)
         self.assertEqual(battle.metrics["damage"], {})
 
     def test_branch_modifies_only_selected_branch(self):
         battle = Battle("wharf-1", upgrades={"gatherer": "A"})
         gatherer = self.place(battle, "gatherer")
-        self.assertEqual(gatherer["data"]["orb_interval"], 6.5)
-        self.assertEqual(gatherer["data"]["orb_value"], 25)
-        self.assertEqual(HEROES["gatherer"]["orb_interval"], 8)
+        self.assertEqual(gatherer["data"]["orb_interval"], 8.0)
+        self.assertEqual(gatherer["data"]["orb_value"], 20)
+        self.assertEqual(HEROES["gatherer"]["orb_interval"], 10)
 
     def test_ultimate_spends_charge_and_cannot_self_fund(self):
         battle = Battle("wharf-1")
         hero = self.place(battle)
         self.assertFalse(battle.command({"action": "ultimate", "unit": hero["id"]})["ok"])
+        battle.advance(2)
         hero["resonance"] = 100
         enemy = battle._spawn("hound", 2, 5)
         battle.command({"action": "ultimate", "unit": hero["id"]})
@@ -200,13 +201,13 @@ class CombatTests(unittest.TestCase):
         self.place(battle)
         battle.advance(12)
         self.place(battle, lane=1)
-        battle.advance(13.2)
+        battle.advance(24.2)
         self.place(battle, lane=3)
         for _ in range(350):
             if battle.qi >= 75 and battle.cards["sword"] <= battle.tick:
                 for lane in (2,1,3):
-                    if not any(h["lane"]==lane and h["col"]==3 for h in battle.heroes.values()):
-                        self.place(battle,lane=lane,col=3)
+                    if not any(h["lane"]==lane and h["col"]==5 for h in battle.heroes.values()):
+                        self.place(battle,lane=lane,col=5)
                         break
             battle.advance(1)
             if battle.status != "playing": break

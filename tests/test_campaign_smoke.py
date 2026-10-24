@@ -25,8 +25,8 @@ def defend_tutorial(seed):
                     defended.add(lane)
         if state["time"] >= 50 and state["qi"] >= 75 and state["cards"]["sword"] <= 0:
             for lane in (2,1,3):
-                if not any(h["lane"]==lane and h["col"]==3 for h in state["heroes"]):
-                    battle.command({"action":"place","hero":"sword","lane":lane,"col":3})
+                if not any(h["lane"]==lane and h["col"]==5 for h in state["heroes"]):
+                    battle.command({"action":"place","hero":"sword","lane":lane,"col":5})
                     break
         battle.advance(1 / 60)
         if battle.status != "playing":

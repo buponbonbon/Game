@@ -74,7 +74,7 @@ class ContentTests(unittest.TestCase):
         known_lanes = set()
         spent = 0
         for wave in stage["waves"]:
-            available = income + int(wave["at"] // gatherer["orb_interval"]) * gatherer["orb_value"] + int(wave["at"] // 12) * 25
+            available = income + int(wave["at"] // gatherer["orb_interval"]) * gatherer["orb_value"] + int(wave["at"] // 12) * catalog()["rules"]["passive_qi"] - int(wave["at"] // 24)
             for spawn in wave["spawns"]:
                 lane = spawn["lane"]
                 if lane not in known_lanes:

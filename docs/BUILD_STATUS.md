@@ -1,84 +1,79 @@
-# Build status
+# Build status — version 1.2
 
-## Playable release
+Download/extract the repository and run `python run.py`. Python 3.10+ and a modern
+browser are the runtime requirements. No pip/npm installation, account, remote
+API or runtime asset download is required. Windows also has `play.bat`.
 
-Download/extract the repository and run `python run.py`. Python 3.10+ is the only
-runtime prerequisite. The standard-library server opens a local browser and runs
-the combat simulation; the included canvas client renders the game. No package
-installation, account, remote API, or runtime asset download is needed.
+The supplied production document is a design reference. The user chose a Python
+localhost browser game; the authoritative 60 Hz combat/server uses Python's
+standard library and the client uses canvas and browser audio APIs.
 
-The user explicitly chose Python and local browser play. This architecture
-replaces the earlier Pygbag/CDN onboarding experiment, avoiding an online
-WebAssembly prerequisite. The uploaded production document was used as a design
-reference, not as existing executable code.
+## Implemented in this update
 
-## Implemented
+- Eight heroes and nine encounters retained; 12–21 waves per encounter, five lanes,
+  twelve columns, deployment in 1–9 and a reserved one-use guardian column.
+- Per-unit mana and regeneration, automatic-skill costs/toggle, and atomic ultimate
+  checks for mana, Qi, 100 Dao and a personal cooldown. Shared Qi cap 320, maximum
+  three Yuns with diminishing orb yields and a finite economy ultimate.
+- Shared effective-stat data for combat and previews. The field manual lists
+  scaling, current power, costs, cooldowns, target counts and precise geometry.
+  Hover overlays cycle basic/skill/ultimate ranges; pause-menu access covers all
+  eight cultivators and twelve monster types.
+- Two exclusive five-node talent paths per hero, two special milestones per path,
+  real stat/effect changes and smaller repeat-clear rewards. Legacy A/B upgrades
+  remain usable as rank-3 paths. Talents apply when a new battle starts.
+- Three encounter phases, increasing elite presence, small captains and enemy HP
+  scaling by 5% multiplicatively per campaign stage. Boss phase gates use matching
+  integer thresholds, fixing a rounding softlock exposed by scaled HP.
+- Region-specific tide penalties, corruptible/purifiable ley nodes, wind, grave
+  mist, curses and resurrection altars. Each region has a 35-Qi/30s ritual and a
+  different emergency artifact with its own effects. The region guide states
+  timings, radii, buffs and counterplay.
+- Native 64×64 hero action sheets with separate idle/attack/skill/ultimate frames;
+  denser 1024×576 region backgrounds, distinct defended architecture and 48×48
+  region-specific rescue devices. Water/wind/mist and the lobby animate.
+- Sixteen bundled English synthetic voice clips, captions, a Voice volume slider,
+  music ducking and battle-transition cancellation. Eight character SFX palettes.
+- Ten original Chinese-inspired instrumental loops: lobby and three increasingly
+  intense arrangements per region, with guqin/guzheng/pipa/dizi/percussion timbres.
+- Existing local VT323, save slots, IndexedDB mirror, import/export, pause, speed,
+  keyboard, mouse and touch controls remain supported.
 
-- Deterministic 60 Hz Python combat: resource costs, deployment cooldowns,
-  blocking/movement, attack windups, traveling projectiles, shared damage math,
-  shields, healing, status effects, death, gate breaches and terminal rewards.
-- Eight heroes with distinct economy/damage/control/tank/support behavior,
-  autonomous skills, charged player Ultimates, and exclusive upgrade branches.
-- Nine authored encounters across three regions, nine common enemy archetypes,
-  three bosses with mandatory phases and visible danger warnings, and three
-  one-use relics. Tide tiles, a timed ferry opening, ley-node bonuses, grave mist
-  and destructible resurrection altars affect combat.
-- Original native raster pixel art: four backgrounds, 21 animated actors and
-  a UI icon atlas. Procedural Web Audio music/cues, volume controls and reduced
-  shake setting are included.
-- Mouse, keyboard and touch input; pause/speed controls; campaign and cultivation
-  screens; three local save slots, IndexedDB mirror, export/import and reset
-  confirmation. Campaign rewards are granted only on the first clear.
-- One-command launcher, optional Windows batch launcher, safe local HTTP API,
-  source-archive packager and reproducible asset generator.
+## Verification
 
-## Version 1.1 improvements
-
-The existing eight-hero, nine-stage campaign now has 12-21 waves per encounter.
-A 12-column field offers nine deployment columns and a reserved guardian column.
-Each lane has one automatic rescue sweep; bosses take a phase-safe heavy hit.
-The three region strongholds stand visibly behind the formation. VT323 is bundled
-with its license and replaces the missing-glyph bitmap renderer. A twelve-entry
-monster archive shows combat attributes, named abilities and counterplay.
-Eight hero sound palettes and four locally composed themes distinguish characters,
-the lobby, wharf, terrace and tomb. Save schema version 1 remains compatible.
-
-## Validation evidence
-
-- All 54 standard-library unit tests pass, including longer encounter playability,
-  the new deployment boundary, one-use guardian sweeps, flying/boss interactions,
-  paused guardians, archive data and bundled-font licensing.
-- The seeded legal campaign policy clears all nine extended stages with all gate
-  seals intact. Recorded durations: 183.8, 219.0, 310.133, 263.383, 249.483, 342.867,
-  297.917, 287.217 and 390.95 simulation seconds. The opening stage has 31 enemies.
-  Reproduce with `python tools/simulate_campaign.py --output report.json`.
+- All **79** standard-library tests passed: rules, geometry, mana transaction
+  failures, Qi cap, diminishing economy, talent milestones, old saves, scaled
+  boss phases, nodes/rituals, HTTP previews/validation and reproducible assets.
+- The legal seeded campaign policy cleared **9/9** encounters using only earned
+  stone rewards and legal costs/cooldowns; no failed commands. Durations were
+  189.517, 224.650, 333.783, 287.500, 258.250, 368.233, 316.600, 413.983, 525.467
+  simulation seconds. All nine stages retained three gate seals. Reproduce with `python tools/simulate_campaign.py --output report.json`.
   This is one playability policy, not a statistical balance study.
-- Actual Chromium input placed a hero in new column 9 and correctly rejected
-  column 0 with an explanation. An undefended enemy naturally triggered the
-  guardian; its sweep preserved the gate and became spent. Pause froze the clock.
-- Browser checks loaded the real local VT323 face, browsed the archive including
-  boss attributes, imported an earned version-1 save, dispatched eight distinct
-  hero sound palettes and changed between all four music themes. No JavaScript
-  errors or external network requests occurred. Audio checks establish event
-  dispatch and a running graph, not the perceived mix on every speaker.
-- The 1.1 fresh-extraction ZIP smoke check passed with `python -S`, a path with
-  spaces and a different working directory: real browser placement, combat kill,
-  pause, no external requests and no JavaScript errors. Updated touch checks
-  passed for modal settings sliders, new field placement, exact Qi and pause.
-  Earlier first-clear reward persistence and version-1 save compatibility are
-  retained; the current browser check imported an earned version-1 campaign save.
+- Chromium exercised lobby, talents, the hero/enemy manual, range controls,
+  mana inspection, pause, region guide and settings without JavaScript errors or
+  external requests. All eight English summon voices played; a legally charged
+  Yun ultimate played its English line. Actual wave progression changed wharf
+  music through setup/pressure/onslaught. All 36 bundled audio files decoded.
+- A fresh source ZIP launched with `python -S` from a path containing spaces
+  and a different working directory. Canvas input placed Yun/Shen, spent exactly
+  125 Qi, defeated an enemy and paused combat without external requests or errors.
+- Landscape touch checks confirmed paid talent purchase, exclusive branches,
+  effective preview matching deployed HP, reload persistence, the Voice slider
+  and a frozen battle clock while browsing skills.
+- See `docs/ART_AUDIO.md` for asset sizes, authoring dependencies and attribution;
+  none of the optional audio-authoring tools is required to launch the game.
 
-## Scope and limitations
+## Practical limits
 
-This is a playable compact adaptation, not full production-document parity.
-Boss HP is tuned for local play; encounter wave schedules are extended. Mastery text is tactical
-guidance rather than a tracked achievement system. There is no full narrative
-cutscene campaign, exhaustive hero-rank tree, New Game+ modifier system, or
-long-form recorded soundtrack. Four sprite poses per actor do not constitute
-every named animation in the original production brief.
+This is a compact adaptation, not full parity with the production brief. It has
+no narrative cutscene campaign, New Game+ system or tracked mastery achievement
+system. Current talent trees implement two five-node paths, not an unlimited hero
+rank system. Voice dialogue is synthetic; music uses synthesized timbres rather
+than acoustic recordings. Enemies retain four-frame sprites; the expanded action
+sheets in this update focus on cultivators.
 
-Campaign/settings saves live in the browser. An active battle can reconnect while
-the same Python server session exists; restarting the server starts fresh battle
-sessions. Save export is needed to transfer progress between browsers/computers.
-Chromium was tested here; Windows/macOS launch scripts and other browser engines
-were not executed on their native platforms in this Linux environment.
+Browser storage holds campaign progress/settings. Restarting Python does not
+retain active battle sessions; export a save to transfer campaign progress.
+Keep the same browser and localhost port to retain its save origin. Linux
+Chromium was exercised here; native Windows/macOS launchers and other browser
+engines were not executed in this environment.
