@@ -8,7 +8,7 @@ system, asset or exact balance target is implemented. Content values live in
 
 ## Shared battle rules
 
-- Five lanes, nine columns. Heroes deploy in columns 1–6; enemies approach from
+- Five lanes, twelve columns. Heroes deploy in columns 1–9; enemies approach from
   the right. Three breaches break the gate.
 - Begin with 150 Spirit Qi. Passive recovery gives 25 Qi every 12 active seconds.
   Yun adds 25 Qi every 8 seconds. The resource cap is 999.
@@ -47,22 +47,27 @@ Place melee protection ahead of ranged damage and economy behind the front.
 
 ## Authored encounters and tactical openings
 
-| Stage | Encounter budget | Main question | Suggested counterplay |
-| --- | ---: | --- | --- |
-| Lanterns Going Dark | 76 s | Build an economy while learning three lanes | Start Yun at middle column 1 and Shen Zhu at middle column 3. Add a sword in lane 2 around 12 s and lane 4 around 24 s. |
-| The Drowned Ferry | 96 s | Support shields and pressure on the outer lanes | Add lanes gradually; concentrated Fire bursts help remove lantern-backed groups. |
-| River King's Claim | 112 s | Hold a boss lane through the tide | Protect sustained damage with Jin Shan; watch marked lane attacks and charge Ultimates. |
-| Broken Ley Garden | 112 s | Break armor without losing tempo | Build beside ley nodes; sustained Fire and mixed damage are better than isolated weak hits. |
-| Wings Above the Terrace | 120 s | Defend backline economy from flight and siphons | Use control and prioritize the draining channel; do not leave support units exposed. |
-| Heart of the Mountain | 128 s | Break plates and survive marked impacts | Maintain damage through the armor phase and avoid over-investing in one vulnerable cluster. |
-| The Unmarked Gate | 108 s | Catch spectral enemies through mist | Area damage and Lightning retain value where ordinary blades lose targets. |
-| The Coffin Corridor | 126 s | Counter projectile absorption | Use the Monk's staff, Fire, and control rather than relying solely on light swords. |
-| The Bone-Crown Emperor | 140 s | End the court's resurrection loop | Remove seal support, preserve shields for decrees, and keep damage ready through phase transitions. |
+| Stage | Waves | Scripted enemies | Encounter budget |
+| --- | ---: | ---: | ---: |
+| Lanterns Going Dark | 12 | 31 | 214 s |
+| The Drowned Ferry | 16 | 42 | 245 s |
+| River King's Claim | 17 | 45 | 354 s |
+| Broken Ley Garden | 18 | 49 | 291 s |
+| Wings Above the Terrace | 18 | 47 | 275 s |
+| Heart of the Mountain | 19 | 49 | 392 s |
+| The Unmarked Gate | 20 | 59 | 317 s |
+| The Coffin Corridor | 20 | 55 | 307 s |
+| The Bone-Crown Emperor | 21 | 56 | 425 s |
 
 Lane numbers in this table are one-based, top to bottom. Simulation data uses
 zero-based lanes. The first encounter intentionally uses only the middle three
 lanes. Its first enemies arrive at 8, 21 and 34 seconds, leaving enough time to
 finance additional swords through passive recovery and Yun's orbs.
+
+Each lane has one guardian seal. An approaching enemy triggers its automatic
+sweep: ordinary enemies are purged, including flying enemies; bosses take one
+phase-safe heavy hit and are pushed away from the gate. It never recharges, and
+pause stops its movement. Once spent, later breaches damage the gate normally.
 
 ## Regions and campaign rewards
 

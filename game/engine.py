@@ -50,6 +50,7 @@ class Battle:
         self.qi = 175 if self.realm >= 1 else 150
         self.gate = int(self.stage.get("gate", 3))
         self.kills = 0
+        self.defenses = [{"lane": lane, "status": "ready", "x": 0.5, "hit": set()} for lane in range(5)]
         self.heroes = {}
         self.enemies = {}
         self.projectiles = {}
@@ -94,11 +95,13 @@ class Battle:
         self._entity += 1
         return self._entity
 
-    def _event(self, kind, text, x=None, lane=None):
+    def _event(self, kind, text, x=None, lane=None, actor=None):
         self._sequence += 1
         event = {"seq": self._sequence, "kind": kind, "text": text, "time": round(self.time, 3)}
         if x is not None:
             event.update(x=x, lane=lane)
+        if actor is not None:
+            event["actor"] = actor
         self.events.append(event)
 
     def _effect(self, kind, x, lane, text="", duration=0.65):
@@ -166,8 +169,8 @@ class Battle:
                 return self._response(False, "Choose a hero card.")
             if not isinstance(lane, int) or not isinstance(col, int) or isinstance(lane, bool) or isinstance(col, bool):
                 return self._response(False, "Choose a valid battlefield tile.")
-            if not 0 <= lane < 5 or not 1 <= col <= 6:
-                return self._response(False, "Deploy inside the six marked columns.")
+            if not 0 <= lane < 5 or not 1 <= col <= 9:
+                return self._response(False, "Column 0 holds a one-use guardian seal. Deploy in columns 1-9.")
             if self.realm < self._unlock(hero_id):
                 return self._response(False, "This hero is not unlocked yet.")
             if any(h["lane"] == lane and h["col"] == col for h in self.heroes.values()):
@@ -295,6 +298,7 @@ class Battle:
                 break
             if enemy["id"] in self.enemies:
                 self._enemy_tick(enemy)
+        self._defense_tick()
         if self.gate > 0:
             self._projectile_tick()
         if self.tick % ticks(6) == 0 and self._hazard()["phase"] == "HIGH TIDE":
@@ -317,7 +321,7 @@ class Battle:
                 self._rewarded = True
                 self._event("victory", "The gate endures. Victory!")
 
-    def _spawn(self, enemy_type, lane, x=8.8):
+    def _spawn(self, enemy_type, lane, x=11.8):
         if enemy_type not in ENEMIES and enemy_type != "altar":
             self._event("warning", f"Unknown enemy definition: {enemy_type}")
             return
@@ -417,6 +421,7 @@ class Battle:
             self.orbs[orb["id"]] = orb
             self._resonance(hero, 12)
             self._effect("qi", hero["x"], hero["lane"], f"+{value}")
+            self._event("hero_skill", "", hero["x"], hero["lane"], actor="gatherer")
         if hero_type == "herbalist" and hero["next_passive"] <= self.tick:
             allies = [ally for ally in self.heroes.values() if ally["id"] != hero["id"] and self._near(hero, ally, 3) and ally["hp"] < ally["max_hp"]]
             if allies:
@@ -431,6 +436,7 @@ class Battle:
             hero["next_passive"] = self.tick + ticks(data.get("heal_interval", 6))
         if hero["next_skill"] <= self.tick:
             if self._skill(hero):
+                self._event("hero_skill", "", hero["x"], hero["lane"], actor=hero_type)
                 hero["next_skill"] = self.tick + ticks(data.get("circuit_cooldown", data.get("skill", {}).get("cooldown", 9)))
         if data.get("damage", 0) <= 0 or hero["next_attack"] > self.tick:
             return
@@ -441,6 +447,7 @@ class Battle:
         speed, multiplier, _ = self._buffs(hero)
         hero["next_attack"] = self.tick + ticks(data.get("interval", 1.5) / speed)
         hero["action"] = "attack"
+        self._event("hero_attack", "", hero["x"], hero["lane"], actor=hero_type)
         hero["action_until"] = self.tick + ticks(data.get("windup", 0.3) + 0.25)
         self._schedule(data.get("windup", 0.3), "hero_attack", hero=hero["id"], target=target["id"], multiplier=multiplier)
 
@@ -465,7 +472,7 @@ class Battle:
                 if enemy["x"] - hero["x"] <= 1.3:
                     self._hurt_enemy(enemy, 60, "Physical", hero)
                     if not enemy["data"].get("boss"):
-                        enemy["x"] = min(9.1, enemy["x"] + data.get("knockback", 0.35))
+                        enemy["x"] = min(12.1, enemy["x"] + data.get("knockback", 0.35))
             self._effect("slam", hero["x"] + 0.6, hero["lane"], "EARTH SHAKE")
         elif kind == "lightning" and targets:
             target = targets[0]
@@ -505,7 +512,7 @@ class Battle:
         kind = hero["type"]
         hero["action"] = "ultimate"
         hero["action_until"] = self.tick + ticks(1.2)
-        self._event("ultimate", hero["data"].get("name", kind) + " unleashes an ultimate!", hero["x"], hero["lane"])
+        self._event("ultimate", hero["data"].get("name", kind) + " unleashes an ultimate!", hero["x"], hero["lane"], actor=kind)
         self._effect("ultimate", hero["x"], hero["lane"], "ULTIMATE", 1.4)
         targets = sorted((enemy for enemy in self.enemies.values() if enemy["lane"] == hero["lane"]), key=lambda e: (e["x"], e["id"]))
         if kind == "gatherer":
@@ -759,7 +766,7 @@ class Battle:
                 projectile["pierce"] -= 1
                 if projectile["pierce"] <= 0:
                     break
-            if projectile["pierce"] <= 0 or projectile["x"] > 9.4 or projectile["x"] - projectile["start"] > projectile["range"]:
+            if projectile["pierce"] <= 0 or projectile["x"] > 12.4 or projectile["x"] - projectile["start"] > projectile["range"]:
                 self.projectiles.pop(projectile["id"], None)
 
     def _hit_passive(self, owner, target):
@@ -1010,12 +1017,38 @@ class Battle:
         if kind == "tide" and self._hazard()["phase"] == "HIGH TIDE":
             speed *= 1.15
         enemy["x"] -= speed * STEP
+        ward = self.defenses[enemy["lane"]]
+        if enemy["x"] <= 1.0 and ward["status"] == "ready":
+            ward.update(status="sweeping", x=0.5)
+            self._event("guardian", "Guardian seal awakened! This lane has no second rescue.", 0.5, enemy["lane"])
+        if enemy["x"] <= 0.5 and ward["status"] == "sweeping":
+            return
         if enemy["x"] <= 0.5:
             self.gate = max(0, self.gate - (3 if data.get("boss") else 1))
             self.metrics["breaches"] += 1
             self.enemies.pop(enemy["id"], None)
             self._event("breach", "An enemy breached the immortal gate!", 0.5, enemy["lane"])
             self._effect("breach", 0.5, enemy["lane"], "BREACH", 1)
+
+    def _defense_tick(self):
+        """Each lane's guardian sweeps once. Bosses take a single phase-safe hit."""
+        for ward in self.defenses:
+            if ward["status"] != "sweeping":
+                continue
+            ward["x"] += 8 * STEP
+            for enemy in list(self.enemies.values()):
+                if enemy["lane"] != ward["lane"] or enemy["id"] in ward["hit"] or enemy["x"] > ward["x"] + 0.5:
+                    continue
+                ward["hit"].add(enemy["id"])
+                if enemy["data"].get("boss"):
+                    self._hurt_enemy(enemy, enemy["max_hp"] * .45, "True", ultimate=True)
+                    enemy["x"] = max(2.0, enemy["x"])
+                else:
+                    enemy["resurrected"] = True
+                    self._kill(enemy, None)
+                self._effect("guardian", ward["x"], ward["lane"], duration=.35)
+            if ward["x"] > 12.5:
+                ward["status"] = "spent"
 
     def _boss_phase(self, boss):
         ratio = boss["hp"] / boss["max_hp"]
@@ -1118,6 +1151,8 @@ class Battle:
                 "gate": self.gate, "kills": self.kills, "wave": self._wave_index, "wave_count": len(self._waves),
                 "next_wave": None if next_wave is None else round(next_wave, 2), "seed": self.seed,
                 "heroes": heroes, "enemies": enemies,
+                "columns": 12, "deployment_columns": list(range(1, 10)),
+                "defenses": [{k: v for k, v in ward.items() if k != "hit"} for ward in self.defenses],
                 "projectiles": [{key: round(value, 3) if isinstance(value, float) else value for key, value in projectile.items() if key not in ("hit",)} for projectile in self.projectiles.values()],
                 "effects": [{"id": e["id"], "kind": e["kind"], "x": e["x"], "lane": e["lane"], "text": e["text"], "ttl": round((e["until"] - self.tick) / HZ, 3), "age": round((self.tick - e["born"]) / HZ, 3)} for e in self.effects],
                 "orbs": [{"id": orb["id"], "x": orb["x"], "lane": orb["lane"], "value": orb["value"], "age": round((self.tick - orb["born"]) / HZ, 3)} for orb in self.orbs.values()],

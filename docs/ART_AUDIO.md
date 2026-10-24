@@ -6,8 +6,8 @@ The game ships its original artwork in `web/assets`; it never downloads sprites,
 fonts, backgrounds or sound libraries at runtime. `tools/generate_assets.py`
 authors the images directly on integer pixel grids with Python's standard
 library, then writes RGBA PNGs using `struct` and `zlib`. No image package, asset
-marketplace, stock illustration, proprietary character, emoji or external font
-is used.
+marketplace, stock illustration, proprietary character, emoji is used for artwork. VT323 is bundled separately from the Google Fonts
+repository under the SIL Open Font License; see `web/assets/fonts/OFL.txt`.
 
 Regenerate the committed images with:
 
@@ -24,9 +24,9 @@ frames per actor.
 | File | Native size | Purpose |
 | --- | --- | --- |
 | `title.png` | 384 × 216 | Mountain gate, lanterns and a solitary sword cultivator |
-| `wharf.png` | 384 × 216 | Lantern-lit timber deck above the river |
-| `terrace.png` | 384 × 216 | Mossy stone terrace, mountain clouds and wind banners |
-| `tomb.png` | 384 × 216 | Moonlit mausoleum with spirit braziers and bone fragments |
+| `wharf.png` | 512 × 288 | Lantern-lit timber deck above the river |
+| `terrace.png` | 512 × 288 | Mossy stone terrace, mountain clouds and wind banners |
+| `tomb.png` | 512 × 288 | Moonlit mausoleum with spirit braziers and bone fragments |
 | `sprites.png` | 128 × 672 | Eight heroes, nine ordinary enemies, three bosses and a soul altar |
 | `icons.png` | 128 × 32 | Sixteen small resource, action and status emblems |
 
@@ -37,11 +37,12 @@ invaders face left. Weapon poses, breathing, steps and lunges distinguish the
 frames; these are compact four-frame animations rather than separate extensive
 idle, attack, skill and death sheets.
 
-The board occupies x = 44–349 and y = 49–173 at the internal 384 × 216 resolution.
-Its nine columns use 34-pixel tiles, and its five lanes use 25-pixel tiles. The
-browser draws the scene with image smoothing disabled, an embedded 5 × 7 bitmap
-alphabet and pixel-sized interface details. It provides a fit display and an
-integer-scale option. Large bosses are enlarged with nearest-neighbor sampling.
+The board occupies x = 92–475 and y = 60–219 at the 512 × 288 logical
+resolution. Twelve columns and five lanes use 32-pixel tiles. Columns 1–9 permit
+deployment, column 0 visibly contains guardian artifacts, and the two rightmost
+columns provide enemy approach space. Region-specific palaces and shrines occupy
+the space behind the guardians. Drawing uses nearest-neighbor sprites and a 3x
+backing canvas, with locally loaded VT323 text for legibility and full punctuation.
 
 The palette uses dark ink outlines, muted jade, weathered gold, warm lantern red,
 ice blue and violet. Each environment uses stepped color bands and small raster
@@ -63,11 +64,16 @@ confirmation, placement, Qi, hit, kill, death, error, skill, ultimate and upgrad
 victory and defeat use short note sequences. Repeated hits are rate-limited to
 avoid stacking a sound on every rendered frame.
 
-Each region has a different eight-note musical pattern with a slower supporting
-tone. The browser schedules the pattern locally; the music pauses while battle
-is paused or the document is hidden. These are compact synthesized loops and
-feedback tones, not the long, fully arranged soundtrack or complete per-hero
-sound inventory described in the production brief.
+Four separate 32-note scores cover the lobby, wharf, terrace and tomb. They have
+distinct melody, tempo, root and instrumentation, with bass, pad and percussion
+layers; bosses add rhythmic accents. Scheduling and synthesis remain entirely
+local. Music pauses with battle pause or a hidden document.
+
+Each hero has a distinct pitched/noise palette: jade chimes, bamboo slashes, flame
+bursts, glassy frost, low stone/staff impacts, electric transients, healing notes
+and formation bells. Simulation events carry stable actor IDs, so character SFX
+are tied to real attacks/skills rather than decorative particles. Placement and
+Ultimates use the same character identity. Per-character throttling limits clutter.
 
 Automated checks can establish that the audio context starts and events dispatch
 without browser errors. They do not establish perceived musical quality, speaker

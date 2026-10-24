@@ -6,9 +6,12 @@
   const live = document.getElementById("live-status"),
     fileInput = document.getElementById("import-save");
   ctx.imageSmoothingEnabled = false;
-  const W = 384,
-    H = 216,
-    B = { x: 44, y: 49, cw: 34, ch: 25, cols: 9, rows: 5 };
+  const W = 512,
+    H = 288,
+    B = { x: 92, y: 60, cw: 32, ch: 32, cols: 12, rows: 5 };
+  canvas.width = W * 3;
+  canvas.height = H * 3;
+  ctx.setTransform(3, 0, 0, 3, 0, 0);
   const C = {
     ink: "#101a24",
     deep: "#0b131e",
@@ -23,74 +26,6 @@
     ice: "#99dceb",
     violet: "#baacee",
   };
-  const FONT = {
-    A: [14, 17, 17, 31, 17, 17, 17],
-    B: [30, 17, 17, 30, 17, 17, 30],
-    C: [14, 17, 16, 16, 16, 17, 14],
-    D: [30, 17, 17, 17, 17, 17, 30],
-    E: [31, 16, 16, 30, 16, 16, 31],
-    F: [31, 16, 16, 30, 16, 16, 16],
-    G: [14, 17, 16, 23, 17, 17, 15],
-    H: [17, 17, 17, 31, 17, 17, 17],
-    I: [14, 4, 4, 4, 4, 4, 14],
-    J: [7, 2, 2, 2, 18, 18, 12],
-    K: [17, 18, 20, 24, 20, 18, 17],
-    L: [16, 16, 16, 16, 16, 16, 31],
-    M: [17, 27, 21, 21, 17, 17, 17],
-    N: [17, 25, 21, 19, 17, 17, 17],
-    O: [14, 17, 17, 17, 17, 17, 14],
-    P: [30, 17, 17, 30, 16, 16, 16],
-    Q: [14, 17, 17, 17, 21, 18, 13],
-    R: [30, 17, 17, 30, 20, 18, 17],
-    S: [15, 16, 16, 14, 1, 1, 30],
-    T: [31, 4, 4, 4, 4, 4, 4],
-    U: [17, 17, 17, 17, 17, 17, 14],
-    V: [17, 17, 17, 17, 17, 10, 4],
-    W: [17, 17, 17, 21, 21, 21, 10],
-    X: [17, 17, 10, 4, 10, 17, 17],
-    Y: [17, 17, 10, 4, 4, 4, 4],
-    Z: [31, 1, 2, 4, 8, 16, 31],
-    0: [14, 17, 19, 21, 25, 17, 14],
-    1: [4, 12, 4, 4, 4, 4, 14],
-    2: [14, 17, 1, 2, 4, 8, 31],
-    3: [30, 1, 1, 14, 1, 1, 30],
-    4: [2, 6, 10, 18, 31, 2, 2],
-    5: [31, 16, 16, 30, 1, 1, 30],
-    6: [14, 16, 16, 30, 17, 17, 14],
-    7: [31, 1, 2, 4, 8, 8, 8],
-    8: [14, 17, 17, 14, 17, 17, 14],
-    9: [14, 17, 17, 15, 1, 1, 14],
-    " ": [0, 0, 0, 0, 0, 0, 0],
-    ".": [0, 0, 0, 0, 0, 12, 12],
-    ",": [0, 0, 0, 0, 0, 4, 8],
-    ":": [0, 12, 12, 0, 12, 12, 0],
-    "!": [4, 4, 4, 4, 4, 0, 4],
-    "?": [14, 17, 1, 2, 4, 0, 4],
-    "-": [0, 0, 0, 31, 0, 0, 0],
-    "+": [0, 4, 4, 31, 4, 4, 0],
-    "/": [1, 2, 2, 4, 8, 8, 16],
-    "(": [2, 4, 8, 8, 8, 4, 2],
-    ")": [8, 4, 2, 2, 2, 4, 8],
-    "%": [17, 2, 4, 8, 17, 0, 0],
-    "' ": [4, 4, 8, 0, 0, 0, 0],
-    "<": [2, 4, 8, 16, 8, 4, 2],
-    ">": [8, 4, 2, 1, 2, 4, 8],
-    "=": [0, 0, 31, 0, 31, 0, 0],
-    _: [0, 0, 0, 0, 0, 0, 31],
-    "*": [0, 21, 14, 31, 14, 21, 0],
-    "#": [10, 31, 10, 10, 31, 10, 0],
-    "[": [14, 8, 8, 8, 8, 8, 14],
-    "]": [14, 2, 2, 2, 2, 2, 14],
-  };
-  // Normalize punctuation entries while keeping glyph drawing entirely raster.
-  FONT["&"] = [12, 18, 20, 8, 21, 18, 13];
-  FONT[","] = [0, 0, 0, 0, 0, 4, 8];
-  FONT["%"] = [17, 2, 4, 8, 17, 0, 0];
-  FONT["'"] = [4, 4, 8, 0, 0, 0, 0];
-  FONT["_"] = [0, 0, 0, 0, 0, 0, 31];
-  FONT["*"] = [0, 21, 14, 31, 14, 21, 0];
-  FONT["["] = [14, 8, 8, 8, 8, 8, 14];
-  FONT["]"] = [14, 2, 2, 2, 2, 2, 14];
   const heroOrder = [
     "gatherer",
     "sword",
@@ -132,6 +67,8 @@
     buttons = [],
     pointer = { x: -1, y: -1 },
     toast = null;
+  let archiveEnemy = "tide",
+    archivePage = 0;
   let battleEpoch = 0;
   let selectionEpoch = 0;
   let seenEffects = new Set();
@@ -236,27 +173,18 @@
     ctx.fillRect(Math.round(x), Math.round(y), Math.round(w), Math.round(h));
   };
   function text(str, x, y, color = C.cream, scale = 1, align = "left") {
-    str = String(str ?? "").toUpperCase();
-    let sx =
-      align === "center"
-        ? x - ((str.length * 6 - 1) * scale) / 2
-        : align === "right"
-          ? x - (str.length * 6 - 1) * scale
-          : x;
+    str = String(str ?? "")
+      .replace(/[—–]/g, "-")
+      .replace(/[‘’]/g, "'")
+      .replace(/[“”]/g, '"')
+      .replace(/×/g, "x");
+    ctx.save();
+    ctx.font = `${13 * scale}px VT323, monospace`;
+    ctx.textBaseline = "top";
+    ctx.textAlign = align;
     ctx.fillStyle = color;
-    for (const ch of str) {
-      const rows = FONT[ch] || FONT["?"];
-      for (let yy = 0; yy < 7; yy++)
-        for (let xx = 0; xx < 5; xx++)
-          if (rows[yy] & (1 << (4 - xx)))
-            ctx.fillRect(
-              Math.round(sx + xx * scale),
-              Math.round(y + yy * scale),
-              scale,
-              scale,
-            );
-      sx += 6 * scale;
-    }
+    ctx.fillText(str, x, y - 1);
+    ctx.restore();
   }
   function wrapped(
     str,
@@ -270,10 +198,10 @@
     let line = "",
       lines = 0;
     for (const word of String(str ?? "")
-      .toUpperCase()
       .replace(/[—–]/g, "-")
       .split(/\s+/)) {
-      if ((line + word).length * 6 > maxW && line) {
+      ctx.font = "13px VT323, monospace";
+      if (ctx.measureText(line + word).width > maxW && line) {
         text(line.trim(), x, y + lines * lineHeight, color);
         line = "";
         if (++lines >= maxLines) return lines;
@@ -321,7 +249,7 @@
       r.disabled ? "#172128" : hover ? "#284238" : opt.fill || "#1b3035",
     );
     text(
-      String(label).slice(0, Math.max(1, Math.floor((w - 8) / 6))),
+      String(label).slice(0, Math.max(1, Math.floor((w - 10) / 6.5))),
       x + w / 2,
       y + (h - 7) / 2,
       r.disabled ? C.dim : opt.active ? C.gold : opt.color || C.cream,
@@ -439,51 +367,47 @@
   }
   function drawTitle() {
     bg("title");
-    rect(16, 18, 157, 1, "#786b48");
-    text("THE LAST IMMORTAL GATE", 17, 8, C.muted);
-    text("VAN DAO", 22, 35, "#071118", 3);
-    text("VAN DAO", 20, 33, C.cream, 3);
-    text("IMMORTAL WAR", 22, 61, C.gold, 1);
-    line(22, 73, 155, 73, C.edge);
+    text("THE LAST IMMORTAL GATE", 24, 14, C.muted);
+    line(24, 29, 206, 29, C.edge);
+    text("VAN DAO", 25, 43, C.deep, 3);
+    text("VAN DAO", 23, 41, C.cream, 3);
+    text("IMMORTAL WAR", 25, 82, C.gold, 1.3);
     wrapped(
-      "THE GATE IS FAILING.\nYOUR FORMATION IS ITS LAST LIGHT.",
-      23,
-      84,
-      150,
+      "The gate is failing. Your formation is its last light.",
+      25,
+      112,
+      164,
       C.jade,
-      11,
+      14,
       3,
     );
-    button("begin", "BEGIN CAMPAIGN", 22, 121, 143, 22, () => {
+    button("begin", "BEGIN CAMPAIGN", 24, 164, 174, 27, () => {
       scene = "campaign";
       audio.play("confirm");
     });
-    button("roster", "CULTIVATORS", 22, 148, 143, 18, () => {
-      scene = "roster";
-    });
-    button("saves", "SAVE SLOTS", 22, 170, 69, 17, () => (overlay = "saves"));
+    button("roster", "CULTIVATORS", 24, 198, 174, 24, () => (scene = "roster"));
+    button("saves", "SAVE SLOTS", 24, 229, 84, 24, () => (overlay = "saves"));
     button(
       "settings",
       "SETTINGS",
-      95,
-      170,
-      70,
-      17,
+      114,
+      229,
+      84,
+      24,
       () => (overlay = "settings"),
     );
-    if (profile.completed.length)
-      text(profile.completed.length + " / 9 STAGES CLEARED", 23, 195, C.jade);
-    else text("BUILD. DEFEND. ASCEND.", 23, 195, C.muted);
-    text(
-      "ORIGINAL ART / OFFLINE LOCAL PLAY",
-      W - 8,
-      204,
-      "#9aa895",
-      1,
-      "right",
+    button(
+      "archive",
+      "MONSTER ARCHIVE",
+      278,
+      241,
+      210,
+      23,
+      () => (scene = "archive"),
     );
+    text("Original art / Offline play", W - 16, H - 13, C.muted, 0.95, "right");
     if (battleId && state && isPlaying(state))
-      button("resume", "RESUME BATTLE", 222, 169, 145, 21, () => {
+      button("resume", "RESUME BATTLE", 278, 211, 210, 24, () => {
         scene = "battle";
         command({ action: "pause", paused: false });
       });
@@ -510,21 +434,21 @@
       tomb: ["III", "BONE TOMB"],
     };
     ["wharf", "terrace", "tomb"].forEach((reg, i) => {
-      const x = 12 + i * 124;
-      panel(x, 47, 112, 131, regionColor[reg], "#14262e");
+      const x = 16 + i * 165;
+      panel(x, 55, 150, 157, regionColor[reg], "#14262e");
       if (images[reg]) {
         ctx.save();
         ctx.beginPath();
-        ctx.rect(x + 3, 50, 106, 35);
+        ctx.rect(x + 3, 58, 144, 42);
         ctx.clip();
-        ctx.drawImage(images[reg], x - 34, 5, 180, 101);
+        ctx.drawImage(images[reg], x - 15, 30, 192, 108);
         ctx.restore();
-        rect(x + 3, 82, 106, 3, "#152831");
+        rect(x + 3, 100, 144, 3, "#152831");
       }
       text(
         names[reg][0] + "  " + names[reg][1],
-        x + 56,
-        90,
+        x + 75,
+        112,
         regionColor[reg],
         1,
         "center",
@@ -555,9 +479,9 @@
           "stage-" + s.id,
           label,
           x + 6,
-          103 + j * 22,
-          100,
-          18,
+          130 + j * 24,
+          138,
+          21,
           () => {
             stagePreview = s;
             overlay = "stage";
@@ -574,7 +498,7 @@
       "roster",
       "CULTIVATE ROSTER",
       12,
-      187,
+      227,
       134,
       19,
       () => (scene = "roster"),
@@ -583,7 +507,7 @@
       "saves",
       "SAVE / LOAD",
       152,
-      187,
+      227,
       103,
       19,
       () => (overlay = "saves"),
@@ -592,11 +516,12 @@
       "settings",
       "SETTINGS",
       261,
-      187,
+      227,
       111,
       19,
       () => (overlay = "settings"),
     );
+    button("archive", "BESTIARY", 380, 227, 116, 20, () => (scene = "archive"));
     if (profile.completed.includes("tomb-3"))
       text(
         "THE EMPEROR IS FALLEN. A NEW DAWN BEGINS.",
@@ -608,79 +533,157 @@
       );
   }
   function drawRoster() {
-    bg("title", 0.7);
+    bg("title", 0.75);
     header("CULTIVATION HALL", () => (scene = "campaign"));
     const h = heroes[rosterHero] || catalog.heroes[0];
     heroOrder.forEach((id, i) => {
-      const unit = heroes[id];
-      if (!unit) return;
-      const y = 32 + i * 21;
       button(
         "hero-" + id,
-        (unlocked(unit) ? "" : "? ") + (shortNames[id] || id),
-        9,
-        y,
-        83,
-        19,
+        shortNames[id] + (unlocked(heroes[id]) ? "" : " / LOCK"),
+        10,
+        35 + i * 29,
+        100,
+        26,
         () => (rosterHero = id),
-        { active: rosterHero === id, disabled: false },
+        { active: rosterHero === id },
       );
-      sprite(id, 10, y - 6, 0.75);
+      sprite(id, 10, 29 + i * 29, 0.8);
     });
-    if (!h) return;
-    panel(100, 33, 274, 171, C.edge);
-    sprite(h.id, 109, 43, 1.8, Math.floor(now / 320) % 4);
-    text(h.name || h.id, 178, 43, C.gold);
-    text(h.role || "CULTIVATOR", 178, 56, C.jade);
-    text("QI " + h.cost + "  HP " + h.hp, 178, 68, C.cream);
-    text(
-      "ATK " + (h.damage || 0) + "  RANGE " + Number(h.range || 0).toFixed(1),
-      178,
-      80,
-      C.muted,
+    panel(120, 34, 380, 240, C.edge);
+    sprite(h.id, 132, 41, 2);
+    text(h.name, 208, 44, C.gold, 1.35);
+    text(h.title, 208, 65, C.jade);
+    text(`${h.hp} HP / ${h.armor} armor / ${h.cost} Qi`, 208, 82);
+    wrapped(h.description, 132, 113, 351, C.cream, 13, 3);
+    wrapped(
+      h.skill.name + ": " + h.skill.description,
+      132,
+      155,
+      350,
+      C.jade,
+      13,
+      2,
     );
-    wrapped(h.description || h.title, 111, 106, 252, C.muted, 10, 3);
+    wrapped(
+      h.ultimate.name + ": " + h.ultimate.description,
+      132,
+      184,
+      350,
+      C.gold,
+      13,
+      2,
+    );
     if (!unlocked(h)) {
       wrapped(
-        "UNLOCK: CLEAR " + (stages[h.unlock]?.name || h.unlock),
-        111,
-        149,
-        252,
+        "Unlock: Clear " + (stages[h.unlock]?.name || h.unlock),
+        132,
+        230,
+        350,
         C.gold,
-        11,
-        3,
+        14,
+        2,
       );
       return;
     }
     const current = profile.upgrades[h.id];
-    const cost = h.branches?.A?.cost || 35;
     for (const [i, key] of ["A", "B"].entries()) {
-      const b = h.branches?.[key] || { name: key, description: "" };
-      const x = 110 + i * 130;
+      const b = h.branches[key],
+        x = 130 + i * 181;
       button(
         "branch-" + key,
-        (current === key ? "* " : "") +
-          key +
-          " " +
-          (b.name || "PATH").slice(0, 15),
+        (current === key ? "* " : "") + key + " " + b.name,
         x,
-        143,
-        124,
-        18,
-        () => buyBranch(h.id, key, cost),
+        217,
+        174,
+        22,
+        () => buyBranch(h.id, key, b.cost),
         { disabled: !!current && current !== key, active: current === key },
       );
-      wrapped(b.description, x + 2, 166, 120, C.muted, 9, 3);
+      wrapped(b.description, x + 2, 243, 170, C.muted, 11, 2);
     }
+  }
+  function drawArchive() {
+    bg("tomb", 0.75);
+    header("MONSTER ARCHIVE", () => (scene = "campaign"));
+    const list = catalog.enemies,
+      visible = list.slice(archivePage * 6, archivePage * 6 + 6);
+    visible.forEach((e, i) => {
+      button(
+        "enemy-" + e.id,
+        e.name,
+        10,
+        38 + i * 32,
+        174,
+        29,
+        () => (archiveEnemy = e.id),
+        { active: archiveEnemy === e.id },
+      );
+      sprite(e.id, 12, 34 + i * 32, 0.85);
+    });
+    button(
+      "archive-prev",
+      "<",
+      10,
+      244,
+      50,
+      25,
+      () => (archivePage = Math.max(0, archivePage - 1)),
+      { disabled: archivePage === 0 },
+    );
     text(
-      current
-        ? "CULTIVATION PATH SEALED"
-        : "CHOOSE ONE PATH / " + cost + " SPIRIT STONES",
-      237,
-      195,
-      current ? C.jade : C.gold,
+      `${archivePage + 1} / ${Math.ceil(list.length / 6)}`,
+      98,
+      252,
+      C.muted,
       1,
       "center",
+    );
+    button(
+      "archive-next",
+      ">",
+      135,
+      244,
+      49,
+      25,
+      () =>
+        (archivePage = Math.min(
+          Math.ceil(list.length / 6) - 1,
+          archivePage + 1,
+        )),
+      { disabled: archivePage >= Math.ceil(list.length / 6) - 1 },
+    );
+    const e = enemies[archiveEnemy] || list[0];
+    if (!e) return;
+    panel(195, 35, 307, 239, regionColor[e.boss ? "tomb" : "wharf"]);
+    sprite(e.id, 205, 42, 2, Math.floor(now / 240) % 4);
+    wrapped(e.name, 276, 47, 214, C.gold, 16, 2);
+    text(e.boss ? "BOSS / 3 PHASES" : e.role, 276, 86, C.jade);
+    text(`HP ${e.hp} / Armor ${e.armor} / Shield ${e.shield || 0}`, 207, 115);
+    text(`ATK ${e.damage} ${e.damage_type} / ${e.interval}s`, 207, 132);
+    text(`Speed ${e.speed} tiles/s / Reach ${e.range}`, 207, 149);
+    const resist = Object.entries(e.resistances || {})
+      .map(([k, v]) => `${k} ${v >= 0 ? "+" : ""}${Math.round(v * 100)}%`)
+      .join(" / ");
+    text(resist || "No elemental resistance", 207, 166, C.ice, 0.9);
+    const ability = e.abilities?.[0];
+    text(ability?.name || "Special behavior", 207, 188, C.gold);
+    wrapped(
+      ability?.description || e.description,
+      207,
+      204,
+      282,
+      C.cream,
+      12,
+      3,
+    );
+    wrapped(
+      "Counter: " + (e.counterplay || "Use mixed damage."),
+      207,
+      242,
+      282,
+      C.jade,
+      12,
+      2,
     );
   }
   function buyBranch(id, branch, cost) {
@@ -723,7 +726,7 @@
     bg(s.region || "wharf");
     // Tile and range indicators sit behind the sprites, never over attack feedback.
     for (let lane = 0; lane < 5; lane++)
-      for (let col = 1; col <= 6; col++) {
+      for (let col = 1; col <= 9; col++) {
         const x = B.x + col * B.cw,
           y = B.y + lane * B.ch;
         rect(x, y, 1, B.ch, "#8aa58528");
@@ -794,9 +797,9 @@
       for (const lane of tell.lanes || []) {
         const y = B.y + lane * B.ch;
         ctx.globalAlpha = 0.12 + Math.sin(now / 80) * 0.05;
-        rect(B.x + B.cw, y, 7 * B.cw, B.ch, C.red);
+        rect(B.x + B.cw, y, 10 * B.cw, B.ch, C.red);
         ctx.globalAlpha = 1;
-        for (let x = B.x + B.cw; x < B.x + 8 * B.cw; x += 6) {
+        for (let x = B.x + B.cw; x < B.x + 11 * B.cw; x += 6) {
           rect(x, y, 3, 1, C.red);
           rect(x, y + B.ch - 1, 3, 1, C.red);
         }
@@ -810,11 +813,12 @@
       const remaining = (upcoming.at ?? upcoming.time) - s.time;
       for (const spawn of upcoming.spawns || upcoming.enemies || []) {
         const y = B.y + (spawn.lane + 0.5) * B.ch;
-        text("<", 357, y - 4, C.gold);
+        text("<", 486, y - 4, C.gold);
         if (remaining < 10)
-          text(Math.ceil(remaining), 376, y - 4, C.gold, 1, "right");
+          text(Math.ceil(remaining), 505, y - 4, C.gold, 1, "right");
       }
     }
+    drawDefenses(s);
     drawAmbient(s.region || "wharf");
     const units = [
       ...(s.heroes || []).map((x) => ({ ...x, friendly: true })),
@@ -924,146 +928,169 @@
     }
     ctx.globalAlpha = 1;
   }
+  function drawDefenses(s) {
+    wrapped(
+      stages[s.stage]?.stronghold || "Immortal Palace",
+      5,
+      223,
+      80,
+      C.gold,
+      10,
+      2,
+    );
+    for (const ward of s.defenses || []) {
+      const x = B.x + ward.x * B.cw,
+        y = B.y + (ward.lane + 0.5) * B.ch;
+      if (ward.status === "spent") {
+        line(B.x + 9, y - 5, B.x + 23, y + 5, C.dim);
+        line(B.x + 23, y - 5, B.x + 9, y + 5, C.dim);
+        continue;
+      }
+      const color = ward.status === "sweeping" ? C.cream : C.gold;
+      rect(x - 6, y - 10, 12, 19, "#22424c");
+      line(x - 8, y - 4, x + 8, y + 4, color);
+      line(x - 8, y + 4, x + 8, y - 4, color);
+      rect(x - 2, y - 13, 4, 25, color);
+      rect(x - 9, y - 1, 18, 3, C.jade);
+      if (ward.status === "sweeping") {
+        for (let i = 1; i < 5; i++) rect(x - i * 7, y - 7 + i * 3, 5, 2, C.ice);
+      }
+    }
+    if (
+      pointer.x >= B.x &&
+      pointer.x < B.x + B.cw &&
+      pointer.y >= B.y &&
+      pointer.y < B.y + 5 * B.ch
+    ) {
+      panel(95, 223, 380, 16, C.gold);
+      text(
+        "Guardian seal: one automatic rescue per lane. Place heroes to its right.",
+        102,
+        226,
+        C.gold,
+        0.9,
+      );
+    }
+  }
   function drawHUD(s) {
     rect(0, 0, W, 27, "#10202a");
     rect(0, 26, W, 1, C.edge);
     icon("qi", 8, 8, C.gold);
-    text(Math.floor(s.qi || 0), 20, 9, C.gold);
-    icon("gate", 68, 8, C.jade);
-    text(s.gate ?? 3, 80, 9, C.cream);
-    text("WAVE " + (s.wave || 0) + "/" + (s.wave_count || 0), 106, 9, C.cream);
-    text(formatTime(s.time), 192, 9, C.muted);
-    button("pause", s.paused ? ">" : "II", 239, 5, 21, 16, () =>
+    text(Math.floor(s.qi || 0), 22, 8, C.gold);
+    icon("gate", 80, 8, C.jade);
+    text(s.gate ?? 3, 94, 8);
+    text("Wave " + (s.wave || 0) + "/" + (s.wave_count || 0), 126, 8);
+    text(formatTime(s.time), 237, 8, C.muted);
+    button("pause", s.paused ? ">" : "II", 303, 4, 28, 19, () =>
       command({ action: "pause", paused: !s.paused }),
     );
-    button("speed", (s.speed || 1) + "X", 264, 5, 31, 16, () => {
+    button("speed", (s.speed || 1) + "x", 335, 4, 39, 19, () => {
       const values = realm() >= 3 ? [1, 1.5, 2] : [1, 1.5];
       command({
         action: "speed",
         value: values[(values.indexOf(s.speed || 1) + 1) % values.length],
       });
     });
-    button("battle-settings", "...", 299, 5, 24, 16, () => {
+    button("battle-settings", "Menu", 378, 4, 48, 19, () => {
       command({ action: "pause", paused: true });
       overlay = "battleMenu";
     });
-    button("quit", "<", 328, 5, 21, 16, () => {
-      command({ action: "pause", paused: true });
-      overlay = "battleMenu";
-    });
-    button("help", "?", 353, 5, 24, 16, () => {
+    button("help", "Guide", 430, 4, 72, 19, () => {
       command({ action: "pause", paused: true });
       overlay = "controls";
     });
-    rect(0, 28, W, 17, "#10202ab8");
-    const stage = stages[s.stage] || {};
-    text((stage.name || s.stage || "").slice(0, 34), 7, 32, C.jade);
-    const hazard = s.hazard || {};
-    let label = hazard.name
-      ? (hazard.name + " " + (hazard.phase || "")).slice(0, 23)
-      : "GUARD THE IMMORTAL GATE";
-    text(label, W - 7, 32, C.muted, 1, "right");
-    for (let i = 0; i < realm(); i++) {
-      const relic = catalog.relics[i];
+    rect(0, 28, W, 25, "#10202ae8");
+    text(stages[s.stage]?.name || s.stage, 8, 32, C.jade);
+    text(
+      (s.hazard?.phase || "") + " / " + (s.hazard?.countdown ?? 0) + "s",
+      W - 8,
+      32,
+      C.muted,
+      1,
+      "right",
+    );
+    for (let i = 0; i < realm(); i++)
       button(
         "relic-" + i,
-        ["JADE", "WIND", "BELL"][i],
-        5,
-        58 + i * 23,
-        33,
-        18,
+        ["1", "2", "3"][i],
+        5 + i * 27,
+        251,
+        24,
+        22,
         () => command({ action: "relic", slot: i }),
-        {
-          disabled: (s.relics_used || []).includes(relic?.id),
-          color: [C.jade, C.gold, C.violet][i],
-        },
+        { disabled: s.relics_used?.includes(catalog.relics[i]?.id) },
       );
-    }
-    if (s.boss || s.enemies?.some((e) => enemies[e.type]?.boss)) {
-      const boss = s.enemies.find((e) => enemies[e.type]?.boss);
-      if (boss) {
-        panel(103, 47, 178, 12, C.violet);
-        rect(106, 50, 172 * clamp(boss.hp / boss.max_hp, 0, 1), 5, "#a65874");
-        text(
-          (enemies[boss.type]?.name || "BOSS").slice(0, 21),
-          192,
-          50,
-          C.cream,
-          1,
-          "center",
-        );
-      }
+    const boss = s.enemies?.find((e) => e.boss);
+    if (boss) {
+      panel(158, 47, 270, 13, C.violet);
+      rect(161, 50, 264 * clamp(boss.hp / boss.max_hp, 0, 1), 6, "#a65874");
+      text(
+        (enemies[boss.type]?.name || "Boss") + " / Phase " + boss.phase,
+        293,
+        49,
+        C.cream,
+        0.9,
+        "center",
+      );
     }
   }
   function drawCards(s) {
-    rect(0, 177, W, 39, "#0c1822");
-    rect(0, 177, W, 1, C.edge);
+    rect(85, 238, W - 85, 50, "#0c1822");
     heroOrder.forEach((id, i) => {
-      const h = heroes[id];
-      if (!h) return;
-      const x = 8 + i * 46,
+      const h = heroes[id],
+        x = 88 + i * 52,
         available = unlocked(h),
-        selected = selectedHero === id,
-        cd = Number(s.cards?.[id] || 0),
-        cost = h.cost ?? 0;
-      panel(
-        x,
-        181,
-        43,
-        33,
-        selected ? C.gold : available ? "#45645a" : "#283940",
-        selected ? "#2b4039" : "#172b33",
+        cd = Number(s.cards?.[id] || 0);
+      panel(x, 241, 50, 45, selectedHero === id ? C.gold : C.edge);
+      sprite(id, x + 4, 246, 0.9, null, available ? 1 : 0.25);
+      text(i + 1, x + 3, 243, C.muted, 0.85);
+      text(
+        available ? h.cost : "LOCK",
+        x + 46,
+        243,
+        available ? (s.qi >= h.cost ? C.gold : C.red) : C.dim,
+        0.85,
+        "right",
       );
-      if (available) {
-        sprite(id, x + 1, 185, 0.75, Math.floor(now / 400) % 4);
-        text(String(i + 1), x + 3, 184, C.muted);
-        text(cost, x + 40, 184, s.qi >= cost ? C.gold : C.red, 1, "right");
-        text(
-          shortNames[id],
-          x + 23,
-          205,
-          selected ? C.gold : C.cream,
-          1,
-          "center",
-        );
-      } else {
-        sprite(id, x + 10, 184, 0.75, 0, 0.25);
-        icon("lock", x + 18, 191, C.dim);
-        text("LOCKED", x + 21, 205, C.dim, 1, "center");
-      }
+      text(
+        shortNames[id],
+        x + 25,
+        274,
+        available ? C.cream : C.dim,
+        0.9,
+        "center",
+      );
       if (cd > 0) {
-        ctx.globalAlpha = 0.65;
-        rect(x + 2, 183, 39, 29 * clamp(cd / (h.cooldown || 10), 0, 1), C.deep);
-        ctx.globalAlpha = 1;
-        text(Math.ceil(cd) + "S", x + 22, 194, C.cream, 1, "center");
+        rect(x + 2, 243, 46, 37 * clamp(cd / h.cooldown, 0, 1), "#0b131ebb");
+        text(Math.ceil(cd) + "s", x + 25, 258, C.cream, 1, "center");
       }
       buttons.push({
         id: "card-" + id,
         x,
-        y: 181,
-        w: 43,
-        h: 33,
+        y: 241,
+        w: 50,
+        h: 45,
         fn: () => selectCard(id),
         disabled: !available,
       });
     });
     if (selectedHero) {
       const h = heroes[selectedHero];
-      panel(62, 157, 260, 17, C.gold, "#14282f");
+      panel(135, 221, 340, 16, C.gold);
       text(
-        (h.name + " / QI " + h.cost + " / TAP A FREE TILE").slice(0, 41),
-        192,
-        162,
+        h.name + " / " + h.cost + " Qi / Choose an empty tile",
+        305,
+        224,
         C.gold,
-        1,
+        0.95,
         "center",
       );
     }
   }
   function drawInspect(u) {
     const h = heroes[u.type] || {};
-    const x = 119,
-      y = 128;
+    const x = 200,
+      y = 184;
     panel(x, y, 177, 47, C.gold);
     text((h.name || u.type).slice(0, 20), x + 6, y + 5, C.gold);
     text(
@@ -1220,6 +1247,13 @@
       text(s.name, 70, 62, C.gold);
       wrapped(s.description, 70, 78, 242, C.cream, 11, 4);
       wrapped(s.mechanic, 70, 124, 242, C.muted, 10, 2);
+      text(
+        `${s.waves.length} waves / ${s.enemy_count} foes / ${s.duration_label}`,
+        70,
+        139,
+        C.gold,
+        0.9,
+      );
       button("start", "DEFEND THE GATE", 70, 155, 160, 20, () =>
         startBattle(s.id),
       );
@@ -1314,14 +1348,15 @@
         "3. SWORDS SHOOT RIGHT. MONKS BLOCK.",
         "4. SELECT A HERO. Q CASTS A FULL ULTIMATE.",
         "5. SPACE PAUSES. ESC CANCELS SELECTION.",
-        "6. GUARD ALL FIVE LANES. THREE BREACHES LOSE.",
+        "6. EACH LANE HAS ONE GUARDIAN SEAL RESCUE.",
+        "7. COLUMN 0 IS RESERVED. DEPLOY IN 1-9.",
         "TIP: YUN IN THE MIDDLE, SHEN AHEAD OF HIM.",
         "FIRST THREATS: MIDDLE, THEN UPPER-MIDDLE.",
       ];
       guide.forEach((t, i) =>
-        text(t, 61, 59 + i * 12, i >= 6 ? C.jade : C.muted),
+        text(t, 61, 55 + i * 11, i >= 6 ? C.jade : C.muted),
       );
-      button("close", "UNDERSTOOD", 119, 162, 146, 19, () => (overlay = null));
+      button("close", "UNDERSTOOD", 119, 173, 146, 19, () => (overlay = null));
       return;
     }
     if (overlay === "saves") {
@@ -1397,13 +1432,30 @@
   function render(t) {
     now = t;
     buttons = [];
+    ctx.setTransform(3, 0, 0, 3, 0, 0);
     ctx.imageSmoothingEnabled = false;
     if (scene === "title") drawTitle();
     else if (scene === "campaign") drawCampaign();
     else if (scene === "roster") drawRoster();
+    else if (scene === "archive") drawArchive();
     else if (scene === "battle") drawBattle();
     if (overlay) buttons = [];
-    drawOverlay();
+    if (overlay) {
+      const offset = { x: (W - 384) / 2, y: (H - 216) / 2 },
+        originalPointer = pointer;
+      pointer = { x: pointer.x - offset.x, y: pointer.y - offset.y };
+      ctx.save();
+      ctx.translate(offset.x, offset.y);
+      drawOverlay();
+      ctx.restore();
+      pointer = originalPointer;
+      for (const b of buttons) {
+        b.x += offset.x;
+        b.y += offset.y;
+        const action = b.fn;
+        b.fn = (p) => action(p ? { x: p.x - offset.x, y: p.y - offset.y } : p);
+      }
+    }
     drawToast();
     canvas.dataset.scene =
       overlay === "settings"
@@ -1420,7 +1472,7 @@
   function tileAt(p) {
     const col = Math.floor((p.x - B.x) / B.cw),
       lane = Math.floor((p.y - B.y) / B.ch);
-    return col >= 1 && col <= 6 && lane >= 0 && lane < 5 ? { col, lane } : null;
+    return col >= 1 && col <= 9 && lane >= 0 && lane < 5 ? { col, lane } : null;
   }
   function leaveBattle() {
     battleEpoch++;
@@ -1532,7 +1584,7 @@
         notify(out.message || "THAT ACTION IS NOT AVAILABLE.", C.red);
         audio.play("error");
       } else if (placing) {
-        audio.play("place");
+        audio.hero(data.hero, "deploy");
         if (selectionEpoch === selectedAtStart && selectedHero === data.hero)
           selectedHero = null;
       } else if (data.action === "ultimate") audio.play("cast");
@@ -1597,8 +1649,17 @@
       if (Number(e.seq || 0) <= lastEvent) continue;
       lastEvent = Math.max(lastEvent, Number(e.seq || 0));
       const kind = e.kind || "";
+      if (e.actor) audio.hero(e.actor, kind);
       if (
-        ["warning", "phase", "boss", "breach", "altar", "drain"].includes(kind)
+        [
+          "warning",
+          "phase",
+          "boss",
+          "breach",
+          "altar",
+          "drain",
+          "guardian",
+        ].includes(kind)
       ) {
         audio.play(kind === "altar" ? "upgrade" : "warning");
         notify(e.text, kind === "altar" ? C.jade : C.red, 2.5);
@@ -1705,6 +1766,9 @@
     step: 0,
     timer: null,
     last: {},
+    heroCounts: {},
+    theme: "lobby",
+    nextNote: 0,
     init() {
       if (this.context) {
         if (this.context.state === "suspended") this.context.resume();
@@ -1717,9 +1781,16 @@
         this.sfxGain = this.context.createGain();
         this.musicGain.connect(this.master);
         this.sfxGain.connect(this.master);
-        this.master.connect(this.context.destination);
+        const limiter = this.context.createDynamicsCompressor();
+        limiter.threshold.value = -8;
+        limiter.knee.value = 6;
+        limiter.ratio.value = 12;
+        limiter.attack.value = 0.003;
+        limiter.release.value = 0.15;
+        this.master.connect(limiter);
+        limiter.connect(this.context.destination);
         this.update();
-        this.timer = setInterval(() => this.music(), 420);
+        this.timer = setInterval(() => this.music(), 100);
       } catch {}
     },
     update() {
@@ -1744,6 +1815,87 @@
       g.gain.exponentialRampToValueAtTime(0.001, t + d);
       o.start(t);
       o.stop(t + d + 0.02);
+    },
+    noise(duration = 0.09, volume = 0.08, filter = 1800) {
+      if (!this.context) return;
+      const ac = this.context,
+        count = Math.floor(ac.sampleRate * duration),
+        b = ac.createBuffer(1, count, ac.sampleRate),
+        data = b.getChannelData(0);
+      for (let i = 0; i < count; i++)
+        data[i] = (Math.random() * 2 - 1) * (1 - i / count) ** 2;
+      const source = ac.createBufferSource(),
+        gain = ac.createGain(),
+        low = ac.createBiquadFilter();
+      source.buffer = b;
+      low.type = "lowpass";
+      low.frequency.value = filter;
+      gain.gain.value = volume;
+      source.connect(low);
+      low.connect(gain);
+      gain.connect(this.sfxGain);
+      source.start();
+    },
+    hero(actor, action) {
+      if (!this.context) return;
+      const stamp = performance.now(),
+        key = "hero-" + actor;
+      if (stamp - (this.last[key] || 0) < 150) return;
+      this.last[key] = stamp;
+      this.heroCounts[actor] = (this.heroCounts[actor] || 0) + 1;
+      const profiles = {
+        gatherer: { notes: [880, 1320, 1760], wave: "sine", decay: 0.22 },
+        sword: {
+          notes: [440, 660],
+          wave: "triangle",
+          decay: 0.065,
+          noise: 4200,
+        },
+        fire: {
+          notes: [147, 294, 392],
+          wave: "sawtooth",
+          decay: 0.14,
+          noise: 900,
+        },
+        frost: {
+          notes: [1175, 1568, 2349],
+          wave: "sine",
+          decay: 0.16,
+          noise: 6500,
+        },
+        monk: {
+          notes: [82, 123, 164],
+          wave: "triangle",
+          decay: 0.18,
+          noise: 450,
+        },
+        lightning: {
+          notes: [740, 1480, 370],
+          wave: "square",
+          decay: 0.045,
+          noise: 8000,
+        },
+        herbalist: { notes: [523, 659, 784], wave: "sine", decay: 0.25 },
+        formation: {
+          notes: [196, 294, 392, 588],
+          wave: "triangle",
+          decay: 0.3,
+        },
+      };
+      const p = profiles[actor];
+      if (!p) return;
+      const ultimate = action === "ultimate";
+      p.notes.forEach((n, i) =>
+        this.tone(
+          n * (ultimate ? 1.5 : 1),
+          p.decay * (ultimate ? 2 : 1),
+          p.wave,
+          0.1,
+          "sfx",
+          i * (ultimate ? 0.08 : 0.025),
+        ),
+      );
+      if (p.noise) this.noise(ultimate ? 0.2 : 0.07, 0.06, p.noise);
     },
     play(kind) {
       if (!this.context) return;
@@ -1785,22 +1937,90 @@
     music() {
       if (!this.context || !profile.settings.music || document.hidden) return;
       if (scene === "battle" && state?.paused) return;
-      const notes =
-        state?.region === "tomb"
-          ? [146.83, 174.61, 196, 220, 261.63, 220, 196, 174.61]
-          : state?.region === "terrace"
-            ? [196, 246.94, 293.66, 329.63, 392, 329.63, 293.66, 246.94]
-            : [164.81, 196, 220, 293.66, 329.63, 293.66, 220, 196];
-      const i = this.step++ % 16;
+      const theme = scene === "battle" ? state?.region || "wharf" : "lobby";
+      if (theme !== this.theme) {
+        this.theme = theme;
+        this.step = 0;
+        this.nextNote = 0;
+      }
+      const scores = {
+        lobby: {
+          bpm: 76,
+          root: 48,
+          lead: "triangle",
+          melody: [
+            12, 16, 19, 24, 19, 16, 14, 16, 12, 7, 12, 14, 16, 19, 16, 7, 9, 12,
+            16, 21, 19, 16, 14, 12, 7, 9, 12, 16, 14, 7, 4, 7,
+          ],
+        },
+        wharf: {
+          bpm: 104,
+          root: 45,
+          lead: "triangle",
+          melody: [
+            12, 15, 19, 22, 24, 19, 15, 12, 10, 12, 15, 19, 22, 19, 15, 7, 12,
+            15, 17, 24, 22, 19, 17, 15, 10, 7, 10, 15, 19, 17, 15, 12,
+          ],
+        },
+        terrace: {
+          bpm: 90,
+          root: 50,
+          lead: "sine",
+          melody: [
+            12, 19, 24, 26, 24, 19, 16, 14, 12, 16, 19, 21, 24, 21, 19, 16, 14,
+            19, 21, 26, 28, 26, 24, 19, 16, 14, 12, 7, 9, 12, 16, 19,
+          ],
+        },
+        tomb: {
+          bpm: 84,
+          root: 38,
+          lead: "triangle",
+          melody: [
+            12, 13, 19, 24, 22, 19, 13, 12, 7, 12, 15, 19, 18, 15, 13, 7, 12,
+            19, 25, 24, 19, 18, 15, 13, 12, 7, 6, 7, 12, 13, 7, 0,
+          ],
+        },
+      };
+      const score = scores[theme],
+        ac = this.context;
+      if (this.nextNote > ac.currentTime + 0.12) return;
+      if (this.nextNote < ac.currentTime) this.nextNote = ac.currentTime + 0.02;
+      const i = this.step++,
+        beat = 60 / score.bpm / 2,
+        delay = this.nextNote - ac.currentTime,
+        hz = (n) => 440 * 2 ** ((score.root + n - 69) / 12);
       this.tone(
-        notes[i % 8] * (i % 4 === 0 ? 1 : 0.5),
-        0.8,
-        "sine",
-        0.11,
+        hz(score.melody[i % 32]),
+        theme === "terrace" ? 0.38 : 0.22,
+        score.lead,
+        0.1,
         "music",
+        delay,
       );
-      if (i % 4 === 0)
-        this.tone(notes[0] * 0.5, 1.4, "triangle", 0.08, "music");
+      if (i % 4 === 0) {
+        this.tone(
+          hz([0, 5, 7, 0][Math.floor(i / 8) % 4] - 12),
+          beat * 3.6,
+          "sine",
+          0.12,
+          "music",
+          delay,
+        );
+        this.tone(55, 0.09, "sine", 0.12, "music", delay);
+      }
+      if (i % 8 === 4)
+        this.tone(hz(7), 0.05, "triangle", 0.045, "music", delay);
+      if (i % 16 === 0) {
+        this.tone(hz(12), beat * 7, "sine", 0.025, "music", delay);
+        this.tone(hz(19), beat * 7, "sine", 0.02, "music", delay);
+      }
+      if (
+        scene === "battle" &&
+        state?.enemies?.some((e) => e.boss) &&
+        i % 2 === 0
+      )
+        this.tone(73, 0.07, "triangle", 0.09, "music", delay);
+      this.nextNote += beat;
     },
   };
   function point(event) {
@@ -1846,6 +2066,19 @@
       return;
     }
     if (selectedHero) {
+      if (
+        pointer.x >= B.x &&
+        pointer.x < B.x + B.cw &&
+        pointer.y >= B.y &&
+        pointer.y < B.y + 5 * B.ch
+      ) {
+        notify(
+          "Guardian seals occupy column 0: one automatic lane rescue. Deploy to their right.",
+          C.gold,
+          5,
+        );
+        return;
+      }
       selectedHero = null;
       return;
     }
@@ -1914,6 +2147,8 @@
   }
   async function init() {
     try {
+      await document.fonts.load("13px VT323");
+      await document.fonts.ready;
       catalog = await api("/api/catalog");
       for (const key of ["heroes", "enemies", "stages", "relics"])
         if (!Array.isArray(catalog[key]))
@@ -1979,6 +2214,15 @@
         h,
         disabled,
       }));
+    },
+    get audioTheme() {
+      return audio.theme;
+    },
+    get heroSounds() {
+      return { ...audio.heroCounts };
+    },
+    get board() {
+      return { ...B };
     },
     get audioActive() {
       return !!audio.context && audio.context.state === "running";

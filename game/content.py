@@ -6,7 +6,7 @@ All data is JSON serializable and shared by the Python simulation and canvas UI.
 """
 from copy import deepcopy
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 REGIONS = [
     {"id": "wharf", "name": "Glass Lantern Wharf", "subtitle": "The river remembers", "chapter": 1, "color": "#58c8bd", "description": "Protect a lantern-lit town as the corrupted river rises.", "mechanic": "Tide Cycle", "intro": "Keeper, the lanterns are going dark. Gather Spirit Qi and hold the river gate.", "outro": "The River Lord was bound to a broken seal. Its last breath points toward the Azure Terraces."},
@@ -107,6 +107,12 @@ ENEMIES = {
 }
 
 
+ENEMY_ABILITIES = {'tide': ('Tidal Rush', 'Moves 15% faster during high tide.', 'Frost slows its sprint.'), 'lantern': ('Murk Lantern', 'Grants nearby enemies 25 shield every 6s; bursts after death.', 'Burn down the support before the pack arrives.'), 'drowned': ('Submerge', 'Becomes hidden during the high-tide phase.', 'Fire and lightning can strike submerged targets.'), 'hound': ('Shoulder Rush', 'After a 1.1s tell, rushes 1.5 tiles if no nearby blocker. Starts with 260 shield.', 'Place a guardian ahead of mixed damage.'), 'yaksha': ('Winged Dive', 'Flies over blockers for 4.5s in each 7s cycle, then hunts support.', 'Lightning prioritizes flying targets.'), 'drainer': ('Qi Siphon', 'Channels for 1s, then steals Qi. Interrupt the channel.', 'Stun it or kill it before the pulse.'), 'soul': ('Faceless Fade', 'Phases near the end of each 5.5s cycle. Spirit hits curse heroes.', 'Fire, lightning or the soul bell pierce its fade.'), 'rottenwood': ('Spore Cloud', 'A warned spore patch damages and slows allies. Recovers 30 HP while unhurt.', 'Keep dealing damage; spread supports out.'), 'swordcorpse': ('Sword Swallow', 'Absorbs light swords for 1s and returns their energy in its next blow.', 'Use fire, lightning or a monk staff.'), 'riverlord': ('Tidal Sweep', 'Marks two lanes, then sweeps for increasing Water damage. Three HP phases summon waterbound enemies.', 'Shield the marked lanes and preserve sustained damage.'), 'mountainlord': ('Granite Plates', 'Three plates absorb hits without spillover. Warned tremors target crowded lanes.', 'Mix lightning damage with tanks and healing.'), 'boneemperor': ('Royal Decree', 'Marks up to three lanes. Seal altars resurrect souls and grant boss shields.', 'Destroy the three altars; bring healing and formation support.')}
+for _enemy_id, (_ability_name, _ability_text, _counter) in ENEMY_ABILITIES.items():
+    ENEMIES[_enemy_id]["abilities"] = [{"name": _ability_name, "description": _ability_text}]
+    ENEMIES[_enemy_id]["counterplay"] = _counter
+
+
 def _spawn(type, lane, count=1, gap=.8):
     return dict(type=type, lane=lane, count=count, gap=gap)
 
@@ -160,6 +166,33 @@ STAGES = {
         140, {"stones": 160, "insight": 3, "relic": "soul_bell", "material": "Mausoleum Seal Fragment", "campaign_complete": True}, boss="boneemperor", mist_lanes=[1, 3], altars=[{"lane": 1, "x": 7.0}, {"lane": 2, "x": 7.5}, {"lane": 3, "x": 7.0}], mastery=["Destroy every seal altar", "Defeat all three emperor phases"]),
 }
 
+# Reinforcement chapters extend the existing campaign; no stages or heroes are added.
+for _stage_data in STAGES.values():
+    _tutorial = _stage_data.get("tutorial", False)
+    _boss = _stage_data.get("boss")
+    _waves = [deepcopy(w) for w in _stage_data["waves"] if not any(ENEMIES[s["type"]]["boss"] for s in w["spawns"])]
+    _target = 12 if _tutorial else 14 + _stage_data["chapter"] * 2
+    _pool = {"wharf": ["tide", "lantern", "drowned"], "terrace": ["tide", "hound", "yaksha", "drainer", "rottenwood"], "tomb": ["soul", "swordcorpse", "rottenwood", "drainer"]}[_stage_data["region"]]
+    while len(_waves) < _target:
+        _n = len(_waves)
+        _at = _waves[-1]["at"] + (17 if _tutorial else 15)
+        _lane = [2, 1, 3][_n % 3] if _tutorial else (_n * 2 + _stage_data["index"]) % 5
+        _type = "tide" if _tutorial else _pool[_n % len(_pool)]
+        _pack = (3 + int(_n >= 9)) if _tutorial else (2 + int(_n >= 10))
+        _spawns = [_spawn(_type, _lane, _pack, 1.6)]
+        if not _tutorial and _n % 3 == 0:
+            _spawns.append(_spawn(_pool[(_n + 1) % len(_pool)], (_lane + 2) % 5, 2, 2))
+        _waves.append(_wave(_at, *_spawns))
+    if _boss:
+        _waves.append(_wave(_waves[-1]["at"] + 22, _spawn(_boss, 2)))
+    _stage_data["waves"] = _waves
+    _stage_data["duration"] = _waves[-1]["at"] + (100 if _boss else 35)
+    _stage_data["columns"] = 12
+    _stage_data["deployment_columns"] = list(range(1, 10))
+    _stage_data["stronghold"] = {"wharf": "Lantern Palace", "terrace": "Azure Sky Pavilion", "tomb": "Ancestral Spirit Shrine"}[_stage_data["region"]]
+    _stage_data["enemy_count"] = sum(s["count"] for w in _waves for s in w["spawns"])
+    _stage_data["duration_label"] = "3-4 min" if _tutorial else ("5-7 min" if _boss else "4-5 min")
+
 _stage_ids = list(STAGES)
 for _index, _id in enumerate(_stage_ids[:-1]):
     STAGES[_id]["next"] = _stage_ids[_index + 1]
@@ -173,4 +206,4 @@ RELICS = {
 
 def catalog():
     """Return detached public content data; callers cannot mutate the rules."""
-    return deepcopy({"version": VERSION, "regions": REGIONS, "heroes": list(HEROES.values()), "enemies": list(ENEMIES.values()), "stages": list(STAGES.values()), "relics": list(RELICS.values()), "title": "VAN DAO: IMMORTAL WAR", "tagline": "Guard the last immortal gate.", "rules": {"lanes": 5, "columns": 9, "deployment_columns": [1, 2, 3, 4, 5, 6], "starting_qi": 150, "passive_qi": 25, "passive_interval": 12, "qi_cap": 999, "gate": 3, "simulation_hz": 60}})
+    return deepcopy({"version": VERSION, "regions": REGIONS, "heroes": list(HEROES.values()), "enemies": list(ENEMIES.values()), "stages": list(STAGES.values()), "relics": list(RELICS.values()), "title": "VAN DAO: IMMORTAL WAR", "tagline": "Guard the last immortal gate.", "rules": {"lanes": 5, "columns": 12, "deployment_columns": list(range(1, 10)), "lane_wards": 1, "starting_qi": 150, "passive_qi": 25, "passive_interval": 12, "qi_cap": 999, "gate": 3, "simulation_hz": 60}})

@@ -98,10 +98,12 @@ def play_final_stage(seed, upgrades, realm):
         (18, "sword", 1, 2), (28, "sword", 3, 2),
         (34, "fire", 1, 3), (42, "lightning", 2, 4),
         (50, "herbalist", 3, 3), (58, "formation", 2, 3),
-        (66, "monk", 2, 6), (75, "fire", 2, 5), (80, "fire", 4, 3),
+        (66, "monk", 2, 6), (75, "fire", 2, 5), (80, "fire", 4, 3), (88,"sword",0,2), (96,"fire",0,3),
+        (104,"sword",4,2), (112,"monk",1,6), (124,"monk",3,6),
+        (136,"lightning",1,4), (150,"fire",3,4), (164,"herbalist",1,5),
     ]
     placements, ultimate_casts = [], []
-    for _ in range(2_000):
+    for _ in range(3_000):
         state = battle.snapshot()
         elapsed, heroes, enemies = state["time"], state["heroes"], state["enemies"]
         occupied = {(hero["lane"], hero["col"]) for hero in heroes}
@@ -126,6 +128,8 @@ def play_final_stage(seed, upgrades, realm):
                 ("formation", 2, 3), ("fire", 2, 5), ("fire", 4, 3),
                 ("sword", 1, 2), ("sword", 3, 2),
                 ("gatherer", 0, 1), ("gatherer", 4, 1),
+                ("sword",0,2),("fire",0,3),("sword",4,2),
+                ("monk",1,6),("monk",3,6),("lightning",1,4),("fire",3,4),("herbalist",1,5),
             ):
                 if (lane, col) not in occupied and state["qi"] >= HEROES[kind]["cost"] and state["cards"][kind] <= 0:
                     if place(kind, lane, col):

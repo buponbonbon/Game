@@ -83,7 +83,7 @@ class AssetTests(unittest.TestCase):
         for name in sorted(regions | {"title"}):
             with self.subTest(background=name):
                 width, height, rows = decode_png(ASSETS / f"{name}.png")
-                self.assertEqual((width, height), (384, 216))
+                self.assertEqual((width, height), (384, 216) if name == "title" else (512, 288))
                 self.assertTrue(all(row[x] == 255 for row in rows for x in range(3, width * 4, 4)))
                 palette = {row[x:x + 4] for row in rows for x in range(0, width * 4, 4)}
                 self.assertGreaterEqual(len(palette), 20)

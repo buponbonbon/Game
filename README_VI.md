@@ -37,3 +37,16 @@ nhận ra bản lưu.
 
 Đây là bản game chơi được, chuyển thể gọn từ tài liệu thiết kế bạn gửi; xem
 [tình trạng triển khai](docs/BUILD_STATUS.md) để biết phần đã kiểm thử và giới hạn.
+
+## Bản 1.1
+
+- Giữ 8 nhân vật và 9 màn; tăng lên 12–21 wave, khoảng 3–6,5 phút/màn trong lượt
+  mô phỏng kiểm tra. Màn đầu có 31 quái.
+- Bản đồ 12 cột, đặt quân ở cột 1–9; cột 0 là pháp khí tự cứu nguy mỗi hàng đúng
+  một lần. Pháp khí quét quái thường; boss chịu sát thương lớn và bị đẩy lùi.
+- VT323 được đóng gói sẵn, không cần mạng để tải font; sửa dấu “?” thay ký tự.
+- Có cung điện/đền phía sau đội hình, SFX riêng cho 8 nhân vật, nhạc sảnh và 3 vùng.
+- Chọn **Monster Archive / Bestiary** để xem chỉ số, kỹ năng và cách khắc chế quái.
+
+Để cập nhật: tắt server Python cũ, giải nén bản mới rồi chạy lại. Giữ cùng trình
+duyệt và cổng localhost để dùng tiếp bản lưu cũ; nên xuất bản lưu trước khi đổi máy.

@@ -40,6 +40,9 @@ python run.py --port 9000 --no-browser
 - Choose a hero card, then choose an empty deployment tile. Keys **1–8** select
   cards; **Escape** cancels a selection.
 - Enemies advance from the right. Protect the gate's three seals.
+- The field has 12 columns: deploy in columns 1–9. Column 0 holds a guardian
+  artifact that automatically sweeps its lane once; it deals a phase-safe heavy
+  hit to bosses. Spent artifacts never recharge within that battle.
 - Start with **Little Daoist Yun** and **Shen Zhu** in the middle lane. Yun
   generates Qi; Shen Zhu fires swords. Prepare the lanes above and below when
   the wave warnings appear.
@@ -54,13 +57,31 @@ local server port to keep the same browser save origin.
 
 ## What is included
 
-The campaign adapts the supplied design into nine compact encounters across
+The campaign adapts the supplied design into nine extended encounters across
 Glass Lantern Wharf, Azure Spirit Terraces, and the Ten-Thousand-Bone Mausoleum.
 The roster contains eight distinct heroes, unlockable upgrade branches, three
 bosses, map hazards, relics, and authored enemy waves. This is a playable compact
 adaptation, rather than a claim that every detail of the production document is
 implemented. See [build status](docs/BUILD_STATUS.md) for verified coverage and
 limitations and [balance reference](docs/BALANCE_REFERENCE.md) for content data.
+
+## Version 1.1 improvements
+
+- Existing stages now run roughly 3–6.5 minutes in the seeded playability check,
+  with 12–21 waves. The opening encounter has 31 enemies rather than seven.
+- Wider 12-column courtyards provide nine deployment columns; the Lantern Palace,
+  Azure Sky Pavilion and Ancestral Spirit Shrine are visibly behind the formation.
+- One automatic guardian-seal rescue per lane; no free recharges.
+- Locally bundled VT323 replaces the old missing-glyph bitmap font. Character
+  descriptions keep normal casing and punctuation.
+- The Monster Archive lists all twelve enemy archetypes, live combat attributes,
+  named special abilities, resistances and counterplay.
+- Eight character sound palettes and four distinct locally synthesized musical
+  themes cover the lobby and the three regions. No audio or font CDN is used.
+
+The roster and number of stages are unchanged. Existing version-1 saves remain
+compatible. Stop the old Python server, extract the updated game and start it
+again; keep the same browser and port to retain local progress.
 
 ## Development
 

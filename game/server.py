@@ -16,7 +16,7 @@ from typing import Any
 from urllib.parse import unquote, urlsplit
 
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 MAX_BODY_BYTES = 65_536
 LOGGER = logging.getLogger(__name__)
 
@@ -267,6 +267,7 @@ class GameRequestHandler(BaseHTTPRequestHandler):
             ".ogg": "audio/ogg",
             ".wav": "audio/wav",
             ".ico": "image/x-icon",
+            ".ttf": "font/ttf",
             ".txt": "text/plain; charset=utf-8",
         }.get(candidate.suffix.lower(), "application/octet-stream")
         self._send_bytes(HTTPStatus.OK, candidate.read_bytes(), mime, head=head)
