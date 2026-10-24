@@ -1,0 +1,130 @@
+{
+  "style": "Original Chinese-inspired guqin / guzheng / pipa / dizi and percussion arrangements",
+  "tracks": {
+    "lobby_setup": {
+      "ogg": "lobby_setup.ogg",
+      "mp3": "lobby_setup.mp3",
+      "bpm": 70,
+      "duration": 54.85714,
+      "instruments": [
+        "guqin",
+        "guzheng",
+        "dizi"
+      ]
+    },
+    "wharf_setup": {
+      "ogg": "wharf_setup.ogg",
+      "mp3": "wharf_setup.mp3",
+      "bpm": 82,
+      "duration": 46.82927,
+      "instruments": [
+        "guqin",
+        "guzheng",
+        "dizi"
+      ]
+    },
+    "wharf_pressure": {
+      "ogg": "wharf_pressure.ogg",
+      "mp3": "wharf_pressure.mp3",
+      "bpm": 101,
+      "duration": 38.0198,
+      "instruments": [
+        "guqin",
+        "guzheng",
+        "dizi",
+        "pipa",
+        "Chinese drum"
+      ]
+    },
+    "wharf_onslaught": {
+      "ogg": "wharf_onslaught.ogg",
+      "mp3": "wharf_onslaught.mp3",
+      "bpm": 120,
+      "duration": 32.0,
+      "instruments": [
+        "guqin",
+        "guzheng",
+        "dizi",
+        "pipa",
+        "Chinese drum",
+        "gong"
+      ]
+    },
+    "terrace_setup": {
+      "ogg": "terrace_setup.ogg",
+      "mp3": "terrace_setup.mp3",
+      "bpm": 78,
+      "duration": 49.23077,
+      "instruments": [
+        "guqin",
+        "guzheng",
+        "dizi"
+      ]
+    },
+    "terrace_pressure": {
+      "ogg": "terrace_pressure.ogg",
+      "mp3": "terrace_pressure.mp3",
+      "bpm": 97,
+      "duration": 39.58763,
+      "instruments": [
+        "guqin",
+        "guzheng",
+        "dizi",
+        "pipa",
+        "Chinese drum"
+      ]
+    },
+    "terrace_onslaught": {
+      "ogg": "terrace_onslaught.ogg",
+      "mp3": "terrace_onslaught.mp3",
+      "bpm": 116,
+      "duration": 33.10345,
+      "instruments": [
+        "guqin",
+        "guzheng",
+        "dizi",
+        "pipa",
+        "Chinese drum",
+        "gong"
+      ]
+    },
+    "tomb_setup": {
+      "ogg": "tomb_setup.ogg",
+      "mp3": "tomb_setup.mp3",
+      "bpm": 72,
+      "duration": 53.33333,
+      "instruments": [
+        "guqin",
+        "guzheng",
+        "dizi"
+      ]
+    },
+    "tomb_pressure": {
+      "ogg": "tomb_pressure.ogg",
+      "mp3": "tomb_pressure.mp3",
+      "bpm": 91,
+      "duration": 42.1978,
+      "instruments": [
+        "guqin",
+        "guzheng",
+        "dizi",
+        "pipa",
+        "Chinese drum"
+      ]
+    },
+    "tomb_onslaught": {
+      "ogg": "tomb_onslaught.ogg",
+      "mp3": "tomb_onslaught.mp3",
+      "bpm": 110,
+      "duration": 34.90909,
+      "instruments": [
+        "guqin",
+        "guzheng",
+        "dizi",
+        "pipa",
+        "Chinese drum",
+        "gong"
+      ]
+    }
+  }
+}

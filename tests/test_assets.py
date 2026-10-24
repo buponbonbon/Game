@@ -1,4 +1,5 @@
 """Validate the shipped raster assets without a third-party image decoder."""
+
 from __future__ import annotations
 
 import importlib.util
@@ -25,15 +26,19 @@ def decode_png(path):
     while offset < len(data):
         if offset + 12 > len(data):
             raise ValueError("Truncated PNG chunk")
-        length = struct.unpack("!I", data[offset:offset + 4])[0]
-        kind = data[offset + 4:offset + 8]
-        body = data[offset + 8:offset + 8 + length]
-        expected = struct.unpack("!I", data[offset + 8 + length:offset + 12 + length])[0]
-        if zlib.crc32(kind + body) & 0xffffffff != expected:
+        length = struct.unpack("!I", data[offset : offset + 4])[0]
+        kind = data[offset + 4 : offset + 8]
+        body = data[offset + 8 : offset + 8 + length]
+        expected = struct.unpack(
+            "!I", data[offset + 8 + length : offset + 12 + length]
+        )[0]
+        if zlib.crc32(kind + body) & 0xFFFFFFFF != expected:
             raise ValueError(f"PNG checksum mismatch: {kind!r}")
         chunks.append(kind)
         if kind == b"IHDR":
-            width, height, depth, mode, compression, filtering, interlace = struct.unpack("!2I5B", body)
+            width, height, depth, mode, compression, filtering, interlace = (
+                struct.unpack("!2I5B", body)
+            )
             if (depth, mode, compression, filtering, interlace) != (8, 6, 0, 0, 0):
                 raise ValueError("Expected noninterlaced 8-bit RGBA PNG")
         elif kind == b"IDAT":
@@ -42,7 +47,12 @@ def decode_png(path):
             if body:
                 raise ValueError("IEND must be empty")
         offset += length + 12
-    if not chunks or chunks[0] != b"IHDR" or chunks[-1] != b"IEND" or b"IDAT" not in chunks:
+    if (
+        not chunks
+        or chunks[0] != b"IHDR"
+        or chunks[-1] != b"IEND"
+        or b"IDAT" not in chunks
+    ):
         raise ValueError("PNG required chunks missing or misordered")
     scan = zlib.decompress(compressed)
     stride = width * 4
@@ -52,7 +62,7 @@ def decode_png(path):
     for y in range(height):
         start = y * (stride + 1)
         filtering = scan[start]
-        row = bytearray(scan[start + 1:start + stride + 1])
+        row = bytearray(scan[start + 1 : start + stride + 1])
         previous = rows[-1] if rows else bytes(stride)
         for x in range(stride):
             left, above = (row[x - 4] if x >= 4 else 0), previous[x]
@@ -83,9 +93,15 @@ class AssetTests(unittest.TestCase):
         for name in sorted(regions | {"title"}):
             with self.subTest(background=name):
                 width, height, rows = decode_png(ASSETS / f"{name}.png")
-                self.assertEqual((width, height), (384, 216))
-                self.assertTrue(all(row[x] == 255 for row in rows for x in range(3, width * 4, 4)))
-                palette = {row[x:x + 4] for row in rows for x in range(0, width * 4, 4)}
+                self.assertEqual(
+                    (width, height), (384, 216) if name == "title" else (1024, 576)
+                )
+                self.assertTrue(
+                    all(row[x] == 255 for row in rows for x in range(3, width * 4, 4))
+                )
+                palette = {
+                    row[x : x + 4] for row in rows for x in range(0, width * 4, 4)
+                }
                 self.assertGreaterEqual(len(palette), 20)
 
     def test_all_content_has_bounded_animated_sprites(self):
@@ -104,27 +120,98 @@ class AssetTests(unittest.TestCase):
                 frames = []
                 for frame in range(item["frames"]):
                     x = item["x"] + frame * item["w"]
-                    pixels = b"".join(row[x * 4:(x + item["w"]) * 4] for row in rows[item["y"]:item["y"] + item["h"]])
-                    self.assertIn(0, pixels[3::4], "Sprites need a transparent silhouette")
-                    self.assertIn(255, pixels[3::4], "Sprite must contain visible artwork")
+                    pixels = b"".join(
+                        row[x * 4 : (x + item["w"]) * 4]
+                        for row in rows[item["y"] : item["y"] + item["h"]]
+                    )
+                    self.assertIn(
+                        0, pixels[3::4], "Sprites need a transparent silhouette"
+                    )
+                    self.assertIn(
+                        255, pixels[3::4], "Sprite must contain visible artwork"
+                    )
                     frames.append(pixels)
-                self.assertEqual(len(set(frames)), 4, "Animation must not contain cloned frames")
-        for alias, key in {"miao": "tide", "river_lord": "riverlord", "mountain_lord": "mountainlord", "bone_emperor": "boneemperor"}.items():
+                self.assertEqual(
+                    len(set(frames)), 4, "Animation must not contain cloned frames"
+                )
+        for alias, key in {
+            "miao": "tide",
+            "river_lord": "riverlord",
+            "mountain_lord": "mountainlord",
+            "bone_emperor": "boneemperor",
+        }.items():
             self.assertEqual(sprites[alias], sprites[key])
+
+    def test_hero_atlas_has_distinct_native_64_pixel_action_states(self):
+        width, height, rows = decode_png(ASSETS / "cultivators.png")
+        atlas = json.loads((ASSETS / "cultivators.json").read_text())
+        self.assertEqual(set(atlas), set(HEROES))
+        for hero, item in atlas.items():
+            self.assertEqual((item["w"], item["h"]), (64, 64))
+            self.assertEqual(
+                set(item["states"]), {"idle", "attack", "skill", "ultimate"}
+            )
+            states = []
+            for name, state in item["states"].items():
+                self.assertEqual(
+                    state["frames"],
+                    {"idle": 6, "attack": 8, "skill": 10, "ultimate": 12}[name],
+                )
+                self.assertLessEqual(state["x"] + 64 * state["frames"], width)
+                self.assertLessEqual(state["y"] + 64, height)
+                frames = []
+                for frame in range(state["frames"]):
+                    x = state["x"] + frame * 64
+                    pixels = b"".join(
+                        row[x * 4 : (x + 64) * 4]
+                        for row in rows[state["y"] : state["y"] + 64]
+                    )
+                    self.assertIn(0, pixels[3::4])
+                    self.assertIn(255, pixels[3::4])
+                    frames.append(pixels)
+                self.assertGreaterEqual(len(set(frames)), 4, (hero, name))
+                states.append(frames[0])
+            self.assertEqual(len(set(states)), 4, hero)
+
+    def test_each_region_has_an_original_animated_emergency_device(self):
+        width, height, rows = decode_png(ASSETS / "guardians.png")
+        atlas = json.loads((ASSETS / "guardians.json").read_text())
+        self.assertEqual(set(atlas), {"wharf", "terrace", "tomb"})
+        silhouettes = []
+        for region, item in atlas.items():
+            self.assertEqual((item["w"], item["h"], item["frames"]), (48, 48, 6))
+            self.assertLessEqual(item["x"] + 48 * 6, width)
+            self.assertLessEqual(item["y"] + 48, height)
+            silhouettes.append(
+                b"".join(
+                    row[item["x"] * 4 : (item["x"] + 48) * 4]
+                    for row in rows[item["y"] : item["y"] + 48]
+                )
+            )
+        self.assertEqual(len(set(silhouettes)), 3)
 
     def test_ui_icon_atlas_bounds_and_content(self):
         width, height, rows = decode_png(ASSETS / "icons.png")
         icons = json.loads((ASSETS / "icons.json").read_text())
-        self.assertTrue({"qi", "gate", "stones", "relic", "shield", "heal", "fire", "ice"} <= set(icons))
+        self.assertTrue(
+            {"qi", "gate", "stones", "relic", "shield", "heal", "fire", "ice"}
+            <= set(icons)
+        )
         for name, item in icons.items():
             with self.subTest(icon=name):
                 self.assertLessEqual(item["x"] + item["w"], width)
                 self.assertLessEqual(item["y"] + item["h"], height)
-                alpha = [row[x * 4 + 3] for row in rows[item["y"]:item["y"] + item["h"]] for x in range(item["x"], item["x"] + item["w"])]
+                alpha = [
+                    row[x * 4 + 3]
+                    for row in rows[item["y"] : item["y"] + item["h"]]
+                    for x in range(item["x"], item["x"] + item["w"])
+                ]
                 self.assertIn(255, alpha)
 
     def test_assets_reproduce_exactly_without_external_packages(self):
-        spec = importlib.util.spec_from_file_location("van_dao_asset_generator", ROOT / "tools" / "generate_assets.py")
+        spec = importlib.util.spec_from_file_location(
+            "van_dao_asset_generator", ROOT / "tools" / "generate_assets.py"
+        )
         generator = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(generator)
         with tempfile.TemporaryDirectory(prefix="van-dao-art-") as folder:
@@ -132,7 +219,9 @@ class AssetTests(unittest.TestCase):
             generator.main()
             for path in Path(folder).iterdir():
                 with self.subTest(asset=path.name):
-                    self.assertEqual(path.read_bytes(), (ASSETS / path.name).read_bytes())
+                    self.assertEqual(
+                        path.read_bytes(), (ASSETS / path.name).read_bytes()
+                    )
 
 
 if __name__ == "__main__":

@@ -1,0 +1,118 @@
+{
+  "language": "en",
+  "synthesis": "Kokoro-82M v1.0, Apache-2.0 model, generated fictional character dialogue",
+  "characters": {
+    "gatherer": {
+      "summon": {
+        "file": "gatherer_summon.mp3",
+        "text": "A little breath, a mountain of hope.",
+        "duration": 1.825,
+        "voice": "am_puck"
+      },
+      "ultimate": {
+        "file": "gatherer_ultimate.mp3",
+        "text": "Spirit well, awaken!",
+        "duration": 1.387,
+        "voice": "am_puck"
+      }
+    },
+    "sword": {
+      "summon": {
+        "file": "sword_summon.mp3",
+        "text": "My bamboo blade guards this gate.",
+        "duration": 2.455,
+        "voice": "bm_daniel"
+      },
+      "ultimate": {
+        "file": "sword_ultimate.mp3",
+        "text": "Ten thousand blades!",
+        "duration": 1.751,
+        "voice": "bm_daniel"
+      }
+    },
+    "fire": {
+      "summon": {
+        "file": "fire_summon.mp3",
+        "text": "Let the lotus burn away the darkness.",
+        "duration": 2.225,
+        "voice": "af_bella"
+      },
+      "ultimate": {
+        "file": "fire_ultimate.mp3",
+        "text": "Crimson lotus, bloom!",
+        "duration": 1.569,
+        "voice": "af_bella"
+      }
+    },
+    "frost": {
+      "summon": {
+        "file": "frost_summon.mp3",
+        "text": "Be still. Winter stands beside you.",
+        "duration": 2.603,
+        "voice": "bf_lily"
+      },
+      "ultimate": {
+        "file": "frost_ultimate.mp3",
+        "text": "Thousand year frost!",
+        "duration": 1.975,
+        "voice": "bf_lily"
+      }
+    },
+    "monk": {
+      "summon": {
+        "file": "monk_summon.mp3",
+        "text": "Behind me, the mountain will not fall.",
+        "duration": 2.123,
+        "voice": "am_fenrir"
+      },
+      "ultimate": {
+        "file": "monk_ultimate.mp3",
+        "text": "Mountain holds the sky!",
+        "duration": 1.439,
+        "voice": "am_fenrir"
+      }
+    },
+    "lightning": {
+      "summon": {
+        "file": "lightning_summon.mp3",
+        "text": "The storm has found its path.",
+        "duration": 2.006,
+        "voice": "am_liam"
+      },
+      "ultimate": {
+        "file": "lightning_ultimate.mp3",
+        "text": "Nine heavens, thunderfall!",
+        "duration": 1.898,
+        "voice": "am_liam"
+      }
+    },
+    "herbalist": {
+      "summon": {
+        "file": "herbalist_summon.mp3",
+        "text": "Where life remains, hope will grow.",
+        "duration": 2.133,
+        "voice": "bf_emma"
+      },
+      "ultimate": {
+        "file": "herbalist_ultimate.mp3",
+        "text": "Rain of green heaven!",
+        "duration": 1.551,
+        "voice": "bf_emma"
+      }
+    },
+    "formation": {
+      "summon": {
+        "file": "formation_summon.mp3",
+        "text": "One thread, one formation, one unbroken gate.",
+        "duration": 3.807,
+        "voice": "bm_george"
+      },
+      "ultimate": {
+        "file": "formation_ultimate.mp3",
+        "text": "Grand array, unite!",
+        "duration": 1.857,
+        "voice": "bm_george"
+      }
+    }
+  }
+}

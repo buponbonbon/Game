@@ -1,84 +1,90 @@
-# Art and audio
+# Art and audio — version 1.2
 
-## Shipped raster artwork
+## Raster art
 
-The game ships its original artwork in `web/assets`; it never downloads sprites,
-fonts, backgrounds or sound libraries at runtime. `tools/generate_assets.py`
-authors the images directly on integer pixel grids with Python's standard
-library, then writes RGBA PNGs using `struct` and `zlib`. No image package, asset
-marketplace, stock illustration, proprietary character, emoji or external font
-is used.
+The included assets are original integer-grid artwork. Regenerate them with
+`python tools/generate_assets.py`, using Python's standard library only.
+`tools/generate_cultivators.py` authors the higher-resolution hero action sheets,
+region-specific rescue devices and map detail. This is optional authoring work;
+all game-ready images are already committed.
 
-Regenerate the committed images with:
-
-```bash
-python tools/generate_assets.py
-```
-
-The generator is deterministic. `tests/test_assets.py` regenerates every image
-in a temporary directory and compares its bytes with the shipped asset. The
-tests also check PNG chunk checksums, actual decompression, complete backgrounds,
-sprite transparency, atlas bounds, coverage of every content ID and four distinct
-frames per actor.
-
-| File | Native size | Purpose |
+| Asset | Native pixels | Contents |
 | --- | --- | --- |
-| `title.png` | 384 × 216 | Mountain gate, lanterns and a solitary sword cultivator |
-| `wharf.png` | 384 × 216 | Lantern-lit timber deck above the river |
-| `terrace.png` | 384 × 216 | Mossy stone terrace, mountain clouds and wind banners |
-| `tomb.png` | 384 × 216 | Moonlit mausoleum with spirit braziers and bone fragments |
-| `sprites.png` | 128 × 672 | Eight heroes, nine ordinary enemies, three bosses and a soul altar |
-| `icons.png` | 128 × 32 | Sixteen small resource, action and status emblems |
+| title.png | 384 × 216 | Mountain-gate backdrop for the animated lobby |
+| wharf.png | 1024 × 576 | Lantern palace, timber river deck, red lanterns and water detail |
+| terrace.png | 1024 × 576 | Jade sky pavilion, pale stone, floating roofs and cloud terraces |
+| tomb.png | 1024 × 576 | Bronze ancestral crypt, dark stone, funerary ornament and braziers |
+| cultivators.png | 768 × 2048 | Eight native 64×64 heroes, four separate action states |
+| guardians.png | 288 × 144 | Three native 48×48 devices, six frames each |
+| sprites.png | 128 × 672 | Legacy portraits and four-frame enemies, bosses and altar |
+| icons.png | 128 × 32 | Resource/action/status icons |
 
-Each actor occupies one 32-pixel-high row and has four 32 × 32 frames. The direct
-ID mapping in `sprites.json` provides `x`, `y`, `w`, `h` and `frames`; advance the
-source x-coordinate by `frame * w`. Feet rest near row 29. Heroes face right and
-invaders face left. Weapon poses, breathing, steps and lunges distinguish the
-frames; these are compact four-frame animations rather than separate extensive
-idle, attack, skill and death sheets.
+Each hero has idle (6), basic-attack (8), skill (10) and ultimate (12) authored
+frames. `cultivators.json` maps state rows, frame counts and FPS. The runtime
+chooses a state from actual simulation actions, anchored to its simulation start
+time; pausing freezes the pose. Economy/healing/aura heroes use their support
+activity rather than dealing a cosmetic basic attack. The generic attack sheet
+is retained for each hero, including support poses.
 
-The board occupies x = 44–349 and y = 49–173 at the internal 384 × 216 resolution.
-Its nine columns use 34-pixel tiles, and its five lanes use 25-pixel tiles. The
-browser draws the scene with image smoothing disabled, an embedded 5 × 7 bitmap
-alphabet and pixel-sized interface details. It provides a fit display and an
-integer-scale option. Large bosses are enlarged with nearest-neighbor sampling.
+`guardians.json` maps the Jade River Ark, Heaven Sword Array and Soul-Sealing
+Bell. They have visibly different boat, flying-blade and bronze-bell designs.
+Each sweeps its lane once. Region art puts a distinct defended building behind
+the heroes. Water, wind, ley-node corruption and grave mist add runtime motion.
 
-The palette uses dark ink outlines, muted jade, weathered gold, warm lantern red,
-ice blue and violet. Each environment uses stepped color bands and small raster
-clusters. The wharf's horizontal plank grain, the terrace's mossy cracks and the
-tomb's desaturated stone distinguish the three arenas while leaving combat
-silhouettes readable.
+The logical board is 512×288 with five 32-pixel lanes, twelve columns and a 3×
+backing canvas. Nearest-neighbor rendering retains raster edges. VT323 is bundled
+under SIL OFL in `web/assets/fonts`; neither fonts nor images use a CDN.
+Asset tests decode PNG chunks, check atlas coverage/transparency/action diversity,
+and reproduce every generated file byte-for-byte with no external packages.
 
-## Synthesized sound
+## Music
 
-The browser's `AudioContext` generates original audio locally after the first
-pointer or keyboard interaction. No audio files, remote audio service or external
-JavaScript library are required. An audio context starts or resumes in response
-to input so normal browser autoplay rules remain in effect.
+Ten original looped scores are bundled as OGG and MP3 for local decoding:
+one lobby score, plus setup/pressure/onslaught arrangements for each region.
+They use pentatonic melodies, damped and slightly inharmonic string partials,
+pitch bends, transient plucks, breath/vibrato and percussion. The intended timbres
+are guqin, guzheng, pipa, dizi, Chinese drums and gong. These are synthesized
+instrumental arrangements, not recordings of acoustic instruments or performers.
+No commercial song or recording was sampled.
 
-The implemented audio has three gain stages: Master, Music and SFX. Settings let
-the player adjust their volumes. SFX use short sine, triangle, square or sawtooth
-oscillator tones with attack/decay envelopes. Separate cues cover selection,
-confirmation, placement, Qi, hit, kill, death, error, skill, ultimate and upgrade;
-victory and defeat use short note sequences. Repeated hits are rate-limited to
-avoid stacking a sound on every rendered frame.
+Each region has its own melody, root, tempo and color. Setup is sparse; pressure
+adds pipa and drums; onslaught adds rapid figures and gong accents. The encounter
+phase comes from actual wave progression. Local buffers crossfade over 1.1s.
+Music pauses with battle pause and a hidden document. Victory/defeat cues use
+short pentatonic, plucked partials rather than the previous major-scale fanfares.
 
-Each region has a different eight-note musical pattern with a slower supporting
-tone. The browser schedules the pattern locally; the music pauses while battle
-is paused or the document is hidden. These are compact synthesized loops and
-feedback tones, not the long, fully arranged soundtrack or complete per-hero
-sound inventory described in the production brief.
+`tools/generate_music.py` optionally regenerates scores with NumPy, soundfile and
+ffmpeg. Its generation dependencies are not game runtime dependencies. The
+`music.json` manifest records filenames, tempos, durations and instruments.
 
-Automated checks can establish that the audio context starts and events dispatch
-without browser errors. They do not establish perceived musical quality, speaker
-output, loudness on every device or accessibility for a particular listener.
-Check the Master, Music and SFX sliders on the intended speakers or headphones
-when evaluating the mix.
+## English character dialogue
 
-## Scope and ownership
+Sixteen original English lines are bundled in `audio/voices`: one summon line
+and one short ultimate line per cultivator. Each character uses a distinct
+synthetic voice. Playback follows authoritative deployment/ultimate events, is
+queued with ultimate priority and captions, ducks music, and stops obsolete
+queued dialogue when changing battles. No voice service or synthesis runs while
+playing. Master, Music, SFX and Voice have separate volume controls.
 
-The artwork and synthesized patterns were authored for this repository. No
-existing game's characters, exact level art, sound recordings or interface
-illustrations were copied. This release is a compact playable adaptation of the
-design reference; its small atlases and oscillator sound system should not be
-represented as a full premium art-and-audio production pipeline.
+The optional authoring script `tools/generate_voices.py` uses Kokoro-82M v1.0
+(Apache-2.0 model) with kokoro-onnx 0.6.1 (MIT), soundfile 0.13.1, ONNX Runtime
+and ffmpeg. Model files are explicit local inputs and verified by SHA-256; model
+weights are not distributed in this game. Attribution is in each audio folder's
+NOTICE. These are fictional character lines, not actor performances or a claim
+of real-person imitation.
+
+## Effects and verification
+
+Eight distinct SFX palettes remain tied to actual attacks/skills: jade chimes,
+bamboo slash, flame, frost glass, stone/staff, lightning, healing and formation.
+An output compressor and per-character throttling limit stacking. Audio starts
+after the first user interaction, following browser autoplay rules.
+
+Chromium decoded all 16 voice files and all 20 music encodings, played all eight
+summon voices and a legally charged Yun ultimate, and crossed the actual setup,
+pressure and onslaught phases. These checks verify local decoding and event
+routing; the perceived mix still depends on speakers/headphones and preference.
+
+The artwork and musical patterns are original repository assets. This remains a
+compact procedural-art game; the higher resolution and generated dialogue are
+not a claim of a full premium illustration, animation or voice-acting pipeline.

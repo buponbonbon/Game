@@ -1,7 +1,14 @@
+@font-face {
+  font-family: VT323;
+  src: url("/assets/fonts/VT323-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: block;
+}
 :root {
   color-scheme: dark;
   background: #080e16;
-  font-family: monospace;
+  font-family: VT323, monospace;
 }
 * {
   box-sizing: border-box;

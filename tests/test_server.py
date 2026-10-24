@@ -29,7 +29,14 @@ class TinyBattle:
             self.elapsed += elapsed
 
     def snapshot(self):
-        return {"stage": self.stage, "seed": self.seed, "time": self.elapsed, "qi": self.qi, "paused": self.paused, "status": self.status}
+        return {
+            "stage": self.stage,
+            "seed": self.seed,
+            "time": self.elapsed,
+            "qi": self.qi,
+            "paused": self.paused,
+            "status": self.status,
+        }
 
     def command(self, command):
         if command.get("action") == "pause":
@@ -44,10 +51,20 @@ class LocalServerTests(unittest.TestCase):
         cls.temporary = tempfile.TemporaryDirectory()
         cls.web_root = Path(cls.temporary.name) / "web"
         cls.web_root.mkdir()
-        (cls.web_root / "index.html").write_text("<!doctype html><title>VAN DAO test</title>", encoding="utf-8")
-        (cls.web_root / "test.js").write_text("window.testAsset = true;", encoding="utf-8")
-        (Path(cls.temporary.name) / "private.txt").write_text("not a game asset", encoding="utf-8")
-        cls.server = create_server(web_root=cls.web_root, battle_factory=TinyBattle, catalog_factory=lambda: {"version": "test", "heroes": []})
+        (cls.web_root / "index.html").write_text(
+            "<!doctype html><title>VAN DAO test</title>", encoding="utf-8"
+        )
+        (cls.web_root / "test.js").write_text(
+            "window.testAsset = true;", encoding="utf-8"
+        )
+        (Path(cls.temporary.name) / "private.txt").write_text(
+            "not a game asset", encoding="utf-8"
+        )
+        cls.server = create_server(
+            web_root=cls.web_root,
+            battle_factory=TinyBattle,
+            catalog_factory=lambda: {"version": "test", "heroes": []},
+        )
         cls.thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
         cls.thread.start()
         cls.port = cls.server.server_address[1]
@@ -72,7 +89,9 @@ class LocalServerTests(unittest.TestCase):
         return result
 
     def new_battle(self):
-        status, _, body = self.request("POST", "/api/battle", {"stage": "wharf-1", "seed": 12})
+        status, _, body = self.request(
+            "POST", "/api/battle", {"stage": "wharf-1", "seed": 12}
+        )
         self.assertEqual(status, 201)
         return json.loads(body)
 
@@ -89,6 +108,30 @@ class LocalServerTests(unittest.TestCase):
         status, headers, _ = self.request("GET", "/test.js")
         self.assertEqual(status, 200)
         self.assertIn("javascript", headers["Content-Type"])
+
+    def test_effective_preview_and_battle_share_validated_talent_data(self):
+        status, _, body = self.request(
+            "POST",
+            "/api/hero-preview",
+            {"upgrades": {"sword": {"branch": "A", "rank": 5}}},
+        )
+        self.assertEqual(status, 200)
+        heroes = json.loads(body)["heroes"]
+        self.assertEqual(len(heroes), 8)
+        sword = next(h for h in heroes if h["id"] == "sword")
+        self.assertEqual(sword["talent_rank"], 5)
+        self.assertEqual(sword["pierce"], 2)
+        self.assertIn("power", sword["skill"])
+        for upgrades in (
+            {"sword": {"branch": "A", "rank": True}},
+            {"unknown": "B"},
+            {"sword": {"branch": "B", "rank": 6}},
+        ):
+            for path in ("/api/hero-preview", "/api/battle"):
+                status, _, _ = self.request(
+                    "POST", path, {"stage": "wharf-1", "upgrades": upgrades}
+                )
+                self.assertEqual(status, 400)
 
     def test_head_returns_length_without_body(self):
         status, headers, body = self.request("HEAD", "/api/health")
@@ -109,7 +152,11 @@ class LocalServerTests(unittest.TestCase):
                 if record.battle.elapsed > started + 0.02:
                     break
             time.sleep(0.01)
-        status, _, body = self.request("POST", f"/api/battle/{battle_id}/command", {"action": "pause", "paused": True})
+        status, _, body = self.request(
+            "POST",
+            f"/api/battle/{battle_id}/command",
+            {"action": "pause", "paused": True},
+        )
         paused = json.loads(body)
         self.assertEqual(status, 200)
         self.assertTrue(paused["ok"])
@@ -123,7 +170,9 @@ class LocalServerTests(unittest.TestCase):
         self.assertEqual(json.loads(body)["time"], frozen)
 
     def test_invalid_json_and_payload_types_are_rejected(self):
-        status, _, body = self.request("POST", "/api/battle", "{", {"Content-Type": "application/json"})
+        status, _, body = self.request(
+            "POST", "/api/battle", "{", {"Content-Type": "application/json"}
+        )
         self.assertEqual(status, 400)
         self.assertIn("valid JSON", json.loads(body)["error"])
         status, _, _ = self.request("POST", "/api/battle", [])
@@ -134,11 +183,20 @@ class LocalServerTests(unittest.TestCase):
         self.assertEqual(status, 400)
 
     def test_large_body_and_foreign_origin_are_rejected(self):
-        status, _, _ = self.request("POST", "/api/battle", "x" * (MAX_BODY_BYTES + 1), {"Content-Type": "application/json"})
+        status, _, _ = self.request(
+            "POST",
+            "/api/battle",
+            "x" * (MAX_BODY_BYTES + 1),
+            {"Content-Type": "application/json"},
+        )
         self.assertEqual(status, 413)
-        status, _, _ = self.request("POST", "/api/battle", {}, {"Origin": "https://unrelated.example"})
+        status, _, _ = self.request(
+            "POST", "/api/battle", {}, {"Origin": "https://unrelated.example"}
+        )
         self.assertEqual(status, 403)
-        status, _, _ = self.request("POST", "/api/battle", {}, {"Origin": f"http://127.0.0.1:{self.port}"})
+        status, _, _ = self.request(
+            "POST", "/api/battle", {}, {"Origin": f"http://127.0.0.1:{self.port}"}
+        )
         self.assertEqual(status, 201)
 
     def test_missing_battle_unknown_stage_and_unknown_route(self):
@@ -164,7 +222,9 @@ class LocalServerTests(unittest.TestCase):
     def test_delete_closes_battle_and_rejects_foreign_origin(self):
         battle_id = self.new_battle()["battle_id"]
         path = f"/api/battle/{battle_id}"
-        status, _, _ = self.request("DELETE", path, headers={"Origin": "https://unrelated.example"})
+        status, _, _ = self.request(
+            "DELETE", path, headers={"Origin": "https://unrelated.example"}
+        )
         self.assertEqual(status, 403)
         status, _, body = self.request("DELETE", path)
         self.assertEqual(status, 200)

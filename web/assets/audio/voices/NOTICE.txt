@@ -1,0 +1,4 @@
+Original English dialogue synthesized for fictional VAN DAO characters.
+Kokoro-82M model: Apache-2.0, hexgrad/Kokoro-82M.
+ONNX conversion/runtime: thewh1teagle/kokoro-onnx (MIT).
+No actor recording or real-person imitation is claimed. Audio is bundled for offline playback.

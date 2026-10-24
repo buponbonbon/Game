@@ -16,7 +16,7 @@ from typing import Any
 from urllib.parse import unquote, urlsplit
 
 
-VERSION = "1.0.0"
+VERSION = "1.2.0"
 MAX_BODY_BYTES = 65_536
 LOGGER = logging.getLogger(__name__)
 
@@ -55,7 +55,9 @@ class BattleStore:
         self.records: dict[str, BattleRecord] = {}
         self.lock = threading.Lock()
         self.stopped = threading.Event()
-        self.thread = threading.Thread(target=self._tick, name="van-dao-simulation", daemon=True)
+        self.thread = threading.Thread(
+            target=self._tick, name="van-dao-simulation", daemon=True
+        )
 
     def start(self):
         self.thread.start()
@@ -66,7 +68,11 @@ class BattleStore:
             self.thread.join(timeout=2)
 
     def _prune(self, now):
-        stale = [key for key, value in self.records.items() if now - value.last_access > self.idle_seconds]
+        stale = [
+            key
+            for key, value in self.records.items()
+            if now - value.last_access > self.idle_seconds
+        ]
         for key in stale:
             del self.records[key]
 
@@ -75,7 +81,11 @@ class BattleStore:
         if not isinstance(stage, str) or not stage or len(stage) > 64:
             raise ValueError("Choose a valid campaign stage.")
         seed = options.get("seed", secrets.randbits(31))
-        if isinstance(seed, bool) or not isinstance(seed, int) or not -(2**63) <= seed < 2**63:
+        if (
+            isinstance(seed, bool)
+            or not isinstance(seed, int)
+            or not -(2**63) <= seed < 2**63
+        ):
             raise ValueError("Seed must be a 64-bit integer.")
         realm = options.get("realm", 0)
         if isinstance(realm, bool) or not isinstance(realm, int) or not 0 <= realm <= 3:
@@ -83,8 +93,9 @@ class BattleStore:
         upgrades = options.get("upgrades", {})
         if not isinstance(upgrades, dict) or len(upgrades) > 8:
             raise ValueError("Upgrades must map hero IDs to branch A or B.")
-        if any(not isinstance(key, str) or value not in ("A", "B") for key, value in upgrades.items()):
-            raise ValueError("Upgrade branches must be A or B.")
+        from .rules import validate_upgrades
+
+        upgrades = validate_upgrades(upgrades)
         with self.lock:
             self._prune(time.monotonic())
             if len(self.records) >= self.max_battles:
@@ -98,7 +109,9 @@ class BattleStore:
                     if len(self.records) < self.max_battles:
                         break
             if len(self.records) >= self.max_battles:
-                raise CapacityError("Too many battles are open. Close an old game tab or restart the local server.")
+                raise CapacityError(
+                    "Too many battles are open. Close an old game tab or restart the local server."
+                )
             factory = self.battle_factory or load_battle_type()
             battle = factory(stage, seed=seed, upgrades=dict(upgrades), realm=realm)
             record = BattleRecord(battle)
@@ -111,7 +124,9 @@ class BattleStore:
         with self.lock:
             record = self.records.get(battle_id)
             if record is None:
-                raise KeyError("Battle not found. Return to the campaign and start a new battle.")
+                raise KeyError(
+                    "Battle not found. Return to the campaign and start a new battle."
+                )
             record.last_access = time.monotonic()
             return record
 
@@ -119,7 +134,9 @@ class BattleStore:
         record = self.get(battle_id)
         with record.lock:
             if record.failed:
-                raise RuntimeError("This battle stopped unexpectedly. Please start a new battle.")
+                raise RuntimeError(
+                    "This battle stopped unexpectedly. Please start a new battle."
+                )
             return record.battle.snapshot()
 
     def delete(self, battle_id):
@@ -135,7 +152,9 @@ class BattleStore:
         record = self.get(battle_id)
         with record.lock:
             if record.failed:
-                raise RuntimeError("This battle stopped unexpectedly. Please start a new battle.")
+                raise RuntimeError(
+                    "This battle stopped unexpectedly. Please start a new battle."
+                )
             result = record.battle.command(command)
             if not isinstance(result, dict):
                 raise RuntimeError("Invalid battle command response.")
@@ -197,7 +216,9 @@ class GameRequestHandler(BaseHTTPRequestHandler):
         self.send_response(status)
         self.send_header("Content-Type", content_type)
         self.send_header("Content-Length", str(len(body)))
-        self.send_header("Cache-Control", "no-store" if self.path.startswith("/api/") else "no-cache")
+        self.send_header(
+            "Cache-Control", "no-store" if self.path.startswith("/api/") else "no-cache"
+        )
         self.send_header("X-Content-Type-Options", "nosniff")
         self.send_header("Referrer-Policy", "same-origin")
         self.end_headers()
@@ -208,11 +229,15 @@ class GameRequestHandler(BaseHTTPRequestHandler):
                 pass
 
     def _json(self, status, value, *, head=False):
-        body = json.dumps(value, ensure_ascii=False, allow_nan=False, separators=(",", ":")).encode("utf-8")
+        body = json.dumps(
+            value, ensure_ascii=False, allow_nan=False, separators=(",", ":")
+        ).encode("utf-8")
         self._send_bytes(status, body, "application/json; charset=utf-8", head=head)
 
     def _error(self, status, message, *, head=False):
-        self._json(status, {"ok": False, "error": message, "message": message}, head=head)
+        self._json(
+            status, {"ok": False, "error": message, "message": message}, head=head
+        )
 
     def _path(self):
         return urlsplit(self.path).path
@@ -232,7 +257,9 @@ class GameRequestHandler(BaseHTTPRequestHandler):
                 self._json(HTTPStatus.OK, self.server.catalog_factory(), head=head)
             elif path.startswith("/api/battle/") and len(path.split("/")) == 4:
                 battle_id = path.rsplit("/", 1)[1]
-                self._json(HTTPStatus.OK, self.server.store.snapshot(battle_id), head=head)
+                self._json(
+                    HTTPStatus.OK, self.server.store.snapshot(battle_id), head=head
+                )
             elif path.startswith("/api/"):
                 self._error(HTTPStatus.NOT_FOUND, "Unknown API route.", head=head)
             else:
@@ -241,7 +268,11 @@ class GameRequestHandler(BaseHTTPRequestHandler):
             self._error(HTTPStatus.NOT_FOUND, str(error).strip("'"), head=head)
         except Exception:
             LOGGER.exception("A local HTTP request failed")
-            self._error(HTTPStatus.INTERNAL_SERVER_ERROR, "The local game server could not complete this request.", head=head)
+            self._error(
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                "The local game server could not complete this request.",
+                head=head,
+            )
 
     def _static(self, path, *, head=False):
         decoded = unquote(path)
@@ -253,7 +284,9 @@ class GameRequestHandler(BaseHTTPRequestHandler):
             candidate = candidate / "index.html"
         candidate = candidate.resolve()
         if not candidate.is_relative_to(self.server.web_root):
-            self._error(HTTPStatus.FORBIDDEN, "Asset path leaves the game directory.", head=head)
+            self._error(
+                HTTPStatus.FORBIDDEN, "Asset path leaves the game directory.", head=head
+            )
             return
         if not candidate.is_file():
             self._error(HTTPStatus.NOT_FOUND, "Game asset not found.", head=head)
@@ -266,7 +299,9 @@ class GameRequestHandler(BaseHTTPRequestHandler):
             ".png": "image/png",
             ".ogg": "audio/ogg",
             ".wav": "audio/wav",
+            ".mp3": "audio/mpeg",
             ".ico": "image/x-icon",
+            ".ttf": "font/ttf",
             ".txt": "text/plain; charset=utf-8",
         }.get(candidate.suffix.lower(), "application/octet-stream")
         self._send_bytes(HTTPStatus.OK, candidate.read_bytes(), mime, head=head)
@@ -277,12 +312,17 @@ class GameRequestHandler(BaseHTTPRequestHandler):
             return True
         try:
             parsed = urlsplit(origin)
-            return parsed.scheme == "http" and parsed.netloc.lower() == self.headers.get("Host", "").lower()
+            return (
+                parsed.scheme == "http"
+                and parsed.netloc.lower() == self.headers.get("Host", "").lower()
+            )
         except ValueError:
             return False
 
     def _read_json(self):
-        content_type = self.headers.get("Content-Type", "").partition(";")[0].strip().lower()
+        content_type = (
+            self.headers.get("Content-Type", "").partition(";")[0].strip().lower()
+        )
         if content_type != "application/json":
             raise ValueError("Send commands as application/json.")
         raw_length = self.headers.get("Content-Length")
@@ -307,7 +347,9 @@ class GameRequestHandler(BaseHTTPRequestHandler):
     def do_POST(self):
         if not self._same_origin():
             self.close_connection = True
-            self._error(HTTPStatus.FORBIDDEN, "Cross-origin game commands are not allowed.")
+            self._error(
+                HTTPStatus.FORBIDDEN, "Cross-origin game commands are not allowed."
+            )
             return
         try:
             body = self._read_json()
@@ -321,10 +363,23 @@ class GameRequestHandler(BaseHTTPRequestHandler):
             return
         path = self._path()
         try:
-            if path == "/api/battle":
+            if path == "/api/hero-preview":
+                from .rules import hero_data, validate_upgrades
+                from .content import HEROES
+
+                upgrades = validate_upgrades(body.get("upgrades", {}))
+                self._json(
+                    HTTPStatus.OK,
+                    {"heroes": [hero_data(id, upgrades.get(id)) for id in HEROES]},
+                )
+            elif path == "/api/battle":
                 battle_id, state = self.server.store.create(body)
                 self._json(HTTPStatus.CREATED, {"battle_id": battle_id, "state": state})
-            elif path.startswith("/api/battle/") and path.endswith("/command") and len(path.split("/")) == 5:
+            elif (
+                path.startswith("/api/battle/")
+                and path.endswith("/command")
+                and len(path.split("/")) == 5
+            ):
                 battle_id = path.split("/")[3]
                 self._json(HTTPStatus.OK, self.server.store.command(battle_id, body))
             else:
@@ -337,16 +392,26 @@ class GameRequestHandler(BaseHTTPRequestHandler):
             self._error(HTTPStatus.SERVICE_UNAVAILABLE, str(error))
         except Exception:
             LOGGER.exception("A local game command failed")
-            self._error(HTTPStatus.INTERNAL_SERVER_ERROR, "The local game server could not complete this command.")
+            self._error(
+                HTTPStatus.INTERNAL_SERVER_ERROR,
+                "The local game server could not complete this command.",
+            )
 
     def do_DELETE(self):
         if not self._same_origin():
             self.close_connection = True
-            self._error(HTTPStatus.FORBIDDEN, "Cross-origin game commands are not allowed.")
+            self._error(
+                HTTPStatus.FORBIDDEN, "Cross-origin game commands are not allowed."
+            )
             return
-        if self.headers.get("Content-Length", "0") != "0" or self.headers.get("Transfer-Encoding"):
+        if self.headers.get("Content-Length", "0") != "0" or self.headers.get(
+            "Transfer-Encoding"
+        ):
             self.close_connection = True
-            self._error(HTTPStatus.BAD_REQUEST, "Closing a battle does not accept a request body.")
+            self._error(
+                HTTPStatus.BAD_REQUEST,
+                "Closing a battle does not accept a request body.",
+            )
             return
         path = self._path()
         if not path.startswith("/api/battle/") or len(path.split("/")) != 4:
@@ -359,7 +424,23 @@ class GameRequestHandler(BaseHTTPRequestHandler):
             self._error(HTTPStatus.NOT_FOUND, str(error).strip("'"))
 
 
-def create_server(host="127.0.0.1", port=0, web_root=None, *, battle_factory=None, catalog_factory=None):
+def create_server(
+    host="127.0.0.1",
+    port=0,
+    web_root=None,
+    *,
+    battle_factory=None,
+    catalog_factory=None,
+):
     """Create a bound server with a running simulation clock; caller serves/closes it."""
-    root = Path(web_root) if web_root is not None else Path(__file__).resolve().parent.parent / "web"
-    return GameHTTPServer((host, port), root, battle_factory=battle_factory, catalog_factory=catalog_factory)
+    root = (
+        Path(web_root)
+        if web_root is not None
+        else Path(__file__).resolve().parent.parent / "web"
+    )
+    return GameHTTPServer(
+        (host, port),
+        root,
+        battle_factory=battle_factory,
+        catalog_factory=catalog_factory,
+    )

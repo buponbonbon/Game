@@ -28,7 +28,7 @@ class CombatTests(unittest.TestCase):
         self.assertFalse(result["ok"])
         self.assertIn("occupied", result["message"])
         self.assertEqual(before, (battle.qi, battle.cards, len(battle.heroes)))
-        for lane, col in [(-1, 2), (5, 2), (2, 0), (2, 7), (True, 2), (2.5, 2)]:
+        for lane, col in [(-1, 2), (5, 2), (2, 0), (2, 10), (True, 2), (2.5, 2)]:
             self.assertFalse(battle.command({"action": "place", "hero": "gatherer", "lane": lane, "col": col})["ok"])
 
     def test_insufficient_qi_and_locked_heroes_are_rejected(self):
@@ -41,7 +41,7 @@ class CombatTests(unittest.TestCase):
     def test_pause_freezes_wave_projectile_and_resource_clocks(self):
         battle = Battle("wharf-1")
         self.place(battle, "gatherer")
-        battle.advance(7.9)
+        battle.advance(9.9)
         battle.command({"action": "pause", "paused": True})
         before = battle.snapshot()
         battle.advance(90)
@@ -85,22 +85,23 @@ class CombatTests(unittest.TestCase):
     def test_gatherer_produces_finite_qi_and_he_cannot_attack(self):
         battle = Battle("wharf-1")
         self.place(battle, "gatherer", lane=0, col=1)
-        battle.advance(9.3)
-        self.assertEqual(battle.qi, 125)
-        self.assertEqual(battle.metrics["qi"]["gatherer"], 25)
+        battle.advance(11.3)
+        self.assertEqual(battle.qi, 120)
+        self.assertEqual(battle.metrics["qi"]["gatherer"], 20)
         self.assertEqual(battle.metrics["damage"], {})
 
     def test_branch_modifies_only_selected_branch(self):
         battle = Battle("wharf-1", upgrades={"gatherer": "A"})
         gatherer = self.place(battle, "gatherer")
-        self.assertEqual(gatherer["data"]["orb_interval"], 6.5)
-        self.assertEqual(gatherer["data"]["orb_value"], 25)
-        self.assertEqual(HEROES["gatherer"]["orb_interval"], 8)
+        self.assertEqual(gatherer["data"]["orb_interval"], 8.0)
+        self.assertEqual(gatherer["data"]["orb_value"], 20)
+        self.assertEqual(HEROES["gatherer"]["orb_interval"], 10)
 
     def test_ultimate_spends_charge_and_cannot_self_fund(self):
         battle = Battle("wharf-1")
         hero = self.place(battle)
         self.assertFalse(battle.command({"action": "ultimate", "unit": hero["id"]})["ok"])
+        battle.advance(2)
         hero["resonance"] = 100
         enemy = battle._spawn("hound", 2, 5)
         battle.command({"action": "ultimate", "unit": hero["id"]})
@@ -200,13 +201,21 @@ class CombatTests(unittest.TestCase):
         self.place(battle)
         battle.advance(12)
         self.place(battle, lane=1)
-        battle.advance(13.2)
+        battle.advance(24.2)
         self.place(battle, lane=3)
-        battle.advance(60)
-        self.assertEqual(battle.status, "victory")
-        self.assertEqual(battle.gate, 3)
-        self.assertEqual(battle.kills, 7)
-        self.assertGreater(battle.snapshot()["rewards"]["stones"], 0)
+        for _ in range(350):
+            if battle.qi >= 75 and battle.cards["sword"] <= battle.tick:
+                for lane in (2,1,3):
+                    if not any(h["lane"]==lane and h["col"]==5 for h in battle.heroes.values()):
+                        self.place(battle,lane=lane,col=5)
+                        break
+            battle.advance(1)
+            if battle.status != "playing": break
+        self.assertEqual(battle.status,"victory")
+        self.assertEqual(battle.gate,3)
+        self.assertEqual(battle.kills,battle.stage["enemy_count"])
+        self.assertGreater(battle.time,170)
+        self.assertGreater(battle.snapshot()["rewards"]["stones"],0)
 
     def test_terminal_rewards_cannot_repeat_and_terminal_clock_stops(self):
         battle = Battle("wharf-1")
@@ -267,6 +276,7 @@ class CombatTests(unittest.TestCase):
     def test_gate_never_goes_negative_and_defeat_stops_simulation(self):
         battle = Battle("wharf-3")
         battle.gate = 1
+        for ward in battle.defenses: ward["status"] = "spent"
         battle._spawn("riverlord", 2, .5001)
         battle._spawn("tide", 1, .5001)
         battle.advance(1 / HZ)
