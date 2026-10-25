@@ -65,31 +65,37 @@ adaptation, rather than a claim that every detail of the production document is
 implemented. See [build status](docs/BUILD_STATUS.md) for verified coverage and
 limitations and [balance reference](docs/BALANCE_REFERENCE.md) for content data.
 
-## Version 1.2 improvements
+## Version 1.3 improvements
 
-- Per-hero mana, automatic-skill costs, ultimate mana/Qi/Dao costs and cooldowns.
-  Qi is capped at 320; three Yun maximum, with 100%/80%/60% orb yields. Toggle
-  AUTO OFF in a hero's inspection controls to reserve mana for their ultimate.
-- Hover a deployed hero or card for its range. **Range** cycles basic, skill and
-  ultimate geometry. **Menu → Cultivator / Enemy Skills** pauses the battle and
-  opens exact costs, scaling, target counts and affected cells.
-- Two exclusive five-node talent paths per hero. Each path has two special
-  milestones, giving four distinct special talents per hero. Victories on cleared
-  stages award a smaller, repeatable Spirit Stone reward for further cultivation.
-- Native 64-pixel hero action sheets: idle, attack, skill and ultimate poses.
-  Richer region art and three different one-use emergency artifacts guard the gates.
-- Sixteen bundled **English** summon/ultimate voice clips, subtitles, a Voice
-  slider and music ducking. Dialogue uses synthetic character voices.
-- Ten original Chinese-inspired instrumental loops: lobby, then setup/pressure/
-  onslaught arrangements per region, with guqin/guzheng/pipa/dizi timbres.
-- Three battle phases, more late elites, captains and 5% multiplicative enemy HP
-  progression per stage. Each region has a paid ritual and distinct counterplay.
-- Animated lobby, local VT323, expanded Monster Archive and in-battle field manual.
+- Nine individual encounter themes, each with setup/pressure/onslaught music:
+  **28 bundled arrangements** including the lobby. Actual crowd size and elite/boss
+  pressure can intensify music before the next wave phase; a six-second release
+  prevents constant switching. Chinese-inspired guqin/guzheng/pipa/dizi remain the style.
+- Every final wave attacks **all five lanes**, with **35–51 authored enemies**.
+  Swarm troops mix with elites, captains and bosses. Swarm HP/ATK is lighter than
+  normal troops so mass attacks reward area damage without simply multiplying durability.
+- **A:ON / A:OFF** beside Speed toggles smart automatic ultimates; **A** is its
+  keyboard shortcut. It uses normal mana, Qi, Dao and cooldowns, checks ultimate
+  range, saves costly attacks for a useful target and heals/buffs allies who benefit.
+- Sixteen newly directed **English synthetic voice** takes use expressive phrases,
+  pauses, changing pace and energy. Separate Voice volume and music ducking remain.
+- Learned talents are green/gold with a tick. Unlearned nodes are grey; the next
+  available node has a jade border. Locked nodes remain readable when selected.
+- Individual casting effects distinguish all eight heroes: spirit wells, flying
+  blades, fire lotuses, ice crystals, mountain shockwaves, thunder, healing leaves
+  and formation circuits. Hits no longer erase a skill/ultimate pose, and stale
+  HTTP responses cannot rewind the cast animation or Auto preference.
+- Every encounter opens an illustrated three-page region briefing while the
+  simulation is paused at tick zero. Read terrain, counters and the rescue device,
+  then choose **Enter Battle**. Reopen it from **?** or the pause menu.
+- New high-resolution **16-bit RPG style** scenes use distinct river-palace,
+  floating-jade-observatory and underground-bronze-mausoleum designs. Three ornate
+  artifact cutouts have different silhouettes and runtime motion.
 
-The roster remains eight heroes and nine stages. Existing version-1 saves remain
-compatible. Old A/B upgrades retain their original branch effects and count as
-rank 3; buying a later node adopts the full new path stats. Stop the old Python
-server, extract the update and restart on the same browser/port to retain progress.
+The roster stays eight heroes and nine encounters. Version-1 saves remain
+compatible. Qi remains capped at 320 with at most three Yuns. Mana, precise skill
+ranges and two exclusive five-node talent paths remain in effect.
+Stop the old Python process before launching the update on the same browser/port.
 
 ## Development
 

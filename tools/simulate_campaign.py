@@ -28,11 +28,12 @@ def can_cast(hero, state):
     )
 
 
-def play_stage(stage_id, seed, upgrades, realm):
+def play_stage(stage_id, seed, upgrades, realm, tactics=None):
     """Build economy, cover incoming lanes, then add fire and use charged arts."""
     late_tomb = stage_id in ("tomb-2", "tomb-3")
     content = STAGES[stage_id]
     battle = Battle(stage_id, seed=seed, upgrades=dict(upgrades), realm=realm)
+    battle.command({"action": "auto_ultimate", "enabled": True})
     actions = []
 
     def place(kind, lane, col):
@@ -50,7 +51,22 @@ def play_stage(stage_id, seed, upgrades, realm):
             )
         return result["ok"]
 
-    place("gatherer", 2, 1)
+    tactics = tactics or {}
+    safe_terrace = stage_id in ("terrace-1", "terrace-3")
+    economy_lane = tactics.get(
+        "economy_lane", {"terrace-1": 4, "terrace-3": 0}.get(stage_id, 2)
+    )
+    gatherer_limit = tactics.get(
+        "gatherer_limit", 3 if late_tomb or stage_id == "terrace-3" else 2
+    )
+    economy_window = tactics.get(
+        "economy_window", 32 if late_tomb else 110 if safe_terrace else 24
+    )
+    economy_order = tactics.get(
+        "economy_order", (0, 1, 3, 2, 4) if safe_terrace else (1, 3, 2, 0, 4)
+    )
+    add_tank = tactics.get("add_tank", safe_terrace)
+    place("gatherer", economy_lane, 1)
     place("sword", 2, 2)
     for _ in range(3_500 if stage_id == "tomb-3" else 2_500):
         state = battle.snapshot()
@@ -71,12 +87,13 @@ def play_stage(stage_id, seed, upgrades, realm):
         ):
             place("formation", 1, 3)
         elif (
-            gatherers < (3 if late_tomb else 2)
-            and elapsed < (32 if late_tomb else 24)
+            gatherers < gatherer_limit
+            and (gatherers < 2 or late_tomb or elapsed > 60)
+            and elapsed < economy_window
             and state["qi"] >= 50
             and state["cards"]["gatherer"] <= 0
         ):
-            for lane in (1, 3, 2, 0, 4):
+            for lane in economy_order:
                 if (lane, 1) not in occupied and place("gatherer", lane, 1):
                     break
         else:
@@ -118,7 +135,15 @@ def play_stage(stage_id, seed, upgrades, realm):
                             (
                                 "fire"
                                 if "fire" not in types
-                                else "monk" if "monk" not in types else "sword"
+                                else (
+                                    "monk"
+                                    if "monk" not in types
+                                    else (
+                                        "lightning"
+                                        if "lightning" not in types
+                                        else "sword"
+                                    )
+                                )
                             )
                             if stage_id == "tomb-3"
                             else (
@@ -128,7 +153,13 @@ def play_stage(stage_id, seed, upgrades, realm):
                             )
                         )
                         if late_tomb
-                        else ("fire" if "fire" not in types else "sword")
+                        else (
+                            "fire"
+                            if "fire" not in types
+                            else (
+                                "monk" if add_tank and "monk" not in types else "sword"
+                            )
+                        )
                     )
                     if (
                         state["qi"] >= HEROES[kind]["cost"]
@@ -142,14 +173,6 @@ def play_stage(stage_id, seed, upgrades, realm):
                             if (lane, col) not in occupied and place(kind, lane, col):
                                 break
                         break
-        for hero in heroes:
-            if can_cast(hero, state) and (
-                any(enemy["lane"] == hero["lane"] for enemy in enemies)
-                or hero["type"] == "gatherer"
-                and state["qi"] < state["qi_cap"] - 48
-            ):
-                if battle.qi >= hero["stats"]["ultimate"]["qi_cost"]:
-                    battle.command({"action": "ultimate", "unit": hero["id"]})
         if late_tomb:
             if (
                 elapsed > 100
@@ -168,7 +191,7 @@ def play_stage(stage_id, seed, upgrades, realm):
         "seed": seed,
         "realm": realm,
         "policy": (
-            "Three Yun, mixed fire/staff defense, a late formation circuit, charged arts and timed relics"
+            "Three Yun, fire/staff/lightning defense, a late formation circuit, automatic arts and timed relics"
             if late_tomb
             else "Two Yun, cover incoming lanes, fire reinforcement and charged arts"
         ),

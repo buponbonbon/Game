@@ -1,0 +1,26 @@
+{
+  "style": "16-bit RPG xianxia scenes, authored with image generation; retained source rasters",
+  "regions": {
+    "wharf": {
+      "width": 1672,
+      "height": 941,
+      "draw_y": -22,
+      "draw_height": 311,
+      "sha256": "cf64c421af028510a4d55af3d2b6bf79963de53c074d26d30e3a8a3ff96b5a73"
+    },
+    "terrace": {
+      "width": 1672,
+      "height": 941,
+      "draw_y": -31,
+      "draw_height": 349,
+      "sha256": "be262cbe89b9fd2a1ab40fc0e75dc9d5c63ee2cbbf29cb0d46c4e67de920ea64"
+    },
+    "tomb": {
+      "width": 1672,
+      "height": 940,
+      "draw_y": -8,
+      "draw_height": 280,
+      "sha256": "36c45c3a31683d3824f0c8783743123941f4eeb21cd97a504e6cdf9d339b9ca5"
+    }
+  }
+}

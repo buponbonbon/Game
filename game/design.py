@@ -121,19 +121,9 @@ SPECIALS = {
         ),
     ),
 }
-VOICELINES = {
-    "gatherer": ("A little breath, a mountain of hope.", "Spirit well, awaken!"),
-    "sword": ("My bamboo blade guards this gate.", "Ten thousand blades!"),
-    "fire": ("Let the lotus burn away the darkness.", "Crimson lotus, bloom!"),
-    "frost": ("Be still. Winter stands beside you.", "Thousand year frost!"),
-    "monk": ("Behind me, the mountain will not fall.", "Mountain holds the sky!"),
-    "lightning": ("The storm has found its path.", "Nine heavens, thunderfall!"),
-    "herbalist": ("Where life remains, hope will grow.", "Rain of green heaven!"),
-    "formation": (
-        "One thread, one formation, one unbroken gate.",
-        "Grand array, unite!",
-    ),
-}
+from .performances import PERFORMANCES, lines
+
+VOICELINES = {hero: lines(hero) for hero in PERFORMANCES}
 
 
 def geometry(shape, radius, targets):
@@ -416,3 +406,46 @@ def enrich(heroes, enemies, stages, regions):
             },
         }[s["region"]]
         s["ritual"].update(cost=35, cooldown=30)
+
+        # A coordinated final assault reaches all five lanes within 0.6 seconds.
+        local = s["index"] % 3
+        common = {"wharf": "tide", "terrace": "tide", "tomb": "soul"}[s["region"]]
+        support = {
+            "wharf": "lantern" if local != 1 else "drowned",
+            "terrace": "yaksha",
+            "tomb": "swordcorpse",
+        }[s["region"]]
+        final = s["waves"][-1]
+        leaders = [spawn for spawn in final["spawns"] if enemies[spawn["type"]]["boss"]]
+        surge = []
+        for lane in range(5):
+            surge.append(
+                dict(
+                    type=common,
+                    swarm=True,
+                    lane=lane,
+                    count=6 + local,
+                    gap=0.48,
+                    delay=lane * 0.15,
+                    elite_count=1 if local < 2 else 2,
+                    captain=not s["boss"] and lane == 2,
+                )
+            )
+            # Heavy tomb corpses reinforce alternating lanes; souls fill the rest.
+            kind = common if s["region"] == "tomb" and lane % 2 == 0 else support
+            surge.append(
+                dict(
+                    type=kind,
+                    swarm=kind == common,
+                    lane=lane,
+                    count=1 + int(local == 2),
+                    gap=0.9,
+                    delay=lane * 0.15 + 0.3,
+                    elite_count=0,
+                    captain=False,
+                )
+            )
+        final.update(spawns=leaders + surge, phase="onslaught", all_lanes=True)
+        s["final_assault_count"] = sum(x["count"] for x in final["spawns"])
+        s["enemy_count"] = sum(x["count"] for w in s["waves"] for x in w["spawns"])
+        s["music_theme"] = s["id"].replace("-", "_")

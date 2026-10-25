@@ -21,27 +21,71 @@ def main():
             [0, 3, 5, 7, 10],
             [7, 4, 2, 0, 1, 2, 4, 3, 2, 1, 0, 2, 3, 4, 2, 0],
         ),
-        "wharf": (
+        "wharf_1": (
             50,
-            [0, 3, 5, 7, 10],
+            [0, 2, 4, 7, 9],
             [0, 2, 4, 5, 4, 2, 1, 0, 2, 3, 4, 7, 5, 4, 2, 1],
         ),
-        "terrace": (
+        "wharf_2": (
+            48,
+            [0, 3, 5, 7, 10],
+            [4, 1, 0, 2, 3, 5, 4, 2, 1, 3, 2, 0, 4, 7, 5, 3],
+        ),
+        "wharf_3": (
+            46,
+            [0, 2, 5, 7, 9],
+            [0, 0, 4, 3, 5, 4, 7, 5, 2, 4, 1, 0, 3, 5, 4, 0],
+        ),
+        "terrace_1": (
             55,
             [0, 2, 4, 7, 9],
             [0, 2, 4, 7, 5, 4, 2, 1, 2, 4, 5, 7, 9, 7, 4, 2],
         ),
-        "tomb": (
+        "terrace_2": (
+            57,
+            [0, 2, 5, 7, 9],
+            [7, 4, 5, 2, 4, 0, 2, 1, 5, 7, 4, 2, 3, 4, 1, 0],
+        ),
+        "terrace_3": (
+            51,
+            [0, 3, 5, 7, 10],
+            [0, 3, 4, 0, 2, 5, 7, 4, 3, 1, 5, 2, 7, 5, 3, 0],
+        ),
+        "tomb_1": (
             45,
             [0, 3, 5, 7, 10],
             [0, 1, 4, 5, 3, 2, 1, 0, 2, 3, 1, 0, -1, 0, 2, 1],
         ),
+        "tomb_2": (
+            43,
+            [0, 2, 3, 7, 10],
+            [0, -1, 2, 1, 4, 3, 0, 2, 5, 2, 1, -2, 0, 3, 1, 0],
+        ),
+        "tomb_3": (
+            42,
+            [0, 3, 5, 7, 10],
+            [0, 0, 3, 4, 1, 0, 5, 3, 2, 4, 0, 1, 7, 4, 3, 0],
+        ),
     }
+    titles = [
+        "Sanctuary of Returning Breath",
+        "Lanterns over Still Water",
+        "The Drowned Ferry",
+        "River King's Vow",
+        "Jade Garden at Dawn",
+        "Wings across the Clouds",
+        "Granite Heart",
+        "Unmarked Souls",
+        "Procession of Coffins",
+        "The Crown Must Fall",
+    ]
     manifest = {
         "style": "Original Chinese-inspired guqin / guzheng / pipa / dizi and percussion arrangements",
         "tracks": {},
     }
-    for region, (root, scale, melody) in scores.items():
+    for theme_index, (theme, (root, scale, melody)) in enumerate(scores.items()):
+        region = theme.split("_")[0]
+        variation = (theme_index - 1) % 3 if theme_index else 0
         for phase in (
             ["setup"] if region == "lobby" else ["setup", "pressure", "onslaught"]
         ):
@@ -49,12 +93,12 @@ def main():
             bpm = (
                 70
                 if region == "lobby"
-                else {"wharf": 82, "terrace": 78, "tomb": 72}[region]
+                else {"wharf": 80, "terrace": 76, "tomb": 70}[region] + variation * 5
             ) + intensity * 19
             beat = 60 / bpm
             duration = beat * 64
             audio = np.zeros((round(duration * rate), 2), np.float64)
-            rng = np.random.default_rng(831 + len(region) + intensity)
+            rng = np.random.default_rng(831 + theme_index * 31 + intensity)
 
             def hz(degree, octave=0):
                 n = root + scale[degree % 5] + 12 * (degree // 5 + octave)
@@ -119,7 +163,9 @@ def main():
                     np.add.at(audio[:, ch], indices, wave * vol * gain)
 
             for bar in range(16):
-                harmony = [0, 3, 4, 0][bar // 4]
+                harmony = ([0, 3, 4, 0], [0, 4, 2, 3], [0, 2, 4, 3])[variation][
+                    bar // 4
+                ]
                 add(bar * 4 * beat, hz(harmony, -1), beat * 5, 0.17, "guqin", -0.2)
                 for n in range(4):
                     degree = melody[(bar * 2 + n // 2) % len(melody)] + (
@@ -180,7 +226,7 @@ def main():
             audio = np.tanh(audio * 1.4)
             peak = np.max(np.abs(audio))
             audio *= 0.88 / max(peak, 1e-6)
-            name = region + "_" + phase
+            name = theme + "_" + phase
             with tempfile.TemporaryDirectory() as tmp:
                 wav = Path(tmp) / "track.wav"
                 sf.write(wav, audio, rate)
@@ -210,6 +256,10 @@ def main():
                 "ogg": name + ".ogg",
                 "mp3": name + ".mp3",
                 "bpm": bpm,
+                "title": titles[theme_index],
+                "theme": theme,
+                "melody": melody,
+                "intensity": intensity,
                 "duration": round(duration, 5),
                 "instruments": ["guqin", "guzheng", "dizi"]
                 + (["pipa", "Chinese drum"] if intensity else [])

@@ -354,8 +354,8 @@ class ExpandedRulesTests(unittest.TestCase):
                     (ASSETS / "audio/voices" / line["file"]).stat().st_size, 1000
                 )
         tracks = json.loads((ASSETS / "audio/music/music.json").read_text())["tracks"]
-        self.assertEqual(len(tracks), 10)
-        for region in ("wharf", "terrace", "tomb"):
+        self.assertEqual(len(tracks), 28)
+        for region in (stage.replace("-", "_") for stage in STAGES):
             tempos = [
                 tracks[region + "_" + phase]["bpm"]
                 for phase in ("setup", "pressure", "onslaught")

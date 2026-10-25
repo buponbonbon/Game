@@ -1,4 +1,4 @@
-# VAN DAO 1.2 balance reference
+# VAN DAO 1.3 balance reference
 
 Python is authoritative. Base content is in `game/content.py`, version-1.2
 contracts in `game/design.py`, and talent-adjusted previews in `game/rules.py`.
@@ -82,34 +82,44 @@ First clears grant authored stone rewards; repeat clears grant
 `max(10, floor(first-clear stones × 0.25))`. Each browser battle applies its
 result once. Local saves are editable single-player data, not a competitive ledger.
 
-## Escalation
+## Escalation and final assaults
 
-Enemy HP grows multiplicatively by 5% after each campaign stage:
-`round(base HP × 1.05 ** stage_index × rank multiplier)`.
-Elite rank: 1.25× HP, +2 armor, 1.10× ATK. Captain: 1.50× HP, +3 armor,
-1.15× ATK and +10% movement speed to other enemies within radius 1.5. Captains
-appear in the last wave of non-boss encounters. Elite lantern shields increase
-from 25 to 35. Rank labels are visible above invaders.
+Base enemy HP still increases 5% multiplicatively per campaign stage. Elite rank
+has 1.25× HP, +2 armor and 1.10× ATK; captain has 1.50× HP, +3 armor, 1.15× ATK
+and a radius-1.5 movement aura. Swarm rank uses 0.80× HP and 0.85× ATK with normal
+armor. Swarm modifiers are alternatives to elite/captain stats, never stacked.
+This lets the finale add bodies while retaining stronger priority targets.
 
-The first third of waves is setup, with ordinary enemies; the middle third adds
-one elite per pack; the final third increases elite share to about half each pack.
-Bosses retain mandatory 70%/35% HP phase gates and brief phase protection;
-rounding uses the same integer thresholds for damage clamping and transitions.
+Every final wave attacks five lanes. First spawns across the lanes occur within
+0.6s; the full authored pack arrives within about four seconds. Each lane receives
+7–10 enemies, plus a boss on boss stages. The HUD gives a 15s all-lane warning.
+Boss summons/altar resurrection can add further enemies beyond the authored count.
 
-| Encounter | Waves | Authored spawns* | HP multiplier |
+| Encounter | Waves | Authored spawns | Final assault spawns |
 | --- | ---: | ---: | ---: |
-| wharf-1 | 12 | 31 | 1.0000 |
-| wharf-2 | 16 | 42 | 1.0500 |
-| wharf-3 | 17 | 45 | 1.1025 |
-| terrace-1 | 18 | 49 | 1.1576 |
-| terrace-2 | 18 | 47 | 1.2155 |
-| terrace-3 | 19 | 49 | 1.2763 |
-| tomb-1 | 20 | 59 | 1.3401 |
-| tomb-2 | 20 | 55 | 1.4071 |
-| tomb-3 | 21 | 56 | 1.4775 |
+| wharf-1 | 12 | 62 | 35 |
+| wharf-2 | 16 | 77 | 40 |
+| wharf-3 | 17 | 95 | 51 |
+| terrace-1 | 18 | 81 | 35 |
+| terrace-2 | 18 | 84 | 40 |
+| terrace-3 | 19 | 99 | 51 |
+| tomb-1 | 20 | 91 | 35 |
+| tomb-2 | 20 | 92 | 40 |
+| tomb-3 | 21 | 106 | 51 |
 
-*Boss summons and altar resurrection can add enemies beyond the authored count.
-Completion requires clearing enemies; a wave timer alone never awards victory.
+Boss HP phases, armor plates and telegraph rules remain in effect. A surviving
+boss or enemy must be defeated; a wave timer alone does not award victory.
+
+## Automatic ultimates
+
+The global switch defaults off and is beside Speed; keyboard A toggles it.
+The preference persists in the browser. Auto uses the same validated command and
+exact costs/cooldowns as manual casting. Offensive arts use their ultimate
+geometry. Packs, durable targets, bosses or immediate danger justify expensive
+arts; a weak isolated enemy can wait. Heals require injury/curse; formation buffs
+require nearby allies and a threat; Yun waits for sufficient Qi headroom.
+Casts are spaced by 0.22s and share the real Qi pool. Pause freezes casting;
+changing the preference while paused does not spend resources.
 
 ## Region counterplay
 

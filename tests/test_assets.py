@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import importlib.util
 import json
+import hashlib
 from pathlib import Path
 import struct
 import tempfile
@@ -39,7 +40,11 @@ def decode_png(path):
             width, height, depth, mode, compression, filtering, interlace = (
                 struct.unpack("!2I5B", body)
             )
-            if (depth, mode, compression, filtering, interlace) != (8, 6, 0, 0, 0):
+            if (
+                depth != 8
+                or mode not in (2, 6)
+                or (compression, filtering, interlace) != (0, 0, 0)
+            ):
                 raise ValueError("Expected noninterlaced 8-bit RGBA PNG")
         elif kind == b"IDAT":
             compressed.extend(body)
@@ -55,7 +60,8 @@ def decode_png(path):
     ):
         raise ValueError("PNG required chunks missing or misordered")
     scan = zlib.decompress(compressed)
-    stride = width * 4
+    channels = 4 if mode == 6 else 3
+    stride = width * channels
     if len(scan) != (stride + 1) * height:
         raise ValueError("Decoded PNG length does not match dimensions")
     rows = []
@@ -65,8 +71,8 @@ def decode_png(path):
         row = bytearray(scan[start + 1 : start + stride + 1])
         previous = rows[-1] if rows else bytes(stride)
         for x in range(stride):
-            left, above = (row[x - 4] if x >= 4 else 0), previous[x]
-            upper_left = previous[x - 4] if x >= 4 else 0
+            left, above = (row[x - channels] if x >= channels else 0), previous[x]
+            upper_left = previous[x - channels] if x >= channels else 0
             if filtering == 0:
                 predictor = 0
             elif filtering == 1:
@@ -83,6 +89,11 @@ def decode_png(path):
                 raise ValueError("Unsupported PNG row filter")
             row[x] = (row[x] + predictor) & 255
         rows.append(bytes(row))
+    if channels == 3:
+        rows = [
+            b"".join(row[x : x + 3] + b"\xff" for x in range(0, len(row), 3))
+            for row in rows
+        ]
     return width, height, rows
 
 
@@ -93,9 +104,20 @@ class AssetTests(unittest.TestCase):
         for name in sorted(regions | {"title"}):
             with self.subTest(background=name):
                 width, height, rows = decode_png(ASSETS / f"{name}.png")
-                self.assertEqual(
-                    (width, height), (384, 216) if name == "title" else (1024, 576)
-                )
+                if name == "title":
+                    self.assertEqual((width, height), (384, 216))
+                else:
+                    meta = json.loads((ASSETS / "scenes.json").read_text())["regions"][
+                        name
+                    ]
+                    self.assertEqual((width, height), (meta["width"], meta["height"]))
+                    self.assertGreater(width, 1600)
+                    self.assertEqual(
+                        hashlib.sha256(
+                            (ASSETS / (name + ".png")).read_bytes()
+                        ).hexdigest(),
+                        meta["sha256"],
+                    )
                 self.assertTrue(
                     all(row[x] == 255 for row in rows for x in range(3, width * 4, 4))
                 )
@@ -173,22 +195,26 @@ class AssetTests(unittest.TestCase):
                 states.append(frames[0])
             self.assertEqual(len(set(states)), 4, hero)
 
-    def test_each_region_has_an_original_animated_emergency_device(self):
+    def test_region_artifact_cutouts_are_large_distinct_and_transparent(self):
         width, height, rows = decode_png(ASSETS / "guardians.png")
         atlas = json.loads((ASSETS / "guardians.json").read_text())
         self.assertEqual(set(atlas), {"wharf", "terrace", "tomb"})
-        silhouettes = []
+        content = []
+        last = 0
         for region, item in atlas.items():
-            self.assertEqual((item["w"], item["h"], item["frames"]), (48, 48, 6))
-            self.assertLessEqual(item["x"] + 48 * 6, width)
-            self.assertLessEqual(item["y"] + 48, height)
-            silhouettes.append(
-                b"".join(
-                    row[item["x"] * 4 : (item["x"] + 48) * 4]
-                    for row in rows[item["y"] : item["y"] + 48]
-                )
+            self.assertGreater(item["w"], 600)
+            self.assertGreater(item["h"], 600)
+            self.assertGreaterEqual(item["x"], last)
+            self.assertLessEqual(item["x"] + item["w"], width)
+            last = item["x"] + item["w"]
+            pixels = b"".join(
+                row[item["x"] * 4 : (item["x"] + item["w"]) * 4]
+                for row in rows[: item["h"]]
             )
-        self.assertEqual(len(set(silhouettes)), 3)
+            self.assertIn(0, pixels[3::4])
+            self.assertIn(255, pixels[3::4])
+            content.append(hashlib.sha256(pixels).hexdigest())
+        self.assertEqual(len(set(content)), 3)
 
     def test_ui_icon_atlas_bounds_and_content(self):
         width, height, rows = decode_png(ASSETS / "icons.png")
@@ -208,7 +234,7 @@ class AssetTests(unittest.TestCase):
                 ]
                 self.assertIn(255, alpha)
 
-    def test_assets_reproduce_exactly_without_external_packages(self):
+    def test_procedural_assets_reproduce_and_authored_scenes_are_retained(self):
         spec = importlib.util.spec_from_file_location(
             "van_dao_asset_generator", ROOT / "tools" / "generate_assets.py"
         )
