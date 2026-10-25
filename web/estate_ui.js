@@ -13,6 +13,7 @@ window.VanDaoEstate = (() => {
     "Commissions",
     "Achievements",
     "Research",
+    "Ledger",
   ];
   function reward(r) {
     const parts = [];
@@ -66,9 +67,9 @@ window.VanDaoEstate = (() => {
       button(
         "estate-tab-" + name,
         { Commissions: "Missions", Achievements: "Goals" }[name] || name,
-        8 + i * 83,
+        8 + i * 71,
         32,
-        79,
+        67,
         21,
         () => {
           tab = name;
@@ -462,14 +463,14 @@ window.VanDaoEstate = (() => {
         });
         btn(
           "buy-fert",
-          "FERTILIZER +1 YIELD / BUY 1 FOR 5",
+          "FERTILIZER +1 YIELD / BUY 1 FOR " + d.fertilizer_price,
           12,
           247,
           306,
           25,
           "buy",
           { item: "fertilizer", quantity: 1 },
-          { disabled: p.stones < 5 },
+          { disabled: p.stones < d.fertilizer_price },
         );
         text("Fertilizer in bag: " + b.fertilizer, 333, 254, C.jade, 0.9);
       }
@@ -553,6 +554,64 @@ window.VanDaoEstate = (() => {
         251,
         120,
         24,
+        () => (page = Math.min(pages - 1, page + 1)),
+        { disabled: page === pages - 1 },
+      );
+    } else if (tab === "Ledger") {
+      panel(10, 64, 490, 212);
+      text("SECT LEDGER / RECENT ACTIVITY", 20, 74, C.gold, 1.1);
+      const rows = [...(e.journal || [])].reverse(),
+        pages = Math.max(1, Math.ceil(rows.length / 5));
+      page = Math.min(page, pages - 1);
+      rows.slice(page * 5, page * 5 + 5).forEach((r, i) => {
+        const y = 97 + i * 28;
+        wrapped(r.note, 20, y, 350, C.cream, 10, 2);
+        text(
+          (r.stones >= 0 ? "+" : "") + r.stones + " stones",
+          487,
+          y,
+          C.gold,
+          0.85,
+          "right",
+        );
+        if (r.insight)
+          text(
+            (r.insight >= 0 ? "+" : "") + r.insight + " Insight",
+            487,
+            y + 12,
+            C.jade,
+            0.75,
+            "right",
+          );
+      });
+      if (!rows.length)
+        wrapped(
+          "Your harvests, purchases, crafting and battle outcomes will appear here. Nothing is sent to an online service.",
+          20,
+          106,
+          465,
+          C.muted,
+          14,
+          4,
+        );
+      button(
+        "ledger-prev",
+        "PREV",
+        20,
+        246,
+        94,
+        22,
+        () => (page = Math.max(0, page - 1)),
+        { disabled: !page },
+      );
+      text(page + 1 + " / " + pages, 256, 252, C.muted, 0.9, "center");
+      button(
+        "ledger-next",
+        "NEXT",
+        396,
+        246,
+        94,
+        22,
         () => (page = Math.min(pages - 1, page + 1)),
         { disabled: page === pages - 1 },
       );
@@ -648,6 +707,12 @@ window.VanDaoEstate = (() => {
   return {
     draw,
     reward,
+    open(next) {
+      if (tabs.includes(next)) {
+        tab = next;
+        page = 0;
+      }
+    },
     openResearch() {
       tab = "Research";
       page = 0;

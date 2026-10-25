@@ -92,3 +92,7 @@ noscript {
   background: #172634;
   text-align: center;
 }
+
+#game[data-hub="true"] {
+  image-rendering: auto;
+}

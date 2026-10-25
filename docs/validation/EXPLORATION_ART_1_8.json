@@ -1,0 +1,52 @@
+{
+  "walk": {
+    "sword/south": 8,
+    "sword/southwest": 8,
+    "sword/west": 8,
+    "sword/northwest": 8,
+    "sword/north": 8,
+    "sword/northeast": 8,
+    "sword/east": 8,
+    "sword/southeast": 8,
+    "gatherer/south": 8,
+    "gatherer/southwest": 8,
+    "gatherer/west": 8,
+    "gatherer/northwest": 8,
+    "gatherer/north": 8,
+    "gatherer/northeast": 8,
+    "gatherer/east": 8,
+    "gatherer/southeast": 8,
+    "herbalist/south": 8,
+    "herbalist/southwest": 8,
+    "herbalist/west": 8,
+    "herbalist/northwest": 8,
+    "herbalist/north": 8,
+    "herbalist/northeast": 8,
+    "herbalist/east": 8,
+    "herbalist/southeast": 8
+  },
+  "actions": {
+    "sword/greet": 4,
+    "sword/inspect": 4,
+    "sword/water": 4,
+    "sword/gather": 4,
+    "gatherer/greet": 4,
+    "gatherer/inspect": 4,
+    "gatherer/water": 4,
+    "gatherer/gather": 4,
+    "herbalist/greet": 4,
+    "herbalist/inspect": 4,
+    "herbalist/water": 4,
+    "herbalist/gather": 4
+  },
+  "walk_frames": 192,
+  "interaction_frames": 48,
+  "idle_poses": {
+    "sword": 8,
+    "gatherer": 8,
+    "herbalist": 8
+  },
+  "steady_hub_render_ms": 5.162,
+  "errors": [],
+  "version": "1.8.0"
+}

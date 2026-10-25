@@ -1,0 +1,4046 @@
+{
+  "passed": true,
+  "scope": "One legal seeded estate/campaign policy, not a player study or exhaustive balance result.",
+  "seed": 4701,
+  "runs": [
+    {
+      "stage": "wharf-1",
+      "seed": 4701,
+      "realm": 0,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {},
+      "status": "victory",
+      "duration": 197.117,
+      "gate": 3,
+      "nursery_beds": [],
+      "objective": null,
+      "mode": "campaign",
+      "region": "wharf",
+      "wave": 12,
+      "wave_count": 12,
+      "preparation": null,
+      "kills": 62,
+      "qi_remaining": 11,
+      "metrics": {
+        "damage": {
+          "sword": 3073,
+          "fire": 2822
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 0,
+        "qi": {
+          "starting": 150,
+          "gatherer": 668,
+          "passive": 480,
+          "ultimate": 168
+        },
+        "spent": 1455,
+        "deaths": 0,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 57,
+          "lantern": 5
+        },
+        "roles_used": [
+          "economy",
+          "damage"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "squad_guarded": 0,
+        "squad_healing": 0,
+        "squad_interrupts": 0,
+        "preparation_mana": 0,
+        "preparation_dao": 0,
+        "peak_enemies": 24
+      },
+      "rewards": {
+        "stones": 45,
+        "insight": 1,
+        "stage": "wharf-1",
+        "kills": 62,
+        "replay_stones": 11
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 12.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 24.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 2
+        },
+        {
+          "time": 36.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 60.0,
+          "hero": "fire",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 81.2,
+          "hero": "fire",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 105.2,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 111.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 136.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 145.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 152.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 5
+        },
+        {
+          "time": 161.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 2
+        },
+        {
+          "time": 196.6,
+          "hero": "sword",
+          "lane": 4,
+          "col": 2
+        }
+      ],
+      "estate_outcome": {
+        "stones": 45,
+        "insight": 1,
+        "seeds": {
+          "river_lotus": 1
+        },
+        "fertilizer": 0,
+        "garden_grew": true,
+        "medal": null,
+        "beds": null
+      },
+      "wallet_after_estate": {
+        "stones": 103,
+        "insight": 0
+      },
+      "plots_after_estate": 3,
+      "inventory_after_estate": {
+        "seeds": {
+          "qi_grass": 6,
+          "river_lotus": 1,
+          "azure_bamboo": 0,
+          "soul_lingzhi": 0
+        },
+        "produce": {
+          "qi_grass": 1,
+          "river_lotus": 0,
+          "azure_bamboo": 0,
+          "soul_lingzhi": 0
+        },
+        "pills": {
+          "spirit_tea": 1,
+          "purifying_dew": 0,
+          "soul_ward": 0
+        },
+        "fertilizer": 1
+      }
+    },
+    {
+      "stage": "wharf-2",
+      "seed": 4701,
+      "realm": 0,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 1
+        }
+      },
+      "status": "victory",
+      "duration": 225.567,
+      "gate": 3,
+      "nursery_beds": [],
+      "objective": null,
+      "mode": "campaign",
+      "region": "wharf",
+      "wave": 16,
+      "wave_count": 16,
+      "preparation": {
+        "id": "spirit_tea",
+        "name": "Spirit Tea",
+        "used": true,
+        "remaining": 0
+      },
+      "kills": 77,
+      "qi_remaining": 24,
+      "metrics": {
+        "damage": {
+          "sword": 5856,
+          "fire": 5094
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 0,
+        "qi": {
+          "starting": 150,
+          "gatherer": 776,
+          "passive": 540,
+          "enemy_drop": 210,
+          "ultimate": 192
+        },
+        "spent": 1844,
+        "deaths": 0,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 48,
+          "lantern": 14,
+          "drowned": 15
+        },
+        "roles_used": [
+          "economy",
+          "damage"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "squad_guarded": 0,
+        "squad_healing": 7,
+        "squad_interrupts": 0,
+        "preparation_mana": 30,
+        "preparation_dao": 60,
+        "peak_enemies": 41
+      },
+      "rewards": {
+        "stones": 55,
+        "insight": 1,
+        "stage": "wharf-2",
+        "kills": 77,
+        "replay_stones": 13
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 12.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 24.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 2
+        },
+        {
+          "time": 36.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 48.0,
+          "hero": "sword",
+          "lane": 0,
+          "col": 2
+        },
+        {
+          "time": 60.0,
+          "hero": "sword",
+          "lane": 4,
+          "col": 2
+        },
+        {
+          "time": 81.2,
+          "hero": "fire",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 96.0,
+          "hero": "fire",
+          "lane": 0,
+          "col": 3
+        },
+        {
+          "time": 113.2,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 136.6,
+          "hero": "fire",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 148.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 156.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 168.0,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 180.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 187.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 5
+        },
+        {
+          "time": 204.0,
+          "hero": "fire",
+          "lane": 4,
+          "col": 3
+        }
+      ],
+      "estate_outcome": {
+        "stones": 55,
+        "insight": 1,
+        "seeds": {
+          "river_lotus": 1
+        },
+        "fertilizer": 0,
+        "garden_grew": true,
+        "medal": null,
+        "beds": null
+      },
+      "wallet_after_estate": {
+        "stones": 128,
+        "insight": 1
+      },
+      "plots_after_estate": 3,
+      "inventory_after_estate": {
+        "seeds": {
+          "qi_grass": 6,
+          "river_lotus": 2,
+          "azure_bamboo": 0,
+          "soul_lingzhi": 0
+        },
+        "produce": {
+          "qi_grass": 1,
+          "river_lotus": 5,
+          "azure_bamboo": 0,
+          "soul_lingzhi": 0
+        },
+        "pills": {
+          "spirit_tea": 0,
+          "purifying_dew": 0,
+          "soul_ward": 0
+        },
+        "fertilizer": 1
+      }
+    },
+    {
+      "stage": "wharf-3",
+      "seed": 4701,
+      "realm": 0,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        }
+      },
+      "status": "victory",
+      "duration": 311.317,
+      "gate": 3,
+      "nursery_beds": [],
+      "objective": null,
+      "mode": "campaign",
+      "region": "wharf",
+      "wave": 17,
+      "wave_count": 17,
+      "preparation": null,
+      "kills": 102,
+      "qi_remaining": 35,
+      "metrics": {
+        "damage": {
+          "sword": 11657,
+          "fire": 4595
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 0,
+        "qi": {
+          "starting": 150,
+          "gatherer": 1292,
+          "passive": 748,
+          "enemy_drop": 405,
+          "ultimate": 336
+        },
+        "spent": 2896,
+        "deaths": 12,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 63,
+          "drowned": 11,
+          "lantern": 27,
+          "riverlord": 1
+        },
+        "roles_used": [
+          "economy",
+          "damage"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "squad_guarded": 0,
+        "squad_healing": 0,
+        "squad_interrupts": 1,
+        "preparation_mana": 0,
+        "preparation_dao": 0,
+        "peak_enemies": 33
+      },
+      "rewards": {
+        "stones": 90,
+        "insight": 2,
+        "relic": "tide_pearl",
+        "material": "Tide Jade",
+        "unlocks": [
+          "frost",
+          "herbalist"
+        ],
+        "stage": "wharf-3",
+        "kills": 102,
+        "replay_stones": 22
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 12.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 24.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 2
+        },
+        {
+          "time": 36.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 49.2,
+          "hero": "fire",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 67.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 76.6,
+          "hero": "sword",
+          "lane": 4,
+          "col": 2
+        },
+        {
+          "time": 89.2,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 97.2,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 118.4,
+          "hero": "fire",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 125.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 2
+        },
+        {
+          "time": 132.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 147.4,
+          "hero": "sword",
+          "lane": 2,
+          "col": 5
+        },
+        {
+          "time": 172.0,
+          "hero": "fire",
+          "lane": 4,
+          "col": 3
+        },
+        {
+          "time": 172.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 4
+        },
+        {
+          "time": 179.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 5
+        },
+        {
+          "time": 190.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 217.0,
+          "hero": "fire",
+          "lane": 0,
+          "col": 3
+        },
+        {
+          "time": 217.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 225.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 5
+        },
+        {
+          "time": 280.6,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 287.6,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 287.8,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 294.6,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 301.6,
+          "hero": "sword",
+          "lane": 2,
+          "col": 5
+        }
+      ],
+      "estate_outcome": {
+        "stones": 90,
+        "insight": 2,
+        "seeds": {
+          "river_lotus": 1
+        },
+        "fertilizer": 1,
+        "garden_grew": true,
+        "medal": null,
+        "beds": null
+      },
+      "wallet_after_estate": {
+        "stones": 163,
+        "insight": 3
+      },
+      "plots_after_estate": 3,
+      "inventory_after_estate": {
+        "seeds": {
+          "qi_grass": 5,
+          "river_lotus": 2,
+          "azure_bamboo": 0,
+          "soul_lingzhi": 0
+        },
+        "produce": {
+          "qi_grass": 1,
+          "river_lotus": 5,
+          "azure_bamboo": 3,
+          "soul_lingzhi": 4
+        },
+        "pills": {
+          "spirit_tea": 0,
+          "purifying_dew": 0,
+          "soul_ward": 0
+        },
+        "fertilizer": 2
+      }
+    },
+    {
+      "stage": "terrace-1",
+      "seed": 4701,
+      "realm": 1,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        },
+        "sword": {
+          "branch": "A",
+          "rank": 3
+        }
+      },
+      "status": "victory",
+      "duration": 279.033,
+      "gate": 3,
+      "nursery_beds": [],
+      "objective": null,
+      "mode": "campaign",
+      "region": "terrace",
+      "wave": 18,
+      "wave_count": 18,
+      "preparation": null,
+      "kills": 81,
+      "qi_remaining": 82,
+      "metrics": {
+        "damage": {
+          "sword": 16777,
+          "fire": 4853,
+          "monk": 1059
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 13,
+        "qi": {
+          "starting": 175,
+          "gatherer": 936,
+          "passive": 690,
+          "enemy_drop": 400,
+          "ultimate": 192
+        },
+        "spent": 2281,
+        "deaths": 7,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 42,
+          "hound": 13,
+          "rottenwood": 7,
+          "yaksha": 12,
+          "drainer": 7
+        },
+        "roles_used": [
+          "economy",
+          "damage",
+          "tank"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire",
+          "monk"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "squad_guarded": 55,
+        "squad_healing": 32,
+        "squad_interrupts": 3,
+        "preparation_mana": 0,
+        "preparation_dao": 0,
+        "peak_enemies": 37
+      },
+      "rewards": {
+        "stones": 65,
+        "insight": 1,
+        "stage": "terrace-1",
+        "kills": 81,
+        "replay_stones": 16
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 4,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 8.0,
+          "hero": "gatherer",
+          "lane": 0,
+          "col": 1
+        },
+        {
+          "time": 17.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 25.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 41.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 4
+        },
+        {
+          "time": 57.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 64.2,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 79.6,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 89.2,
+          "hero": "fire",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 97.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 118.6,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 125.6,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 132.8,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 147.2,
+          "hero": "fire",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 169.2,
+          "hero": "fire",
+          "lane": 0,
+          "col": 3
+        },
+        {
+          "time": 195.2,
+          "hero": "monk",
+          "lane": 0,
+          "col": 6
+        },
+        {
+          "time": 216.0,
+          "hero": "monk",
+          "lane": 1,
+          "col": 6
+        },
+        {
+          "time": 223.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 5
+        },
+        {
+          "time": 252.0,
+          "hero": "sword",
+          "lane": 0,
+          "col": 5
+        }
+      ],
+      "estate_outcome": {
+        "stones": 65,
+        "insight": 1,
+        "seeds": {
+          "azure_bamboo": 1
+        },
+        "fertilizer": 0,
+        "garden_grew": true,
+        "medal": null,
+        "beds": null
+      },
+      "wallet_after_estate": {
+        "stones": 155,
+        "insight": 4
+      },
+      "plots_after_estate": 6,
+      "inventory_after_estate": {
+        "seeds": {
+          "qi_grass": 2,
+          "river_lotus": 1,
+          "azure_bamboo": 0,
+          "soul_lingzhi": 0
+        },
+        "produce": {
+          "qi_grass": 5,
+          "river_lotus": 7,
+          "azure_bamboo": 1,
+          "soul_lingzhi": 4
+        },
+        "pills": {
+          "spirit_tea": 0,
+          "purifying_dew": 1,
+          "soul_ward": 0
+        },
+        "fertilizer": 2
+      }
+    },
+    {
+      "stage": "terrace-2",
+      "seed": 4701,
+      "realm": 1,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        },
+        "sword": {
+          "branch": "A",
+          "rank": 3
+        },
+        "fire": {
+          "branch": "B",
+          "rank": 2
+        }
+      },
+      "status": "victory",
+      "duration": 276.15,
+      "gate": 3,
+      "nursery_beds": [],
+      "objective": null,
+      "mode": "campaign",
+      "region": "terrace",
+      "wave": 18,
+      "wave_count": 18,
+      "preparation": null,
+      "kills": 84,
+      "qi_remaining": 115,
+      "metrics": {
+        "damage": {
+          "sword": 15385,
+          "fire": 6747
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 10,
+        "qi": {
+          "starting": 175,
+          "gatherer": 1192,
+          "passive": 690,
+          "enemy_drop": 400,
+          "ultimate": 288
+        },
+        "spent": 2580,
+        "deaths": 12,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 45,
+          "yaksha": 13,
+          "drainer": 10,
+          "hound": 10,
+          "rottenwood": 6
+        },
+        "roles_used": [
+          "economy",
+          "damage"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "squad_guarded": 13,
+        "squad_healing": 0,
+        "squad_interrupts": 4,
+        "preparation_mana": 0,
+        "preparation_dao": 0,
+        "peak_enemies": 42
+      },
+      "rewards": {
+        "stones": 75,
+        "insight": 1,
+        "stage": "terrace-2",
+        "kills": 84,
+        "replay_stones": 18
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 8.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 17.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 25.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 41.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 48.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 4
+        },
+        {
+          "time": 72.0,
+          "hero": "fire",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 81.6,
+          "hero": "sword",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 88.6,
+          "hero": "sword",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 96.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 113.2,
+          "hero": "fire",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 121.4,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 144.0,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 151.2,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 158.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 179.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 5
+        },
+        {
+          "time": 186.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 201.2,
+          "hero": "sword",
+          "lane": 2,
+          "col": 5
+        },
+        {
+          "time": 225.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 232.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 5
+        },
+        {
+          "time": 241.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 5
+        },
+        {
+          "time": 257.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 265.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        }
+      ],
+      "estate_outcome": {
+        "stones": 75,
+        "insight": 1,
+        "seeds": {
+          "azure_bamboo": 1
+        },
+        "fertilizer": 0,
+        "garden_grew": true,
+        "medal": null,
+        "beds": null
+      },
+      "wallet_after_estate": {
+        "stones": 220,
+        "insight": 6
+      },
+      "plots_after_estate": 6,
+      "inventory_after_estate": {
+        "seeds": {
+          "qi_grass": 0,
+          "river_lotus": 0,
+          "azure_bamboo": 0,
+          "soul_lingzhi": 0
+        },
+        "produce": {
+          "qi_grass": 17,
+          "river_lotus": 11,
+          "azure_bamboo": 1,
+          "soul_lingzhi": 4
+        },
+        "pills": {
+          "spirit_tea": 0,
+          "purifying_dew": 1,
+          "soul_ward": 0
+        },
+        "fertilizer": 2
+      }
+    },
+    {
+      "stage": "terrace-3",
+      "seed": 4701,
+      "realm": 1,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        },
+        "sword": {
+          "branch": "A",
+          "rank": 3
+        },
+        "fire": {
+          "branch": "B",
+          "rank": 3
+        }
+      },
+      "status": "victory",
+      "duration": 367.183,
+      "gate": 3,
+      "nursery_beds": [],
+      "objective": null,
+      "mode": "campaign",
+      "region": "terrace",
+      "wave": 19,
+      "wave_count": 19,
+      "preparation": null,
+      "kills": 99,
+      "qi_remaining": 3,
+      "metrics": {
+        "damage": {
+          "sword": 21556,
+          "fire": 8340,
+          "monk": 1336
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 14,
+        "qi": {
+          "starting": 175,
+          "gatherer": 1884,
+          "passive": 900,
+          "enemy_drop": 380,
+          "ultimate": 528
+        },
+        "spent": 3774,
+        "deaths": 20,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 51,
+          "yaksha": 23,
+          "hound": 11,
+          "drainer": 8,
+          "rottenwood": 5,
+          "mountainlord": 1
+        },
+        "roles_used": [
+          "economy",
+          "damage",
+          "tank"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire",
+          "monk"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "squad_guarded": 12,
+        "squad_healing": 32,
+        "squad_interrupts": 3,
+        "preparation_mana": 0,
+        "preparation_dao": 0,
+        "peak_enemies": 45
+      },
+      "rewards": {
+        "stones": 110,
+        "insight": 2,
+        "relic": "wind_compass",
+        "material": "Azure Ley Shard",
+        "unlocks": [
+          "lightning",
+          "formation"
+        ],
+        "stage": "terrace-3",
+        "kills": 99,
+        "replay_stones": 27
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 0,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 8.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 17.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 25.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 49.2,
+          "hero": "fire",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 60.2,
+          "hero": "gatherer",
+          "lane": 3,
+          "col": 1
+        },
+        {
+          "time": 69.4,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 83.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 4
+        },
+        {
+          "time": 90.0,
+          "hero": "fire",
+          "lane": 0,
+          "col": 3
+        },
+        {
+          "time": 105.2,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 120.0,
+          "hero": "monk",
+          "lane": 2,
+          "col": 6
+        },
+        {
+          "time": 137.2,
+          "hero": "monk",
+          "lane": 1,
+          "col": 6
+        },
+        {
+          "time": 148.6,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 156.6,
+          "hero": "sword",
+          "lane": 1,
+          "col": 5
+        },
+        {
+          "time": 165.0,
+          "hero": "monk",
+          "lane": 0,
+          "col": 6
+        },
+        {
+          "time": 173.4,
+          "hero": "sword",
+          "lane": 0,
+          "col": 5
+        },
+        {
+          "time": 185.2,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 193.2,
+          "hero": "sword",
+          "lane": 2,
+          "col": 5
+        },
+        {
+          "time": 204.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 2
+        },
+        {
+          "time": 225.0,
+          "hero": "fire",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 225.2,
+          "hero": "monk",
+          "lane": 3,
+          "col": 6
+        },
+        {
+          "time": 228.6,
+          "hero": "sword",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 237.4,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 278.8,
+          "hero": "fire",
+          "lane": 4,
+          "col": 3
+        },
+        {
+          "time": 282.0,
+          "hero": "monk",
+          "lane": 4,
+          "col": 6
+        },
+        {
+          "time": 342.6,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 342.8,
+          "hero": "monk",
+          "lane": 2,
+          "col": 6
+        },
+        {
+          "time": 360.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        }
+      ],
+      "estate_outcome": {
+        "stones": 110,
+        "insight": 2,
+        "seeds": {
+          "azure_bamboo": 1
+        },
+        "fertilizer": 1,
+        "garden_grew": true,
+        "medal": null,
+        "beds": null
+      },
+      "wallet_after_estate": {
+        "stones": 240,
+        "insight": 10
+      },
+      "plots_after_estate": 6,
+      "inventory_after_estate": {
+        "seeds": {
+          "qi_grass": 0,
+          "river_lotus": 0,
+          "azure_bamboo": 0,
+          "soul_lingzhi": 0
+        },
+        "produce": {
+          "qi_grass": 25,
+          "river_lotus": 15,
+          "azure_bamboo": 4,
+          "soul_lingzhi": 4
+        },
+        "pills": {
+          "spirit_tea": 0,
+          "purifying_dew": 1,
+          "soul_ward": 0
+        },
+        "fertilizer": 4
+      }
+    },
+    {
+      "stage": "tomb-1",
+      "seed": 4701,
+      "realm": 2,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        },
+        "sword": {
+          "branch": "A",
+          "rank": 3
+        },
+        "fire": {
+          "branch": "B",
+          "rank": 5
+        }
+      },
+      "status": "victory",
+      "duration": 305.333,
+      "gate": 3,
+      "nursery_beds": [],
+      "objective": null,
+      "mode": "campaign",
+      "region": "tomb",
+      "wave": 20,
+      "wave_count": 20,
+      "preparation": null,
+      "kills": 91,
+      "qi_remaining": 96,
+      "metrics": {
+        "damage": {
+          "sword": 24166,
+          "fire": 14609
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 0,
+        "qi": {
+          "starting": 175,
+          "gatherer": 1352,
+          "passive": 800,
+          "ultimate": 372,
+          "enemy_drop": 240
+        },
+        "spent": 2753,
+        "deaths": 1,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 1,
+          "soul": 51,
+          "swordcorpse": 13,
+          "rottenwood": 14,
+          "drainer": 12
+        },
+        "roles_used": [
+          "economy",
+          "damage"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "squad_guarded": 0,
+        "squad_healing": 154,
+        "squad_interrupts": 7,
+        "preparation_mana": 0,
+        "preparation_dao": 0,
+        "peak_enemies": 40
+      },
+      "rewards": {
+        "stones": 85,
+        "insight": 1,
+        "stage": "tomb-1",
+        "kills": 91,
+        "replay_stones": 21
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 8.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 17.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 25.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 41.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 49.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 4
+        },
+        {
+          "time": 73.2,
+          "hero": "fire",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 81.6,
+          "hero": "sword",
+          "lane": 1,
+          "col": 5
+        },
+        {
+          "time": 96.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 2
+        },
+        {
+          "time": 113.2,
+          "hero": "fire",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 132.0,
+          "hero": "fire",
+          "lane": 4,
+          "col": 3
+        },
+        {
+          "time": 145.6,
+          "hero": "sword",
+          "lane": 4,
+          "col": 5
+        },
+        {
+          "time": 180.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 193.2,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 204.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 233.0,
+          "hero": "sword",
+          "lane": 4,
+          "col": 2
+        },
+        {
+          "time": 241.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 264.0,
+          "hero": "fire",
+          "lane": 0,
+          "col": 3
+        }
+      ],
+      "estate_outcome": {
+        "stones": 85,
+        "insight": 1,
+        "seeds": {
+          "soul_lingzhi": 1
+        },
+        "fertilizer": 0,
+        "garden_grew": true,
+        "medal": null,
+        "beds": null
+      },
+      "wallet_after_estate": {
+        "stones": 281,
+        "insight": 13
+      },
+      "plots_after_estate": 6,
+      "inventory_after_estate": {
+        "seeds": {
+          "qi_grass": 0,
+          "river_lotus": 0,
+          "azure_bamboo": 0,
+          "soul_lingzhi": 0
+        },
+        "produce": {
+          "qi_grass": 24,
+          "river_lotus": 19,
+          "azure_bamboo": 7,
+          "soul_lingzhi": 2
+        },
+        "pills": {
+          "spirit_tea": 0,
+          "purifying_dew": 1,
+          "soul_ward": 1
+        },
+        "fertilizer": 4
+      }
+    },
+    {
+      "stage": "tomb-2",
+      "seed": 4701,
+      "realm": 2,
+      "policy": "Three Yun, fire/staff/lightning defense, a late formation circuit, automatic arts and timed relics",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        },
+        "sword": {
+          "branch": "A",
+          "rank": 3
+        },
+        "fire": {
+          "branch": "B",
+          "rank": 5
+        },
+        "monk": {
+          "branch": "A",
+          "rank": 2
+        },
+        "herbalist": {
+          "branch": "A",
+          "rank": 2
+        }
+      },
+      "status": "victory",
+      "duration": 388.633,
+      "gate": 3,
+      "nursery_beds": [],
+      "objective": null,
+      "mode": "campaign",
+      "region": "tomb",
+      "wave": 20,
+      "wave_count": 20,
+      "preparation": null,
+      "kills": 92,
+      "qi_remaining": 94,
+      "metrics": {
+        "damage": {
+          "sword": 19423,
+          "monk": 13660,
+          "fire": 5657
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 0,
+        "qi": {
+          "starting": 175,
+          "gatherer": 1628,
+          "passive": 1024,
+          "ultimate": 480,
+          "enemy_drop": 180
+        },
+        "spent": 2594,
+        "deaths": 8,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "soul": 54,
+          "rottenwood": 13,
+          "swordcorpse": 16,
+          "drainer": 9
+        },
+        "roles_used": [
+          "economy",
+          "damage",
+          "tank"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "monk",
+          "fire"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "squad_guarded": 0,
+        "squad_healing": 235,
+        "squad_interrupts": 11,
+        "preparation_mana": 0,
+        "preparation_dao": 0,
+        "peak_enemies": 48
+      },
+      "rewards": {
+        "stones": 95,
+        "insight": 1,
+        "stage": "tomb-2",
+        "kills": 92,
+        "replay_stones": 23
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 8.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 16.0,
+          "hero": "gatherer",
+          "lane": 3,
+          "col": 1
+        },
+        {
+          "time": 25.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 33.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 41.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 3
+        },
+        {
+          "time": 49.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 3
+        },
+        {
+          "time": 65.2,
+          "hero": "monk",
+          "lane": 3,
+          "col": 6
+        },
+        {
+          "time": 73.6,
+          "hero": "sword",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 87.6,
+          "hero": "monk",
+          "lane": 1,
+          "col": 6
+        },
+        {
+          "time": 98.6,
+          "hero": "monk",
+          "lane": 2,
+          "col": 6
+        },
+        {
+          "time": 121.2,
+          "hero": "fire",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 145.2,
+          "hero": "monk",
+          "lane": 0,
+          "col": 6
+        },
+        {
+          "time": 192.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 228.0,
+          "hero": "monk",
+          "lane": 4,
+          "col": 6
+        }
+      ],
+      "estate_outcome": {
+        "stones": 95,
+        "insight": 1,
+        "seeds": {
+          "soul_lingzhi": 1
+        },
+        "fertilizer": 0,
+        "garden_grew": true,
+        "medal": null,
+        "beds": null
+      },
+      "wallet_after_estate": {
+        "stones": 361,
+        "insight": 15
+      },
+      "plots_after_estate": 6,
+      "inventory_after_estate": {
+        "seeds": {
+          "qi_grass": 0,
+          "river_lotus": 0,
+          "azure_bamboo": 0,
+          "soul_lingzhi": 0
+        },
+        "produce": {
+          "qi_grass": 24,
+          "river_lotus": 19,
+          "azure_bamboo": 10,
+          "soul_lingzhi": 2
+        },
+        "pills": {
+          "spirit_tea": 0,
+          "purifying_dew": 1,
+          "soul_ward": 1
+        },
+        "fertilizer": 4
+      }
+    },
+    {
+      "stage": "tomb-3",
+      "seed": 4701,
+      "realm": 2,
+      "policy": "Three Yun, fire/staff/lightning defense, a late formation circuit, automatic arts and timed relics",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        },
+        "sword": {
+          "branch": "A",
+          "rank": 3
+        },
+        "fire": {
+          "branch": "B",
+          "rank": 5
+        },
+        "monk": {
+          "branch": "A",
+          "rank": 3
+        },
+        "herbalist": {
+          "branch": "A",
+          "rank": 2
+        }
+      },
+      "status": "victory",
+      "duration": 571.4,
+      "gate": 2,
+      "nursery_beds": [],
+      "objective": null,
+      "mode": "campaign",
+      "region": "tomb",
+      "wave": 21,
+      "wave_count": 21,
+      "preparation": null,
+      "kills": 124,
+      "qi_remaining": 32,
+      "metrics": {
+        "damage": {
+          "sword": 17777,
+          "fire": 34617,
+          "monk": 5575
+        },
+        "healing": 0,
+        "altars_destroyed": 3,
+        "plates_broken": 0,
+        "qi": {
+          "starting": 175,
+          "gatherer": 2480,
+          "passive": 1504,
+          "ultimate": 768,
+          "enemy_drop": 300
+        },
+        "spent": 4228,
+        "deaths": 25,
+        "breaches": 1,
+        "invalid": 0,
+        "kills_by_type": {
+          "soul": 74,
+          "rottenwood": 14,
+          "swordcorpse": 17,
+          "drainer": 15,
+          "boneemperor": 1
+        },
+        "roles_used": [
+          "economy",
+          "damage",
+          "tank"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire",
+          "monk"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "squad_guarded": 0,
+        "squad_healing": 239,
+        "squad_interrupts": 5,
+        "preparation_mana": 0,
+        "preparation_dao": 0,
+        "peak_enemies": 59
+      },
+      "rewards": {
+        "stones": 160,
+        "insight": 3,
+        "relic": "soul_bell",
+        "material": "Mausoleum Seal Fragment",
+        "campaign_complete": true,
+        "stage": "tomb-3",
+        "kills": 124,
+        "replay_stones": 40
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 8.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 16.0,
+          "hero": "gatherer",
+          "lane": 3,
+          "col": 1
+        },
+        {
+          "time": 25.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 36.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 49.2,
+          "hero": "fire",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 65.2,
+          "hero": "monk",
+          "lane": 3,
+          "col": 6
+        },
+        {
+          "time": 73.6,
+          "hero": "sword",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 85.4,
+          "hero": "sword",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 92.4,
+          "hero": "sword",
+          "lane": 0,
+          "col": 3
+        },
+        {
+          "time": 108.0,
+          "hero": "fire",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 121.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 3
+        },
+        {
+          "time": 137.2,
+          "hero": "monk",
+          "lane": 0,
+          "col": 6
+        },
+        {
+          "time": 151.2,
+          "hero": "fire",
+          "lane": 4,
+          "col": 4
+        },
+        {
+          "time": 163.2,
+          "hero": "fire",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 169.2,
+          "hero": "monk",
+          "lane": 1,
+          "col": 6
+        },
+        {
+          "time": 216.0,
+          "hero": "monk",
+          "lane": 4,
+          "col": 6
+        },
+        {
+          "time": 225.2,
+          "hero": "fire",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 331.2,
+          "hero": "monk",
+          "lane": 2,
+          "col": 6
+        },
+        {
+          "time": 393.2,
+          "hero": "sword",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 410.4,
+          "hero": "fire",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 432.0,
+          "hero": "monk",
+          "lane": 2,
+          "col": 6
+        },
+        {
+          "time": 466.4,
+          "hero": "sword",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 492.0,
+          "hero": "sword",
+          "lane": 4,
+          "col": 3
+        },
+        {
+          "time": 516.0,
+          "hero": "sword",
+          "lane": 4,
+          "col": 3
+        },
+        {
+          "time": 552.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 3
+        }
+      ],
+      "estate_outcome": {
+        "stones": 160,
+        "insight": 3,
+        "seeds": {
+          "soul_lingzhi": 1
+        },
+        "fertilizer": 1,
+        "garden_grew": true,
+        "medal": null,
+        "beds": null
+      },
+      "wallet_after_estate": {
+        "stones": 566,
+        "insight": 20
+      },
+      "plots_after_estate": 6,
+      "inventory_after_estate": {
+        "seeds": {
+          "qi_grass": 0,
+          "river_lotus": 0,
+          "azure_bamboo": 0,
+          "soul_lingzhi": 0
+        },
+        "produce": {
+          "qi_grass": 24,
+          "river_lotus": 19,
+          "azure_bamboo": 10,
+          "soul_lingzhi": 2
+        },
+        "pills": {
+          "spirit_tea": 0,
+          "purifying_dew": 1,
+          "soul_ward": 1
+        },
+        "fertilizer": 5
+      }
+    }
+  ],
+  "actions": [
+    {
+      "after_battle": 0,
+      "action": "plant",
+      "details": {
+        "plot": 0,
+        "crop": "qi_grass"
+      },
+      "stones": 0,
+      "insight": 0
+    },
+    {
+      "after_battle": 0,
+      "action": "water",
+      "details": {
+        "plot": 0
+      },
+      "stones": 0,
+      "insight": 0
+    },
+    {
+      "after_battle": 0,
+      "action": "fertilize",
+      "details": {
+        "plot": 0
+      },
+      "stones": 0,
+      "insight": 0
+    },
+    {
+      "after_battle": 0,
+      "action": "plant",
+      "details": {
+        "plot": 1,
+        "crop": "river_lotus"
+      },
+      "stones": 0,
+      "insight": 0
+    },
+    {
+      "after_battle": 0,
+      "action": "water",
+      "details": {
+        "plot": 1
+      },
+      "stones": 0,
+      "insight": 0
+    },
+    {
+      "after_battle": 0,
+      "action": "fertilize",
+      "details": {
+        "plot": 1
+      },
+      "stones": 0,
+      "insight": 0
+    },
+    {
+      "after_battle": 0,
+      "action": "plant",
+      "details": {
+        "plot": 2,
+        "crop": "soul_lingzhi"
+      },
+      "stones": 0,
+      "insight": 0
+    },
+    {
+      "after_battle": 0,
+      "action": "water",
+      "details": {
+        "plot": 2
+      },
+      "stones": 0,
+      "insight": 0
+    },
+    {
+      "after_battle": 0,
+      "action": "fertilize",
+      "details": {
+        "plot": 2
+      },
+      "stones": 0,
+      "insight": 0
+    },
+    {
+      "after_battle": 1,
+      "action": "harvest",
+      "details": {
+        "plot": 0
+      },
+      "stones": 45,
+      "insight": 1
+    },
+    {
+      "after_battle": 1,
+      "action": "contract_claim",
+      "details": {
+        "id": "field_study"
+      },
+      "stones": 60,
+      "insight": 1
+    },
+    {
+      "after_battle": 1,
+      "action": "achievement_claim",
+      "details": {
+        "id": "first_victory"
+      },
+      "stones": 80,
+      "insight": 1
+    },
+    {
+      "after_battle": 1,
+      "action": "achievement_claim",
+      "details": {
+        "id": "first_harvest"
+      },
+      "stones": 90,
+      "insight": 1
+    },
+    {
+      "after_battle": 1,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "tide",
+        "tier": 0
+      },
+      "stones": 95,
+      "insight": 1
+    },
+    {
+      "after_battle": 1,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "tide",
+        "tier": 1
+      },
+      "stones": 105,
+      "insight": 1
+    },
+    {
+      "after_battle": 1,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "tide",
+        "tier": 2
+      },
+      "stones": 120,
+      "insight": 2
+    },
+    {
+      "after_battle": 1,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "lantern",
+        "tier": 0
+      },
+      "stones": 125,
+      "insight": 2
+    },
+    {
+      "after_battle": 1,
+      "action": "buy_talent",
+      "details": {
+        "hero": "gatherer",
+        "branch": "A",
+        "rank": 1
+      },
+      "stones": 105,
+      "insight": 2
+    },
+    {
+      "after_battle": 1,
+      "action": "crop_research",
+      "details": {
+        "crop": "qi_grass"
+      },
+      "stones": 105,
+      "insight": 1
+    },
+    {
+      "after_battle": 1,
+      "action": "learn_recipe",
+      "details": {
+        "recipe": "purifying_dew"
+      },
+      "stones": 105,
+      "insight": 0
+    },
+    {
+      "after_battle": 1,
+      "action": "plant",
+      "details": {
+        "plot": 0,
+        "crop": "azure_bamboo"
+      },
+      "stones": 105,
+      "insight": 0
+    },
+    {
+      "after_battle": 1,
+      "action": "water",
+      "details": {
+        "plot": 0
+      },
+      "stones": 105,
+      "insight": 0
+    },
+    {
+      "after_battle": 1,
+      "action": "craft",
+      "details": {
+        "recipe": "spirit_tea"
+      },
+      "stones": 103,
+      "insight": 0
+    },
+    {
+      "after_battle": 1,
+      "action": "equip",
+      "details": {
+        "item": "spirit_tea"
+      },
+      "stones": 103,
+      "insight": 0
+    },
+    {
+      "after_battle": 2,
+      "action": "harvest",
+      "details": {
+        "plot": 1
+      },
+      "stones": 158,
+      "insight": 1
+    },
+    {
+      "after_battle": 2,
+      "action": "contract_claim",
+      "details": {
+        "id": "whole_gate"
+      },
+      "stones": 178,
+      "insight": 1
+    },
+    {
+      "after_battle": 2,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "lantern",
+        "tier": 1
+      },
+      "stones": 188,
+      "insight": 1
+    },
+    {
+      "after_battle": 2,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "drowned",
+        "tier": 0
+      },
+      "stones": 193,
+      "insight": 1
+    },
+    {
+      "after_battle": 2,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "drowned",
+        "tier": 1
+      },
+      "stones": 203,
+      "insight": 1
+    },
+    {
+      "after_battle": 2,
+      "action": "buy_talent",
+      "details": {
+        "hero": "gatherer",
+        "branch": "A",
+        "rank": 2
+      },
+      "stones": 173,
+      "insight": 1
+    },
+    {
+      "after_battle": 2,
+      "action": "buy_talent",
+      "details": {
+        "hero": "gatherer",
+        "branch": "A",
+        "rank": 3
+      },
+      "stones": 128,
+      "insight": 1
+    },
+    {
+      "after_battle": 2,
+      "action": "plant",
+      "details": {
+        "plot": 1,
+        "crop": "river_lotus"
+      },
+      "stones": 128,
+      "insight": 1
+    },
+    {
+      "after_battle": 2,
+      "action": "water",
+      "details": {
+        "plot": 1
+      },
+      "stones": 128,
+      "insight": 1
+    },
+    {
+      "after_battle": 2,
+      "action": "equip",
+      "details": {
+        "item": null
+      },
+      "stones": 128,
+      "insight": 1
+    },
+    {
+      "after_battle": 3,
+      "action": "harvest",
+      "details": {
+        "plot": 0
+      },
+      "stones": 218,
+      "insight": 3
+    },
+    {
+      "after_battle": 3,
+      "action": "harvest",
+      "details": {
+        "plot": 2
+      },
+      "stones": 218,
+      "insight": 3
+    },
+    {
+      "after_battle": 3,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "lantern",
+        "tier": 2
+      },
+      "stones": 233,
+      "insight": 4
+    },
+    {
+      "after_battle": 3,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "drowned",
+        "tier": 2
+      },
+      "stones": 248,
+      "insight": 5
+    },
+    {
+      "after_battle": 3,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "riverlord",
+        "tier": 0
+      },
+      "stones": 258,
+      "insight": 5
+    },
+    {
+      "after_battle": 3,
+      "action": "buy_talent",
+      "details": {
+        "hero": "sword",
+        "branch": "A",
+        "rank": 1
+      },
+      "stones": 238,
+      "insight": 5
+    },
+    {
+      "after_battle": 3,
+      "action": "buy_talent",
+      "details": {
+        "hero": "sword",
+        "branch": "A",
+        "rank": 2
+      },
+      "stones": 208,
+      "insight": 5
+    },
+    {
+      "after_battle": 3,
+      "action": "buy_talent",
+      "details": {
+        "hero": "sword",
+        "branch": "A",
+        "rank": 3
+      },
+      "stones": 163,
+      "insight": 5
+    },
+    {
+      "after_battle": 3,
+      "action": "learn_recipe",
+      "details": {
+        "recipe": "soul_ward"
+      },
+      "stones": 163,
+      "insight": 3
+    },
+    {
+      "after_battle": 3,
+      "action": "plant",
+      "details": {
+        "plot": 0,
+        "crop": "river_lotus"
+      },
+      "stones": 163,
+      "insight": 3
+    },
+    {
+      "after_battle": 3,
+      "action": "water",
+      "details": {
+        "plot": 0
+      },
+      "stones": 163,
+      "insight": 3
+    },
+    {
+      "after_battle": 3,
+      "action": "plant",
+      "details": {
+        "plot": 2,
+        "crop": "qi_grass"
+      },
+      "stones": 163,
+      "insight": 3
+    },
+    {
+      "after_battle": 3,
+      "action": "water",
+      "details": {
+        "plot": 2
+      },
+      "stones": 163,
+      "insight": 3
+    },
+    {
+      "after_battle": 3,
+      "action": "equip",
+      "details": {
+        "item": null
+      },
+      "stones": 163,
+      "insight": 3
+    },
+    {
+      "after_battle": 4,
+      "action": "harvest",
+      "details": {
+        "plot": 1
+      },
+      "stones": 228,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "harvest",
+      "details": {
+        "plot": 2
+      },
+      "stones": 228,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "hound",
+        "tier": 0
+      },
+      "stones": 233,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "hound",
+        "tier": 1
+      },
+      "stones": 243,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "yaksha",
+        "tier": 0
+      },
+      "stones": 248,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "yaksha",
+        "tier": 1
+      },
+      "stones": 258,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "drainer",
+        "tier": 0
+      },
+      "stones": 263,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "rottenwood",
+        "tier": 0
+      },
+      "stones": 268,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "buy_talent",
+      "details": {
+        "hero": "fire",
+        "branch": "B",
+        "rank": 1
+      },
+      "stones": 248,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "buy_talent",
+      "details": {
+        "hero": "fire",
+        "branch": "B",
+        "rank": 2
+      },
+      "stones": 218,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "expand",
+      "details": {},
+      "stones": 158,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "plant",
+      "details": {
+        "plot": 1,
+        "crop": "azure_bamboo"
+      },
+      "stones": 158,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "water",
+      "details": {
+        "plot": 1
+      },
+      "stones": 158,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "plant",
+      "details": {
+        "plot": 2,
+        "crop": "qi_grass"
+      },
+      "stones": 158,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "water",
+      "details": {
+        "plot": 2
+      },
+      "stones": 158,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "plant",
+      "details": {
+        "plot": 3,
+        "crop": "river_lotus"
+      },
+      "stones": 158,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "water",
+      "details": {
+        "plot": 3
+      },
+      "stones": 158,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "plant",
+      "details": {
+        "plot": 4,
+        "crop": "qi_grass"
+      },
+      "stones": 158,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "water",
+      "details": {
+        "plot": 4
+      },
+      "stones": 158,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "plant",
+      "details": {
+        "plot": 5,
+        "crop": "qi_grass"
+      },
+      "stones": 158,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "water",
+      "details": {
+        "plot": 5
+      },
+      "stones": 158,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "craft",
+      "details": {
+        "recipe": "purifying_dew"
+      },
+      "stones": 155,
+      "insight": 4
+    },
+    {
+      "after_battle": 4,
+      "action": "equip",
+      "details": {
+        "item": null
+      },
+      "stones": 155,
+      "insight": 4
+    },
+    {
+      "after_battle": 5,
+      "action": "harvest",
+      "details": {
+        "plot": 0
+      },
+      "stones": 230,
+      "insight": 5
+    },
+    {
+      "after_battle": 5,
+      "action": "harvest",
+      "details": {
+        "plot": 2
+      },
+      "stones": 230,
+      "insight": 5
+    },
+    {
+      "after_battle": 5,
+      "action": "harvest",
+      "details": {
+        "plot": 4
+      },
+      "stones": 230,
+      "insight": 5
+    },
+    {
+      "after_battle": 5,
+      "action": "harvest",
+      "details": {
+        "plot": 5
+      },
+      "stones": 230,
+      "insight": 5
+    },
+    {
+      "after_battle": 5,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "yaksha",
+        "tier": 2
+      },
+      "stones": 245,
+      "insight": 6
+    },
+    {
+      "after_battle": 5,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "drainer",
+        "tier": 1
+      },
+      "stones": 255,
+      "insight": 6
+    },
+    {
+      "after_battle": 5,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "rottenwood",
+        "tier": 1
+      },
+      "stones": 265,
+      "insight": 6
+    },
+    {
+      "after_battle": 5,
+      "action": "buy_talent",
+      "details": {
+        "hero": "fire",
+        "branch": "B",
+        "rank": 3
+      },
+      "stones": 220,
+      "insight": 6
+    },
+    {
+      "after_battle": 5,
+      "action": "plant",
+      "details": {
+        "plot": 0,
+        "crop": "azure_bamboo"
+      },
+      "stones": 220,
+      "insight": 6
+    },
+    {
+      "after_battle": 5,
+      "action": "water",
+      "details": {
+        "plot": 0
+      },
+      "stones": 220,
+      "insight": 6
+    },
+    {
+      "after_battle": 5,
+      "action": "plant",
+      "details": {
+        "plot": 2,
+        "crop": "river_lotus"
+      },
+      "stones": 220,
+      "insight": 6
+    },
+    {
+      "after_battle": 5,
+      "action": "water",
+      "details": {
+        "plot": 2
+      },
+      "stones": 220,
+      "insight": 6
+    },
+    {
+      "after_battle": 5,
+      "action": "plant",
+      "details": {
+        "plot": 4,
+        "crop": "qi_grass"
+      },
+      "stones": 220,
+      "insight": 6
+    },
+    {
+      "after_battle": 5,
+      "action": "water",
+      "details": {
+        "plot": 4
+      },
+      "stones": 220,
+      "insight": 6
+    },
+    {
+      "after_battle": 5,
+      "action": "plant",
+      "details": {
+        "plot": 5,
+        "crop": "qi_grass"
+      },
+      "stones": 220,
+      "insight": 6
+    },
+    {
+      "after_battle": 5,
+      "action": "water",
+      "details": {
+        "plot": 5
+      },
+      "stones": 220,
+      "insight": 6
+    },
+    {
+      "after_battle": 5,
+      "action": "equip",
+      "details": {
+        "item": null
+      },
+      "stones": 220,
+      "insight": 6
+    },
+    {
+      "after_battle": 6,
+      "action": "harvest",
+      "details": {
+        "plot": 1
+      },
+      "stones": 330,
+      "insight": 8
+    },
+    {
+      "after_battle": 6,
+      "action": "harvest",
+      "details": {
+        "plot": 3
+      },
+      "stones": 330,
+      "insight": 8
+    },
+    {
+      "after_battle": 6,
+      "action": "harvest",
+      "details": {
+        "plot": 4
+      },
+      "stones": 330,
+      "insight": 8
+    },
+    {
+      "after_battle": 6,
+      "action": "harvest",
+      "details": {
+        "plot": 5
+      },
+      "stones": 330,
+      "insight": 8
+    },
+    {
+      "after_battle": 6,
+      "action": "contract_claim",
+      "details": {
+        "id": "three_roles"
+      },
+      "stones": 350,
+      "insight": 8
+    },
+    {
+      "after_battle": 6,
+      "action": "contracts_rotate",
+      "details": {},
+      "stones": 350,
+      "insight": 8
+    },
+    {
+      "after_battle": 6,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "hound",
+        "tier": 2
+      },
+      "stones": 365,
+      "insight": 9
+    },
+    {
+      "after_battle": 6,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "drainer",
+        "tier": 2
+      },
+      "stones": 380,
+      "insight": 10
+    },
+    {
+      "after_battle": 6,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "mountainlord",
+        "tier": 0
+      },
+      "stones": 390,
+      "insight": 10
+    },
+    {
+      "after_battle": 6,
+      "action": "buy_talent",
+      "details": {
+        "hero": "fire",
+        "branch": "B",
+        "rank": 4
+      },
+      "stones": 330,
+      "insight": 10
+    },
+    {
+      "after_battle": 6,
+      "action": "buy_talent",
+      "details": {
+        "hero": "fire",
+        "branch": "B",
+        "rank": 5
+      },
+      "stones": 240,
+      "insight": 10
+    },
+    {
+      "after_battle": 6,
+      "action": "plant",
+      "details": {
+        "plot": 1,
+        "crop": "azure_bamboo"
+      },
+      "stones": 240,
+      "insight": 10
+    },
+    {
+      "after_battle": 6,
+      "action": "water",
+      "details": {
+        "plot": 1
+      },
+      "stones": 240,
+      "insight": 10
+    },
+    {
+      "after_battle": 6,
+      "action": "equip",
+      "details": {
+        "item": null
+      },
+      "stones": 240,
+      "insight": 10
+    },
+    {
+      "after_battle": 7,
+      "action": "harvest",
+      "details": {
+        "plot": 0
+      },
+      "stones": 325,
+      "insight": 11
+    },
+    {
+      "after_battle": 7,
+      "action": "harvest",
+      "details": {
+        "plot": 2
+      },
+      "stones": 325,
+      "insight": 11
+    },
+    {
+      "after_battle": 7,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "soul",
+        "tier": 0
+      },
+      "stones": 330,
+      "insight": 11
+    },
+    {
+      "after_battle": 7,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "soul",
+        "tier": 1
+      },
+      "stones": 340,
+      "insight": 11
+    },
+    {
+      "after_battle": 7,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "soul",
+        "tier": 2
+      },
+      "stones": 355,
+      "insight": 12
+    },
+    {
+      "after_battle": 7,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "rottenwood",
+        "tier": 2
+      },
+      "stones": 370,
+      "insight": 13
+    },
+    {
+      "after_battle": 7,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "swordcorpse",
+        "tier": 0
+      },
+      "stones": 375,
+      "insight": 13
+    },
+    {
+      "after_battle": 7,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "swordcorpse",
+        "tier": 1
+      },
+      "stones": 385,
+      "insight": 13
+    },
+    {
+      "after_battle": 7,
+      "action": "buy_talent",
+      "details": {
+        "hero": "monk",
+        "branch": "A",
+        "rank": 1
+      },
+      "stones": 365,
+      "insight": 13
+    },
+    {
+      "after_battle": 7,
+      "action": "buy_talent",
+      "details": {
+        "hero": "monk",
+        "branch": "A",
+        "rank": 2
+      },
+      "stones": 335,
+      "insight": 13
+    },
+    {
+      "after_battle": 7,
+      "action": "buy_talent",
+      "details": {
+        "hero": "herbalist",
+        "branch": "A",
+        "rank": 1
+      },
+      "stones": 315,
+      "insight": 13
+    },
+    {
+      "after_battle": 7,
+      "action": "buy_talent",
+      "details": {
+        "hero": "herbalist",
+        "branch": "A",
+        "rank": 2
+      },
+      "stones": 285,
+      "insight": 13
+    },
+    {
+      "after_battle": 7,
+      "action": "plant",
+      "details": {
+        "plot": 0,
+        "crop": "soul_lingzhi"
+      },
+      "stones": 285,
+      "insight": 13
+    },
+    {
+      "after_battle": 7,
+      "action": "water",
+      "details": {
+        "plot": 0
+      },
+      "stones": 285,
+      "insight": 13
+    },
+    {
+      "after_battle": 7,
+      "action": "craft",
+      "details": {
+        "recipe": "soul_ward"
+      },
+      "stones": 281,
+      "insight": 13
+    },
+    {
+      "after_battle": 7,
+      "action": "equip",
+      "details": {
+        "item": null
+      },
+      "stones": 281,
+      "insight": 13
+    },
+    {
+      "after_battle": 8,
+      "action": "harvest",
+      "details": {
+        "plot": 1
+      },
+      "stones": 376,
+      "insight": 14
+    },
+    {
+      "after_battle": 8,
+      "action": "contract_claim",
+      "details": {
+        "id": "cultivation"
+      },
+      "stones": 391,
+      "insight": 14
+    },
+    {
+      "after_battle": 8,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "swordcorpse",
+        "tier": 2
+      },
+      "stones": 406,
+      "insight": 15
+    },
+    {
+      "after_battle": 8,
+      "action": "buy_talent",
+      "details": {
+        "hero": "monk",
+        "branch": "A",
+        "rank": 3
+      },
+      "stones": 361,
+      "insight": 15
+    },
+    {
+      "after_battle": 8,
+      "action": "plant",
+      "details": {
+        "plot": 1,
+        "crop": "azure_bamboo"
+      },
+      "stones": 361,
+      "insight": 15
+    },
+    {
+      "after_battle": 8,
+      "action": "water",
+      "details": {
+        "plot": 1
+      },
+      "stones": 361,
+      "insight": 15
+    },
+    {
+      "after_battle": 8,
+      "action": "plant",
+      "details": {
+        "plot": 2,
+        "crop": "soul_lingzhi"
+      },
+      "stones": 361,
+      "insight": 15
+    },
+    {
+      "after_battle": 8,
+      "action": "water",
+      "details": {
+        "plot": 2
+      },
+      "stones": 361,
+      "insight": 15
+    },
+    {
+      "after_battle": 8,
+      "action": "equip",
+      "details": {
+        "item": null
+      },
+      "stones": 361,
+      "insight": 15
+    },
+    {
+      "after_battle": 9,
+      "action": "achievement_claim",
+      "details": {
+        "id": "campaign"
+      },
+      "stones": 601,
+      "insight": 20
+    },
+    {
+      "after_battle": 9,
+      "action": "monster_claim",
+      "details": {
+        "enemy": "boneemperor",
+        "tier": 0
+      },
+      "stones": 611,
+      "insight": 20
+    },
+    {
+      "after_battle": 9,
+      "action": "buy_talent",
+      "details": {
+        "hero": "herbalist",
+        "branch": "A",
+        "rank": 3
+      },
+      "stones": 566,
+      "insight": 20
+    },
+    {
+      "after_battle": 9,
+      "action": "plant",
+      "details": {
+        "plot": 3,
+        "crop": "soul_lingzhi"
+      },
+      "stones": 566,
+      "insight": 20
+    },
+    {
+      "after_battle": 9,
+      "action": "water",
+      "details": {
+        "plot": 3
+      },
+      "stones": 566,
+      "insight": 20
+    },
+    {
+      "after_battle": 9,
+      "action": "equip",
+      "details": {
+        "item": null
+      },
+      "stones": 566,
+      "insight": 20
+    }
+  ],
+  "final_profile": {
+    "best": {
+      "wharf-1": {
+        "time": 197.117,
+        "gate": 3,
+        "kills": 62
+      },
+      "wharf-2": {
+        "time": 225.567,
+        "gate": 3,
+        "kills": 77
+      },
+      "wharf-3": {
+        "time": 311.317,
+        "gate": 3,
+        "kills": 102
+      },
+      "terrace-1": {
+        "time": 279.033,
+        "gate": 3,
+        "kills": 81
+      },
+      "terrace-2": {
+        "time": 276.15,
+        "gate": 3,
+        "kills": 84
+      },
+      "terrace-3": {
+        "time": 367.183,
+        "gate": 3,
+        "kills": 99
+      },
+      "tomb-1": {
+        "time": 305.333,
+        "gate": 3,
+        "kills": 91
+      },
+      "tomb-2": {
+        "time": 388.633,
+        "gate": 3,
+        "kills": 92
+      },
+      "tomb-3": {
+        "time": 571.4,
+        "gate": 2,
+        "kills": 124
+      }
+    },
+    "settings": {},
+    "version": 2,
+    "save_id": "57d50efb09164ae69d643aaa7bc8e77f",
+    "stones": 566,
+    "insight": 20,
+    "completed": [
+      "wharf-1",
+      "wharf-2",
+      "wharf-3",
+      "terrace-1",
+      "terrace-2",
+      "terrace-3",
+      "tomb-1",
+      "tomb-2",
+      "tomb-3"
+    ],
+    "upgrades": {
+      "gatherer": {
+        "branch": "A",
+        "rank": 3
+      },
+      "sword": {
+        "branch": "A",
+        "rank": 3
+      },
+      "fire": {
+        "branch": "B",
+        "rank": 5
+      },
+      "monk": {
+        "branch": "A",
+        "rank": 3
+      },
+      "herbalist": {
+        "branch": "A",
+        "rank": 3
+      }
+    },
+    "estate": {
+      "garden": {
+        "size": 6,
+        "irrigation": 0,
+        "plots": [
+          {
+            "crop": "soul_lingzhi",
+            "growth": 2,
+            "watered": true,
+            "fertilized": false
+          },
+          {
+            "crop": "azure_bamboo",
+            "growth": 1,
+            "watered": true,
+            "fertilized": false
+          },
+          {
+            "crop": "soul_lingzhi",
+            "growth": 1,
+            "watered": true,
+            "fertilized": false
+          },
+          {
+            "crop": "soul_lingzhi",
+            "growth": 0,
+            "watered": true,
+            "fertilized": false
+          },
+          {
+            "crop": null,
+            "growth": 0,
+            "watered": false,
+            "fertilized": false
+          },
+          {
+            "crop": null,
+            "growth": 0,
+            "watered": false,
+            "fertilized": false
+          },
+          {
+            "crop": null,
+            "growth": 0,
+            "watered": false,
+            "fertilized": false
+          },
+          {
+            "crop": null,
+            "growth": 0,
+            "watered": false,
+            "fertilized": false
+          },
+          {
+            "crop": null,
+            "growth": 0,
+            "watered": false,
+            "fertilized": false
+          }
+        ]
+      },
+      "bag": {
+        "seeds": {
+          "qi_grass": 0,
+          "river_lotus": 0,
+          "azure_bamboo": 0,
+          "soul_lingzhi": 0
+        },
+        "produce": {
+          "qi_grass": 24,
+          "river_lotus": 19,
+          "azure_bamboo": 10,
+          "soul_lingzhi": 2
+        },
+        "pills": {
+          "spirit_tea": 0,
+          "purifying_dew": 1,
+          "soul_ward": 1
+        },
+        "fertilizer": 5
+      },
+      "trial_medals": {
+        "trial-caravan": 0,
+        "trial-beacons": 0,
+        "trial-oath": 0
+      },
+      "trial_wins": {
+        "trial-caravan": 0,
+        "trial-beacons": 0,
+        "trial-oath": 0
+      },
+      "journal": [
+        {
+          "note": "Harvested 4 River Lotus.",
+          "kind": "harvest",
+          "stones": 0,
+          "insight": 0
+        },
+        {
+          "note": "Bestiary research reward claimed.",
+          "kind": "monster_claim",
+          "stones": 5,
+          "insight": 0
+        },
+        {
+          "note": "Bestiary research reward claimed.",
+          "kind": "monster_claim",
+          "stones": 10,
+          "insight": 0
+        },
+        {
+          "note": "Bestiary research reward claimed.",
+          "kind": "monster_claim",
+          "stones": 15,
+          "insight": 1
+        },
+        {
+          "note": "Bestiary research reward claimed.",
+          "kind": "monster_claim",
+          "stones": 15,
+          "insight": 1
+        },
+        {
+          "note": "Bestiary research reward claimed.",
+          "kind": "monster_claim",
+          "stones": 5,
+          "insight": 0
+        },
+        {
+          "note": "Bestiary research reward claimed.",
+          "kind": "monster_claim",
+          "stones": 10,
+          "insight": 0
+        },
+        {
+          "note": "Talent awakened.",
+          "kind": "buy_talent",
+          "stones": -20,
+          "insight": 0
+        },
+        {
+          "note": "Talent awakened.",
+          "kind": "buy_talent",
+          "stones": -30,
+          "insight": 0
+        },
+        {
+          "note": "Talent awakened.",
+          "kind": "buy_talent",
+          "stones": -20,
+          "insight": 0
+        },
+        {
+          "note": "Talent awakened.",
+          "kind": "buy_talent",
+          "stones": -30,
+          "insight": 0
+        },
+        {
+          "note": "Soul Lingzhi planted.",
+          "kind": "plant",
+          "stones": 0,
+          "insight": 0
+        },
+        {
+          "note": "Watered: better harvest yield.",
+          "kind": "water",
+          "stones": 0,
+          "insight": 0
+        },
+        {
+          "note": "Crafted 1 Soul-Ward Elixir.",
+          "kind": "craft",
+          "stones": -4,
+          "insight": 0
+        },
+        {
+          "note": "Preparation slot cleared.",
+          "kind": "equip",
+          "stones": 0,
+          "insight": 0
+        },
+        {
+          "note": "Victory recorded: stones, seeds and garden growth awarded.",
+          "kind": "battle",
+          "stones": 95,
+          "insight": 1
+        },
+        {
+          "note": "Harvested 3 Azure Wind Bamboo.",
+          "kind": "harvest",
+          "stones": 0,
+          "insight": 0
+        },
+        {
+          "note": "Commission reward claimed.",
+          "kind": "contract_claim",
+          "stones": 15,
+          "insight": 0
+        },
+        {
+          "note": "Bestiary research reward claimed.",
+          "kind": "monster_claim",
+          "stones": 15,
+          "insight": 1
+        },
+        {
+          "note": "Talent awakened.",
+          "kind": "buy_talent",
+          "stones": -45,
+          "insight": 0
+        },
+        {
+          "note": "Azure Wind Bamboo planted.",
+          "kind": "plant",
+          "stones": 0,
+          "insight": 0
+        },
+        {
+          "note": "Watered: better harvest yield.",
+          "kind": "water",
+          "stones": 0,
+          "insight": 0
+        },
+        {
+          "note": "Soul Lingzhi planted.",
+          "kind": "plant",
+          "stones": 0,
+          "insight": 0
+        },
+        {
+          "note": "Watered: better harvest yield.",
+          "kind": "water",
+          "stones": 0,
+          "insight": 0
+        },
+        {
+          "note": "Preparation slot cleared.",
+          "kind": "equip",
+          "stones": 0,
+          "insight": 0
+        },
+        {
+          "note": "Victory recorded: stones, seeds and garden growth awarded.",
+          "kind": "battle",
+          "stones": 160,
+          "insight": 3
+        },
+        {
+          "note": "Achievement reward claimed.",
+          "kind": "achievement_claim",
+          "stones": 80,
+          "insight": 2
+        },
+        {
+          "note": "Bestiary research reward claimed.",
+          "kind": "monster_claim",
+          "stones": 10,
+          "insight": 0
+        },
+        {
+          "note": "Talent awakened.",
+          "kind": "buy_talent",
+          "stones": -45,
+          "insight": 0
+        },
+        {
+          "note": "Soul Lingzhi planted.",
+          "kind": "plant",
+          "stones": 0,
+          "insight": 0
+        },
+        {
+          "note": "Watered: better harvest yield.",
+          "kind": "water",
+          "stones": 0,
+          "insight": 0
+        },
+        {
+          "kind": "equip",
+          "note": "Preparation slot cleared.",
+          "stones": 0,
+          "insight": 0
+        }
+      ],
+      "talent_paid": {
+        "gatherer": 95,
+        "sword": 95,
+        "fire": 245,
+        "monk": 95,
+        "herbalist": 95
+      },
+      "crop_research": {
+        "qi_grass": 1,
+        "river_lotus": 0,
+        "azure_bamboo": 0,
+        "soul_lingzhi": 0
+      },
+      "blueprints": [
+        "spirit_tea",
+        "purifying_dew",
+        "soul_ward"
+      ],
+      "equipped": null,
+      "cosmetics": {
+        "owned": [],
+        "active": []
+      },
+      "contracts": {
+        "cycle": 1,
+        "entries": [
+          {
+            "id": "cultivation",
+            "progress": 3,
+            "claimed": true
+          },
+          {
+            "id": "nursery",
+            "progress": 0,
+            "claimed": false
+          },
+          {
+            "id": "alchemist",
+            "progress": 1,
+            "claimed": false
+          }
+        ]
+      },
+      "claimed_achievements": [
+        "first_victory",
+        "first_harvest",
+        "campaign"
+      ],
+      "monsters": {
+        "tide": 307,
+        "lantern": 46,
+        "drowned": 26,
+        "riverlord": 1,
+        "hound": 34,
+        "rottenwood": 59,
+        "yaksha": 48,
+        "drainer": 61,
+        "mountainlord": 1,
+        "soul": 179,
+        "swordcorpse": 46,
+        "boneemperor": 1
+      },
+      "monster_claims": {
+        "tide": [
+          0,
+          1,
+          2
+        ],
+        "lantern": [
+          0,
+          1,
+          2
+        ],
+        "drowned": [
+          0,
+          1,
+          2
+        ],
+        "riverlord": [
+          0
+        ],
+        "hound": [
+          0,
+          1,
+          2
+        ],
+        "yaksha": [
+          0,
+          1,
+          2
+        ],
+        "drainer": [
+          0,
+          1,
+          2
+        ],
+        "rottenwood": [
+          0,
+          1,
+          2
+        ],
+        "mountainlord": [
+          0
+        ],
+        "soul": [
+          0,
+          1,
+          2
+        ],
+        "swordcorpse": [
+          0,
+          1,
+          2
+        ],
+        "boneemperor": [
+          0
+        ]
+      },
+      "ledger": [
+        "playtest-0",
+        "playtest-1",
+        "playtest-2",
+        "playtest-3",
+        "playtest-4",
+        "playtest-5",
+        "playtest-6",
+        "playtest-7",
+        "playtest-8"
+      ],
+      "stats": {
+        "wins": 9,
+        "battles": 9,
+        "max_roles": 3,
+        "harvests": 17,
+        "crafted": 3
+      }
+    }
+  },
+  "fertilizer_unit_price": 2
+}

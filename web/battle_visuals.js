@@ -476,6 +476,51 @@ window.VanDaoBattleArt = (() => {
       c.fillStyle = color;
       c.fillRect(bx + col * cw + 1, by + lane * ch + 1, 22, 22);
     };
+    if (s?.mode === "trial" && page === 0) {
+      for (const o of s.objective?.objects || []) {
+        const ox = bx + o.x * cw,
+          oy = by + (o.lane + 0.5) * ch;
+        c.strokeStyle = "#89edbf";
+        c.beginPath();
+        c.arc(ox, oy, 1.5 * cw, 0, Math.PI * 2);
+        c.stroke();
+        c.fillStyle = "#cdb47d";
+        c.fillRect(ox - 9, oy - 7, 18, 14);
+        text(
+          s.objective.kind === "escort" ? "CART" : "BEACON",
+          ox,
+          oy - 3,
+          "#13292a",
+          0.55,
+          "center",
+        );
+        c.strokeStyle = "#ec987c";
+        c.beginPath();
+        c.arc(ox, oy, 0.9 * cw, 0, Math.PI * 2);
+        c.stroke();
+        if (s.objective.kind === "escort") {
+          c.fillStyle = "#cdb47d";
+          c.fillRect(ox + 20, oy - 1, 90, 2);
+        }
+      }
+      text(
+        s.objective?.kind === "oath"
+          ? "DEFEAT THE EMPEROR / KEEP HONOR FOR BETTER MEDALS"
+          : "GREEN: FIGHTER PROTECTION / RED: RAIDER DAMAGE",
+        192,
+        165,
+        "#deefce",
+        0.8,
+        "center",
+      );
+      if (s.objective?.kind === "oath") {
+        c.fillStyle = "#705578";
+        c.fillRect(270, 55, 38, 65);
+        text("BOSS", 289, 80, "#ffdeac", 1, "center");
+      }
+      c.restore();
+      return;
+    }
     if (region === "nursery") {
       for (let lane = 0; lane < 5; lane++)
         for (let col = 0; col < 12; col++)

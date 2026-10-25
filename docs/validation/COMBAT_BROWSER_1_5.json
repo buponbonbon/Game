@@ -1,0 +1,540 @@
+{
+  "passed": true,
+  "checks": [
+    "canvas trial/medal/tactics navigation, persistent visual options and two-stone fertilizer journal",
+    "all 21 animation sheets decoded lazily; all four attack/skill frames and eight hero ultimate sequences rendered from actual source cells",
+    "walk loops advance, pause freezes frames; circle/segment/marked-lane countdowns render",
+    "two-frame deaths render for all eight cultivators and thirteen enemy/altar identities",
+    "actual server trial outcome awards Gold once, preserves nine campaign clears and returns to trials",
+    "reload persists v2 saves/visual preferences/medals; landscape touch has no JS errors or external requests"
+  ],
+  "js_errors": [],
+  "external_requests": [],
+  "frames": {
+    "gatherer:idle": [
+      0
+    ],
+    "sword:idle": [
+      0
+    ],
+    "frost:idle": [
+      0
+    ],
+    "monk:idle": [
+      0
+    ],
+    "lightning:idle": [
+      0
+    ],
+    "fire:idle": [
+      0
+    ],
+    "herbalist:idle": [
+      0
+    ],
+    "formation:idle": [
+      0
+    ],
+    "gatherer:skill": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "lightning:skill": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "sword:skill": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "herbalist:skill": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "fire:skill": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "formation:skill": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "frost:skill": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "monk:skill": [
+      3,
+      0,
+      1,
+      2
+    ],
+    "drainer:walk": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "mountainlord:walk": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "tide:walk": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "lantern:walk": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "soul:walk": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "boneemperor:walk": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "drowned:walk": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "altar:walk": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "rottenwood:walk": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "hound:walk": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "swordcorpse:walk": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "yaksha:walk": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "riverlord:walk": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "gatherer:attack": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "lightning:attack": [
+      0,
+      3,
+      1,
+      2
+    ],
+    "tide:attack": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "drainer:attack": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "mountainlord:attack": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "sword:attack": [
+      0,
+      3,
+      1,
+      2
+    ],
+    "herbalist:attack": [
+      0,
+      3,
+      1,
+      2
+    ],
+    "lantern:attack": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "soul:attack": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "boneemperor:attack": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "fire:attack": [
+      0,
+      1,
+      3,
+      2
+    ],
+    "formation:attack": [
+      0,
+      3,
+      1,
+      2
+    ],
+    "drowned:attack": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "rottenwood:attack": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "altar:attack": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "frost:attack": [
+      0,
+      3,
+      1,
+      2
+    ],
+    "hound:attack": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "swordcorpse:attack": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "monk:attack": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "yaksha:attack": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "riverlord:attack": [
+      0,
+      2,
+      3,
+      1
+    ],
+    "tide:skill": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "drainer:skill": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "mountainlord:skill": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "lantern:skill": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "soul:skill": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "boneemperor:skill": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "drowned:skill": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "rottenwood:skill": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "altar:skill": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "hound:skill": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "swordcorpse:skill": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "yaksha:skill": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "riverlord:skill": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "gatherer:ultimate": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "lightning:ultimate": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "tide:ultimate": [
+      0
+    ],
+    "drainer:ultimate": [
+      0
+    ],
+    "mountainlord:ultimate": [
+      0
+    ],
+    "sword:ultimate": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "herbalist:ultimate": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "lantern:ultimate": [
+      0
+    ],
+    "soul:ultimate": [
+      0
+    ],
+    "boneemperor:ultimate": [
+      0
+    ],
+    "fire:ultimate": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "formation:ultimate": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "drowned:ultimate": [
+      0
+    ],
+    "rottenwood:ultimate": [
+      0
+    ],
+    "altar:ultimate": [
+      0
+    ],
+    "frost:ultimate": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "hound:ultimate": [
+      0
+    ],
+    "swordcorpse:ultimate": [
+      0
+    ],
+    "monk:ultimate": [
+      0,
+      1,
+      2,
+      3
+    ],
+    "yaksha:ultimate": [
+      0
+    ],
+    "riverlord:ultimate": [
+      0
+    ],
+    "gatherer:death": [
+      0,
+      1
+    ],
+    "sword:death": [
+      0,
+      1
+    ],
+    "fire:death": [
+      0,
+      1
+    ],
+    "frost:death": [
+      0,
+      1
+    ],
+    "monk:death": [
+      0,
+      1
+    ],
+    "lightning:death": [
+      0,
+      1
+    ],
+    "herbalist:death": [
+      0,
+      1
+    ],
+    "formation:death": [
+      0,
+      1
+    ],
+    "tide:death": [
+      0,
+      1
+    ],
+    "lantern:death": [
+      0,
+      1
+    ],
+    "drowned:death": [
+      0,
+      1
+    ],
+    "hound:death": [
+      0,
+      1
+    ],
+    "yaksha:death": [
+      0,
+      1
+    ],
+    "drainer:death": [
+      0,
+      1
+    ],
+    "soul:death": [
+      0,
+      1
+    ],
+    "rottenwood:death": [
+      0,
+      1
+    ],
+    "swordcorpse:death": [
+      0,
+      1
+    ],
+    "altar:death": [
+      0,
+      1
+    ],
+    "riverlord:death": [
+      0,
+      1
+    ],
+    "mountainlord:death": [
+      0,
+      1
+    ],
+    "boneemperor:death": [
+      0,
+      1
+    ]
+  }
+}

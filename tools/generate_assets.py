@@ -848,9 +848,15 @@ def main():
     # High-resolution scene paintings are retained authoring inputs, never replaced
     # by the earlier recolored tile courtyards when regenerating procedural actors.
     retained=Path(__file__).resolve().parents[1]/'web/assets'
-    for name in ('wharf.png','terrace.png','tomb.png','scenes.json','garden.png','crops.png','crops.json','actors.json','actors_manifest.json','heroes_idle.png','heroes_attack.png','heroes_skill.png','heroes_ultimate.png','enemies_idle.png','enemies_attack.png','enemies_skill.png'):
+    for name in ('wharf.png','terrace.png','tomb.png','scenes.json','garden.png','crops.png','crops.json','actors.json','actors_manifest.json','objectives.png','objectives.json','heroes_idle.png','heroes_attack.png','heroes_skill.png','heroes_ultimate.png','enemies_idle.png','enemies_attack.png','enemies_skill.png'):
         source=retained/name;target=OUT/name
         if source.resolve()!=target.resolve():shutil.copyfile(source,target)
+    if (retained/'motion').is_dir() and (OUT/'motion').resolve()!=(retained/'motion').resolve():
+        shutil.copytree(retained/'motion',OUT/'motion',dirs_exist_ok=True)
+    if (retained/'hub').is_dir() and (OUT/'hub').resolve()!=(retained/'hub').resolve():
+        shutil.copytree(retained/'hub',OUT/'hub',dirs_exist_ok=True)
+    if (retained/'exploration').is_dir() and (OUT/'exploration').resolve()!=(retained/'exploration').resolve():
+        shutil.copytree(retained/'exploration',OUT/'exploration',dirs_exist_ok=True)
     title().save(OUT/'title.png')
     hero_ids = [
         "gatherer",

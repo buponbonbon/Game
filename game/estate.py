@@ -2,9 +2,21 @@
 
 from copy import deepcopy
 import math, uuid
-from .content import HEROES, ENEMIES, STAGES
+from .content import HEROES, ENEMIES, STAGES, TRIALS
 from .estate_content import CROPS, RECIPES, DECORATIONS, CONTRACTS, ACHIEVEMENTS
 from .rules import validate_upgrades
+from .estate_content import FERTILIZER_PRICE
+from .sanctuary import new_hub, normalize_hub, FACILITY_IDS, AVATARS
+from .world_story import (
+    new_story,
+    normalize_story,
+    CHAPTER_BY_ID,
+    NPC_BY_ID,
+    OBSERVATION_BY_ID,
+    FAVORS,
+    chapter_open,
+    favor_progress,
+)
 
 
 class EconomyError(ValueError):
@@ -58,6 +70,11 @@ def new_estate():
             "pills": {},
             "fertilizer": 3,
         },
+        hub=new_hub(),
+        story=new_story(),
+        trial_medals={},
+        trial_wins={},
+        journal=[],
         talent_paid={},
         crop_research={},
         blueprints=["spirit_tea"],
@@ -228,9 +245,44 @@ def normalize_profile(raw):
         e["talent_paid"][key] = number(paid.get(key), maximum, maximum)
     if not isinstance(old, dict):
         e["stats"]["wins"] = len(p["completed"])
+    if isinstance(old, dict):
+        for key in ("trial_medals", "trial_wins"):
+            data = old.get(key, {})
+            data = data if isinstance(data, dict) else {}
+            e[key] = {
+                k: number(data.get(k), 0, 3 if key == "trial_medals" else 99999)
+                for k in TRIALS
+            }
+        for row in sequence(old.get("journal"))[-32:]:
+            if isinstance(row, dict) and isinstance(row.get("note"), str):
+                e["journal"].append(
+                    dict(
+                        note=row["note"][:150],
+                        kind=str(row.get("kind", ""))[:25],
+                        stones=(
+                            max(-999999, min(999999, int(row.get("stones", 0))))
+                            if isinstance(row.get("stones", 0), int)
+                            else 0
+                        ),
+                        insight=(
+                            max(-999999, min(999999, int(row.get("insight", 0))))
+                            if isinstance(row.get("insight", 0), int)
+                            else 0
+                        ),
+                    )
+                )
+    e["story"] = normalize_story(old.get("story") if isinstance(old, dict) else None)
+    e["hub"] = normalize_hub(
+        old.get("hub") if isinstance(old, dict) else None, realm(p)
+    )
     p["estate"] = e
     if len(e["contracts"]["entries"]) != 3:
         _rotate(p, initial=True)
+    if e["hub"]["tracked_cycle"] != e["contracts"]["cycle"] or not any(
+        c["id"] == e["hub"]["tracked"] and not c["claimed"]
+        for c in e["contracts"]["entries"]
+    ):
+        e["hub"]["tracked"] = None
     return p
 
 
@@ -241,6 +293,7 @@ def _rotate(p, initial=False):
         if not all(c["claimed"] for c in con["entries"]):
             raise EconomyError("Claim all three commissions before taking a new set.")
         con["cycle"] += 1
+        e["hub"]["tracked"] = None
     available = [c for c in CONTRACTS if c["min_realm"] <= realm(p)]
     offset = con["cycle"] * 3 % len(available)
     ordered = available[offset:] + available[:offset]
@@ -365,6 +418,7 @@ def view(p):
             else 120 if e["garden"]["size"] == 6 else None
         ),
         irrigation_cost=[40, 90, None][e["garden"]["irrigation"]],
+        fertilizer_price=FERTILIZER_PRICE,
         respec_fee=0 if e["stats"].get("respecs", 0) == 0 else 10,
     )
 
@@ -372,9 +426,72 @@ def view(p):
 def act(raw, action, **data):
     p = normalize_profile(raw)
     e = p["estate"]
+    before_stones, before_insight = p["stones"], p["insight"]
     notice = ""
     if action == "inspect":
         pass
+    elif action in ("story_seen", "story_choice"):
+        id = data.get("chapter")
+        if not isinstance(id, str) or not chapter_open(p, id):
+            raise EconomyError("Reach this chapter before recording its story.")
+        if id not in e["story"]["seen"]:
+            e["story"]["seen"].append(id)
+        if action == "story_choice":
+            choice = data.get("choice")
+            if not isinstance(choice, str) or choice not in {
+                c["id"] for c in CHAPTER_BY_ID[id]["choices"]
+            }:
+                raise EconomyError("Choose one of this chapter's responses.")
+            if e["story"]["choices"].get(id) != choice:
+                e["story"]["choices"][id] = choice
+                notice = "Your response was added to the journey journal."
+    elif action == "story_met":
+        id = data.get("npc")
+        if not isinstance(id, str) or id not in NPC_BY_ID:
+            raise EconomyError("Choose a person in the sanctuary.")
+        if id not in e["story"]["met"]:
+            e["story"]["met"].append(id)
+    elif action == "story_observe":
+        id = data.get("id")
+        if not isinstance(id, str) or id not in OBSERVATION_BY_ID:
+            raise EconomyError("Choose a detail in the sanctuary.")
+        if id not in e["story"]["observations"]:
+            e["story"]["observations"].append(id)
+    elif action == "story_favor":
+        id = data.get("id")
+        favor = next((f for f in FAVORS if f["id"] == id), None)
+        if (
+            not favor
+            or id in e["story"]["favors"]
+            or favor_progress(p, favor) < favor["target"]
+        ):
+            raise EconomyError("This favor is not ready to complete.")
+        e["story"]["favors"].append(id)
+        notice = "A keepsake and a new memory were added to your journal."
+    elif action == "hub_visit":
+        id = data.get("facility")
+        if not isinstance(id, str) or id not in FACILITY_IDS:
+            raise EconomyError("Choose a sanctuary destination.")
+        if id not in e["hub"]["visited"]:
+            e["hub"]["visited"].append(id)
+            notice = "Sanctuary destination discovered: " + id + "."
+    elif action == "hub_avatar":
+        id = data.get("avatar")
+        definition = next((a for a in AVATARS if a["id"] == id), None)
+        if not definition or definition["realm"] > realm(p):
+            raise EconomyError(
+                "Clear the required chapter to use this sanctuary appearance."
+            )
+        e["hub"]["avatar"] = id
+        notice = "Sanctuary appearance changed. Battle stats are unchanged."
+    elif action == "hub_track":
+        id = data.get("id")
+        if id is not None and not any(
+            c["id"] == id and not c["claimed"] for c in e["contracts"]["entries"]
+        ):
+            raise EconomyError("Choose an active commission to follow.")
+        e["hub"].update(tracked=id, tracked_cycle=e["contracts"]["cycle"])
+        notice = "Commission added to your journal." if id else "Commission unpinned."
     elif action == "plant":
         plot = _plot(p, data.get("plot"))
         crop = data.get("crop")
@@ -449,7 +566,7 @@ def act(raw, action, **data):
         if isinstance(qty, bool) or not isinstance(qty, int) or not 1 <= qty <= 99:
             raise EconomyError("Quantity must be 1–99.")
         if action == "buy" and item == "fertilizer":
-            _spend(p, 5 * qty)
+            _spend(p, FERTILIZER_PRICE * qty)
             _give(p, {"fertilizer": qty})
             notice = f"Bought {qty} fertilizer."
         elif (
@@ -557,6 +674,8 @@ def act(raw, action, **data):
         if not entry or entry["claimed"] or entry["progress"] < definition["target"]:
             raise EconomyError("This commission is not ready to claim.")
         entry["claimed"] = True
+        if e["hub"]["tracked"] == key:
+            e["hub"]["tracked"] = None
         _give(p, definition["reward"])
         notice = "Commission reward claimed."
     elif action == "contracts_rotate":
@@ -643,7 +762,22 @@ def act(raw, action, **data):
         notice = "Talent awakened."
     else:
         raise EconomyError("Unknown estate action.")
+    if action != "inspect" and notice:
+        _journal(
+            p,
+            action,
+            notice,
+            p["stones"] - before_stones,
+            p["insight"] - before_insight,
+        )
     return dict(ok=True, profile=p, catalogue=view(p), notice=notice)
+
+
+def _journal(p, kind, note, stones=0, insight=0):
+    p["estate"]["journal"].append(
+        dict(kind=kind, note=note[:150], stones=stones, insight=insight)
+    )
+    p["estate"]["journal"] = p["estate"]["journal"][-32:]
 
 
 def prepare(raw):
@@ -677,6 +811,7 @@ def settle(raw, battle_id, state):
     e["ledger"] = e["ledger"][-512:]
     won = state["status"] == "victory"
     nursery = state.get("mode") == "nursery"
+    trial = state.get("mode") == "trial"
     m = state.get("metrics", {})
     growth = (
         won
@@ -729,6 +864,48 @@ def settle(raw, battle_id, state):
             notice = (
                 f"Nursery defended: {beds} beds survived. Seeds and supplies awarded."
             )
+        elif trial:
+            id = state["stage"]
+            first = not e["trial_wins"].get(id)
+            objects = (state.get("objective") or {}).get("objects", [])
+            health = min((t["hp"] / t["max_hp"] for t in objects), default=1)
+            intact = state.get("gate", 0) >= 3
+            medal = (
+                3
+                if intact and not m.get("deaths", 0) and health >= 0.9
+                else (
+                    2
+                    if intact
+                    and m.get("deaths", 0)
+                    <= (
+                        3 if (state.get("objective") or {}).get("kind") == "oath" else 1
+                    )
+                    and health >= 0.7
+                    else 1
+                )
+            )
+            e["trial_medals"][id] = max(e["trial_medals"].get(id, 0), medal)
+            e["trial_wins"][id] = e["trial_wins"].get(id, 0) + 1
+            _give(
+                p,
+                {
+                    "stones": 20 if first else 6,
+                    "insight": 1 if first else 0,
+                    "seeds": {
+                        {
+                            "wharf": "river_lotus",
+                            "terrace": "azure_bamboo",
+                            "tomb": "soul_lingzhi",
+                        }[state["region"]]: 1
+                    },
+                },
+            )
+            notice = (
+                TRIALS[id]["name"]
+                + " completed: "
+                + ["", "Bronze", "Silver", "Gold"][medal]
+                + " medal."
+            )
         else:
             stage = STAGES[state["stage"]]
             first = state["stage"] not in p["completed"]
@@ -767,6 +944,9 @@ def settle(raw, battle_id, state):
             if growth
             else "Battle recorded. Reach half the waves and 60 seconds, or win, to grow crops."
         )
+    _journal(
+        p, "battle", notice, p["stones"] - before_stones, p["insight"] - before_insight
+    )
     return dict(
         ok=True,
         profile=p,
@@ -783,6 +963,7 @@ def settle(raw, battle_id, state):
             },
             fertilizer=e["bag"]["fertilizer"] - before_fertilizer,
             garden_grew=growth,
+            medal=medal if trial and won else None,
             beds=(
                 sum(b["hp"] > 0 for b in state.get("nursery_beds", []))
                 if nursery

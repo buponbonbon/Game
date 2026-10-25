@@ -1,0 +1,33 @@
+{
+  "version": "1.7.0",
+  "checks": [
+    "64 smooth facility routes: collision-safe at every step, no teleport or one-frame waypoint stops",
+    "Real map travel moves close camera while HUD stays fixed; all 8 walking frames render, separate idle pose, Enter opens campaign",
+    "All 8 illustrated map landmarks route to NPCs; facility buttons and existing systems work",
+    "Quest pin/claim, disabled repeat claim, avatars, ambient switch, zoom and position/save reload persist correctly",
+    "Legacy visual settings, real canvas planting, tick-zero campaign briefing, deployment, Auto and pause pass",
+    "960x540 touch: map footer visible, marker selection/travel, NPC interaction and garden open"
+  ],
+  "route_report": {
+    "pairs": 64,
+    "unintended_stops": 0,
+    "frames": 14949
+  },
+  "walking_frames_rendered": [
+    0,
+    1,
+    2,
+    3,
+    4,
+    5,
+    6,
+    7
+  ],
+  "headless_samples": 209,
+  "headless_raf_median_ms": 16.7,
+  "headless_raf_p95_ms": 16.7,
+  "mean_measured_hub_render_ms": 2.383,
+  "errors": [],
+  "external_requests": [],
+  "notes": "Scripted Chromium checks on this environment; frame timings are not a hardware-independent FPS guarantee. Fixture starts with cleared campaign and one ready commission. Combat rules unchanged."
+}

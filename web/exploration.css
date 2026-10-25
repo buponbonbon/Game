@@ -1,0 +1,822 @@
+/* Journey, conversation and garden UI share the sanctuary's screen-space language. */
+.world-ui {
+  --world-scale: 1;
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  overflow: hidden;
+  isolation: isolate;
+  font:
+    500 calc(14px * var(--world-scale))/1.45 "Segoe UI",
+    system-ui,
+    sans-serif;
+  color: #f5f0da;
+}
+.world-ui[hidden],
+.world-ui [hidden] {
+  display: none !important;
+}
+.world-ui button {
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  pointer-events: auto;
+  border: 0;
+  touch-action: manipulation;
+  -webkit-tap-highlight-color: transparent;
+}
+.world-ui button:disabled {
+  opacity: 0.42;
+  filter: saturate(0.2);
+  cursor: default;
+}
+.world-ui button:focus-visible {
+  outline: 2px solid #b8f6da;
+  outline-offset: 3px;
+}
+.world-ui svg {
+  width: 1.4em;
+  height: 1.4em;
+  vertical-align: middle;
+  flex-shrink: 0;
+}
+.world-ui kbd {
+  border: 1px solid #d0c28970;
+  border-radius: 0.25em;
+  background: #183a42c7;
+  padding: 0.1em 0.35em;
+  font: 0.8em system-ui;
+  color: #f5e5b8;
+}
+.world-primary,
+.world-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5em;
+  padding: 0.7em 1em;
+  border-radius: 0.55em;
+  white-space: nowrap;
+  font-size: 0.88em !important;
+}
+.world-primary {
+  background: linear-gradient(#e5cf93, #b99350);
+  border: 1px solid #ffe9ac !important;
+  color: #183c3b !important;
+  font-weight: 650 !important;
+  box-shadow: 0 2px 7px #08212560;
+}
+.world-primary:hover {
+  filter: brightness(1.1);
+}
+.world-secondary {
+  background: #183c43e8;
+  border: 1px solid #bfbe9366 !important;
+  color: #f3e6c4;
+}
+.world-secondary:hover {
+  background: #34564f;
+}
+.world-close {
+  width: 2.5em;
+  height: 2.5em;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  border: 1px solid #a9be9666 !important;
+  background: #173b42;
+  flex-shrink: 0;
+}
+.world-close svg {
+  width: 1em;
+  height: 1em;
+}
+.world-ui h1,
+.world-ui h2,
+.world-ui h3 {
+  font-family: Georgia, serif;
+  font-weight: 500;
+}
+.world-ui p {
+  line-height: 1.75;
+}
+.journey-header,
+.garden-header {
+  position: absolute;
+  left: 1.4em;
+  right: 1.4em;
+  top: 1.1em;
+  display: flex;
+  gap: 1.3em;
+  align-items: center;
+  padding: 0.7em 1em;
+  background: linear-gradient(110deg, #102f39ed, #163e42e3);
+  border: 1px solid #d2bd7b77;
+  border-radius: 0.8em;
+  box-shadow: 0 5px 20px #00192544;
+}
+.journey-header h1,
+.garden-header h1 {
+  font-size: 1.35em;
+  margin: 0.1em 0;
+  color: #f4d99b;
+}
+.journey-header small,
+.garden-header small {
+  font-size: 0.55em;
+  color: #d3c79d;
+  letter-spacing: 0.16em;
+}
+.journey-header > button:last-child {
+  margin-left: auto;
+}
+.journey-header > button:first-child svg,
+.garden-header > button:first-child svg {
+  transform: rotate(180deg);
+}
+.journey-region {
+  position: absolute;
+  top: 15%;
+  transform: translateX(-50%);
+  padding: 0.45em 1.2em;
+  border: 1px solid #edce8788;
+  border-radius: 2em;
+  background: #16383fe0;
+  font:
+    500 1em Georgia,
+    serif;
+  letter-spacing: 0.025em;
+  box-shadow: 0 2px 8px #092b3444;
+  color: #ffe2ab;
+}
+.region-wharf {
+  left: 20%;
+}
+.region-terrace {
+  left: 51%;
+}
+.region-tomb {
+  left: 82%;
+}
+.journey-route {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+}
+.journey-route path {
+  stroke: #ffe29f99;
+  stroke-width: 0.32;
+  fill: none;
+  stroke-dasharray: 0.8 0.6;
+  filter: drop-shadow(0 1px 1px #725c3a);
+}
+.journey-node {
+  position: absolute;
+  transform: translate(-50%, -50%);
+  display: flex;
+  flex-direction: column;
+  gap: 0.2em;
+  align-items: center;
+  white-space: nowrap;
+  background: transparent;
+  font-size: 0.8em !important;
+  text-shadow: 0 1px 3px #041e28;
+}
+.journey-node i {
+  display: grid;
+  place-items: center;
+  width: 2.8em;
+  height: 2.8em;
+  border-radius: 50%;
+  background: radial-gradient(#46776d, #15363d);
+  border: 2px solid #e4cf8d;
+  color: #fff1bf;
+  font-style: normal;
+  font-size: 1.1em;
+  box-shadow: 0 3px 10px #06293577;
+}
+.journey-node b {
+  padding: 0.25em 0.65em;
+  border-radius: 0.35em;
+  background: #153941ec;
+  border: 1px solid #c7bd8a77;
+  font-weight: 550;
+}
+.journey-node small {
+  font-size: 0.75em;
+  color: #fff4ce;
+  background: #163b3db0;
+  border-radius: 0.3em;
+  padding: 0 0.35em;
+}
+.journey-node.is-locked {
+  filter: saturate(0.3);
+}
+.journey-node.is-locked i {
+  background: #364c51;
+  border-color: #9caa9b;
+  color: #ccd6cb;
+}
+.journey-node.is-locked small {
+  color: #d0d7d2;
+}
+.journey-node.is-selected i,
+.journey-node:hover i {
+  box-shadow:
+    0 0 0 0.22em #fae6a34f,
+    0 3px 10px #032f3377;
+  border-color: #fff5c8;
+}
+.journey-node.is-complete i {
+  background: radial-gradient(#6d9f79, #315e50);
+  color: #fff7d4;
+}
+.journey-overview {
+  position: absolute;
+  left: 1.4em;
+  right: 1.4em;
+  bottom: 1.1em;
+  padding: 0.85em 1.2em;
+  display: flex;
+  gap: 1em;
+  align-items: center;
+  border-radius: 0.8em;
+  background: linear-gradient(100deg, #133841ef, #102a35f0);
+  border: 1px solid #c8b68088;
+  box-shadow: 0 4px 15px #00203555;
+}
+.journey-overview > div {
+  flex: 1;
+}
+.journey-overview small {
+  font-size: 0.6em;
+  letter-spacing: 0.1em;
+  color: #bbd6c5;
+}
+.journey-overview h2 {
+  font-size: 1.2em;
+  margin: 0.12em 0;
+  color: #f3d89e;
+}
+.journey-overview p {
+  font-size: 0.75em;
+  margin: 0.15em 0;
+  color: #dde5d2;
+}
+.world-veil {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.6em;
+  background: #051d2baa;
+  pointer-events: auto;
+  z-index: 6;
+}
+.world-panel {
+  width: min(61em, 96%);
+  max-height: 96%;
+  overflow: auto;
+  overscroll-behavior: contain;
+  scrollbar-color: #b7ac77 #14343c;
+  border: 1px solid #d5bf8999;
+  border-radius: 1em;
+  background: linear-gradient(145deg, #24474bfa, #102b37fc);
+  box-shadow: 0 15px 60px #031b2c99;
+  pointer-events: auto;
+}
+.world-panel > header {
+  padding: 1.2em 1.6em 0.85em;
+  border-bottom: 1px solid #dfd0aa25;
+  display: flex;
+  gap: 1em;
+  justify-content: space-between;
+  align-items: start;
+}
+.world-panel header small {
+  font-size: 0.58em;
+  letter-spacing: 0.13em;
+  color: #d6c695;
+}
+.world-panel h1 {
+  font-size: 1.8em;
+  margin: 0.15em 0;
+  color: #ffe3aa;
+}
+.world-panel header p {
+  font-size: 0.77em;
+  margin: 0.3em 0;
+  color: #bdd7c8;
+}
+.story-conversation {
+  display: grid;
+  grid-template-columns: 29% 1fr;
+  gap: 1em;
+  padding: 1em 1.6em;
+}
+.story-portrait {
+  width: 100%;
+  height: 20em;
+  object-fit: contain;
+  align-self: center;
+  filter: drop-shadow(0 8px 12px #07212b66);
+}
+.story-conversation > div > small {
+  font-size: 0.7em;
+  color: #acd8be;
+}
+.story-conversation h2 {
+  font-size: 1.55em;
+  color: #f2dca4;
+  margin: 0.15em 0 0.7em;
+}
+.story-prose {
+  font-size: 0.95em;
+  line-height: 1.85;
+  margin: 0.3em 0 1em;
+  color: #eff1dc;
+}
+.story-pages {
+  display: flex;
+  gap: 0.4em;
+  margin: 0.7em 0;
+}
+.story-pages button {
+  width: 1.8em;
+  height: 1.8em;
+  border-radius: 50%;
+  background: #4c746354;
+  border: 1px solid #b6b77d60;
+  font-size: 0.7em;
+}
+.story-pages .is-current {
+  background: #d8bd7c;
+  color: #153c38;
+}
+.story-choices,
+.story-topics {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5em;
+}
+.story-choices > small {
+  flex-basis: 100%;
+  font-size: 0.65em;
+  letter-spacing: 0.07em;
+  color: #e8c98e;
+}
+.story-choices button,
+.story-topics button {
+  white-space: normal;
+  text-align: left;
+  font-size: 0.75em !important;
+}
+.story-reply {
+  font-size: 0.77em;
+  color: #c7e8c7;
+  border-left: 2px solid #e4c27e80;
+  padding-left: 0.8em;
+}
+.story-footer {
+  display: flex;
+  gap: 0.7em;
+  align-items: center;
+  padding: 0.9em 1.6em;
+  border-top: 1px solid #d9c79433;
+}
+.story-footer p {
+  font-size: 0.7em;
+  color: #bbd9c9;
+  flex: 1;
+  margin: 0;
+}
+.story-footer p svg {
+  margin-right: 0.4em;
+  color: #e1cb8f;
+}
+.story-favor {
+  margin: 1em 0 0;
+  padding: 0.7em 1em;
+  background: #47675a40;
+  border: 1px solid #9db28255;
+  border-radius: 0.6em;
+}
+.story-favor > b {
+  font-size: 0.85em;
+  color: #eed49a;
+}
+.story-favor p {
+  font-size: 0.75em;
+  color: #c5dccd;
+  margin: 0.4em 0;
+}
+.story-favor button {
+  font-size: 0.7em !important;
+}
+.person-dialogue {
+  width: min(55em, 96%);
+}
+.journey-journal {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 1.2em;
+  padding: 1em 1.6em 1.5em;
+}
+.journey-journal section > h2 {
+  font-size: 1.2em;
+  color: #edd69d;
+}
+.journey-journal article {
+  padding: 0.8em 1em;
+  margin: 0.7em 0;
+  border: 1px solid #a4b68b44;
+  border-radius: 0.6em;
+  background: #15353b66;
+}
+.journey-journal h3 {
+  margin: 0.1em 0 0.5em;
+  font-size: 1em;
+  color: #ecd3a1;
+}
+.journey-journal p {
+  font-size: 0.78em;
+  color: #d4e4d4;
+}
+.journey-journal small {
+  font-size: 0.72em;
+  color: #a8d4b6;
+  display: block;
+}
+.journey-journal button {
+  font-size: 0.7em !important;
+  margin-top: 0.7em;
+}
+.journal-unfinished {
+  opacity: 0.65;
+}
+.world-discovery {
+  position: absolute;
+  right: 1.5em;
+  bottom: 8em;
+  width: 23em;
+  padding: 1.1em 1.3em;
+  border: 1px solid #d6bf8e88;
+  border-radius: 0.8em;
+  background: linear-gradient(120deg, #234a49f5, #12313cf5);
+  box-shadow: 0 5px 25px #08232955;
+  pointer-events: auto;
+}
+.world-discovery > small {
+  font-size: 0.57em;
+  letter-spacing: 0.12em;
+  color: #b4d9bd;
+}
+.world-discovery h2 {
+  font-size: 1.2em;
+  color: #f9dc9f;
+  margin: 0.4em 0;
+}
+.world-discovery p {
+  font-size: 0.83em;
+  color: #e5edda;
+}
+.world-discovery > button {
+  font-size: 0.7em !important;
+}
+.discovery-close {
+  position: absolute;
+  right: 0.6em;
+  top: 0.5em;
+  background: transparent;
+  width: 1.6em;
+  height: 1.6em;
+  color: #d4e4d2;
+}
+.discovery-close svg {
+  width: 1em;
+  height: 1em;
+}
+.hub-world-extras {
+  position: absolute;
+  right: 1.6em;
+  bottom: 4.2em;
+  display: flex;
+  gap: 0.5em;
+}
+.hub-world-extras button {
+  display: flex;
+  align-items: center;
+  gap: 0.4em;
+  background: #13353de8;
+  border: 1px solid #c0bc8870;
+  border-radius: 0.5em;
+  padding: 0.5em 0.7em;
+  font-size: 0.67em !important;
+}
+.hub-world-extras svg {
+  width: 1.2em;
+  height: 1.2em;
+}
+.hub-conversation .hub-secondary {
+  margin-top: 0.8em;
+  font-size: 0.72em !important;
+}
+.garden-header {
+  z-index: 2;
+}
+.garden-header > span {
+  margin-left: auto;
+  display: flex;
+  gap: 0.5em;
+  align-items: center;
+  color: #ecdbac;
+  font-size: 0.85em;
+}
+.garden-header > span svg {
+  width: 1.5em;
+  height: 1.5em;
+}
+.garden-tabs {
+  position: absolute;
+  top: 7em;
+  left: 1.6em;
+  display: flex;
+  gap: 0.4em;
+  pointer-events: auto;
+}
+.garden-tabs button {
+  font-size: 0.7em !important;
+  padding: 0.55em 0.8em;
+}
+.garden-bed-labels {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.garden-bed-label {
+  position: absolute;
+  left: 0;
+  top: 0;
+  white-space: nowrap;
+  border-radius: 1em;
+  background: #194337cc;
+  border: 1px solid #b7c78d77 !important;
+  box-shadow: 0 2px 5px #06322c55;
+  padding: 0.25em 0.6em;
+  font-size: 0.66em !important;
+  will-change: transform;
+}
+.garden-bed-label.is-wild {
+  background: #4c5636b3;
+  color: #e0e3bd;
+  border-color: #a5b17a66 !important;
+}
+.garden-bed-label.is-ready {
+  background: #827044dc;
+  border-color: #ffe09e !important;
+  color: #fff5cc;
+}
+.garden-bed-label:hover {
+  border-color: #fff3b9 !important;
+  background: #38634b;
+}
+.garden-world-hint {
+  position: absolute;
+  left: 1.6em;
+  bottom: 6.7em;
+  color: #fff4d9;
+  font-size: 0.67em;
+  text-shadow: 0 1px 5px #112d22;
+}
+.garden-world-hint small {
+  font-size: 0.9em;
+  color: #dcebcf;
+  display: block;
+  margin-top: 0.5em;
+}
+.garden-improvements {
+  position: absolute;
+  left: 1.6em;
+  right: 1.6em;
+  bottom: 1.2em;
+  display: flex;
+  gap: 0.6em;
+  justify-content: center;
+  padding: 0.65em 1em;
+  border: 1px solid #d1bf8a80;
+  border-radius: 0.8em;
+  background: linear-gradient(120deg, #1c443ee8, #123138ed);
+  box-shadow: 0 5px 20px #102e3055;
+}
+.garden-improvements button {
+  font-size: 0.73em !important;
+}
+.garden-inspector {
+  position: absolute;
+  right: 1.6em;
+  top: 9.5em;
+  bottom: auto;
+  max-height: calc(100% - 16em);
+  width: 21em;
+  padding: 1em 1.2em;
+  border: 1px solid #c5bd8f88;
+  border-radius: 0.85em;
+  background: linear-gradient(140deg, #224b43ee, #11333df0);
+  box-shadow: 0 6px 25px #123b3c66;
+  pointer-events: auto;
+  overflow: auto;
+  scrollbar-color: #bcb481 #183f3c;
+}
+.garden-inspector header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.garden-inspector header small {
+  font-size: 0.55em;
+  letter-spacing: 0.09em;
+  color: #bbd9bd;
+}
+.garden-inspector header .world-close {
+  width: 1.8em;
+  height: 1.8em;
+}
+.garden-inspector h2 {
+  font-size: 1.1em;
+  color: #efd79b;
+  margin: 0.7em 0;
+}
+.garden-inspector p {
+  font-size: 0.75em;
+  color: #d9e5cf;
+  margin: 0.6em 0;
+}
+.garden-inspector > small {
+  font-size: 0.64em;
+  display: block;
+  color: #b7d5bb;
+  margin-top: 1em;
+}
+.garden-seed-list {
+  display: grid;
+  gap: 0.4em;
+  margin: 1em 0;
+}
+.garden-seed-list button {
+  display: flex;
+  align-items: center;
+  gap: 0.5em;
+  background: #123b3f77;
+  border: 1px solid #a9bd8255;
+  padding: 0.35em 0.5em;
+  border-radius: 0.5em;
+  text-align: left;
+  font-size: 0.72em !important;
+}
+.garden-seed-list button.is-selected {
+  background: #55785277;
+  border-color: #efcf87;
+}
+.garden-seed-list canvas {
+  width: 3.3em;
+  height: 3.3em;
+  object-fit: contain;
+}
+.garden-seed-list small {
+  display: block;
+  font-size: 0.8em;
+  color: #b4d4bf;
+  margin-top: 0.3em;
+}
+.garden-inspector > .world-primary {
+  width: 100%;
+}
+.garden-crop-portrait {
+  width: 100%;
+  height: 7em;
+  object-fit: contain;
+}
+.garden-care {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45em;
+}
+.garden-care .world-primary {
+  width: 100%;
+}
+.garden-care button {
+  font-size: 0.75em !important;
+}
+.garden-ui .garden-inspector button:disabled {
+  opacity: 0.4;
+}
+@media (max-width: 1000px) {
+  .world-ui {
+    font-size: calc(13px * var(--world-scale));
+  }
+  .journey-header,
+  .garden-header {
+    top: 0.8em;
+    padding: 0.55em 0.8em;
+  }
+  .journey-header h1,
+  .garden-header h1 {
+    font-size: 1.15em;
+  }
+  .journey-region {
+    top: 16.5%;
+    font-size: 0.8em;
+  }
+  .journey-overview {
+    bottom: 0.8em;
+    padding: 0.7em 1em;
+  }
+  .journey-overview p {
+    font-size: 0.7em;
+  }
+  .world-panel > header {
+    padding: 0.8em 1.2em;
+  }
+  .world-panel h1 {
+    font-size: 1.5em;
+  }
+  .story-conversation {
+    padding: 0.8em 1.2em;
+    grid-template-columns: 25% 1fr;
+  }
+  .story-portrait {
+    height: 16em;
+  }
+  .story-prose {
+    font-size: 0.9em;
+  }
+  .story-footer {
+    padding: 0.7em 1.2em;
+  }
+  .garden-tabs {
+    top: 6.3em;
+  }
+  .garden-tabs button {
+    padding: 0.45em 0.55em;
+    font-size: 0.65em !important;
+  }
+  .garden-inspector {
+    top: 8.5em;
+    bottom: auto;
+    max-height: calc(100% - 15em);
+    width: 19em;
+    font-size: 0.9em;
+  }
+  .garden-inspector h2 {
+    font-size: 1em;
+  }
+  .garden-world-hint {
+    bottom: 7.8em;
+  }
+  .world-discovery {
+    width: 21em;
+    bottom: 9em;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-ui * {
+    transition: none !important;
+  }
+}
+
+.world-panel,
+.garden-inspector {
+  touch-action: pan-y;
+}
+
+.world-panel > header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: linear-gradient(110deg, #20444b, #153640);
+}
+.world-panel:focus {
+  outline: none;
+}
+
+#world-toast {
+  position: absolute;
+  z-index: 8;
+  transform: translateX(-50%);
+  pointer-events: none;
+  padding: 0.65em 1em;
+  border: 1px solid #b9d4b1;
+  border-radius: 0.6em;
+  background: #143d42f2;
+  color: #f4edce;
+  font-family: system-ui, sans-serif;
+  line-height: 1.45;
+  text-align: center;
+  box-shadow: 0 4px 18px #09263866;
+}
+#world-toast[hidden] {
+  display: none;
+}

@@ -21,6 +21,8 @@
       crossorigin
     />
     <link rel="stylesheet" href="/style.css" />
+    <link rel="stylesheet" href="/sanctuary.css" />
+    <link rel="stylesheet" href="/exploration.css" />
   </head>
   <body>
     <main id="game-shell" aria-label="Van Dao: Immortal War game">
@@ -29,7 +31,7 @@
         width="1536"
         height="864"
         tabindex="0"
-        aria-label="Van Dao game. Use the mouse or touch to select a hero, then a battlefield tile. Number keys select heroes; Space pauses; Q uses the selected hero's ultimate."
+        aria-label="Van Dao game. In the sanctuary use WASD or arrows to walk, E to speak, or click a destination. Use the mouse or touch to select a hero, then a battlefield tile. Number keys select heroes; Space pauses; Q uses the selected hero's ultimate."
       ></canvas>
       <p id="live-status" class="sr-only" aria-live="polite">
         Loading the game.
@@ -48,8 +50,14 @@
       >This game needs JavaScript enabled. Start the Python server with python
       run.py and open its local page.</noscript
     >
+    <script src="/combat_motion.js" defer></script>
     <script src="/battle_visuals.js" defer></script>
     <script src="/estate_ui.js" defer></script>
+    <script src="/hub_navigation.js" defer></script>
+    <script src="/sanctuary_hud.js" defer></script>
+    <script src="/sanctuary.js" defer></script>
+    <script src="/adventure.js" defer></script>
+    <script src="/garden_world.js" defer></script>
     <script src="/game.js" defer></script>
   </body>
 </html>

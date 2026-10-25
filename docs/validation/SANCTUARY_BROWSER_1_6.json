@@ -1,0 +1,16 @@
+{
+  "version": "1.6.0",
+  "checks": [
+    "64 facility-to-facility routes reach their NPC without collision stalls (deterministic movement stepping)",
+    "Real canvas walk and speak at all 8 NPCs; Enter and NPC buttons open campaign, talents, archive, alchemy, garden, merchant and trials",
+    "Commission details, progress/rewards, pin and claim use existing transactional economy",
+    "Keyboard movement respects walkways; position, avatar, pinned commission and reduced ambient motion persist after reload",
+    "Legacy settings and garden remain reachable from quick access",
+    "Campaign enters paused briefing at tick 0; deployment, Auto ultimate and pause work from the new hub",
+    "Touch directory routes to NPC and opens garden at 960x540"
+  ],
+  "errors": [],
+  "external_requests": [],
+  "route_pairs": 64,
+  "notes": "Browser fixture has cleared campaign and one ready commission. Battle simulation rules unchanged."
+}

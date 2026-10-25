@@ -65,6 +65,113 @@ adaptation, rather than a claim that every detail of the production document is
 implemented. See [build status](docs/BUILD_STATUS.md) for verified coverage and
 limitations and [balance reference](docs/BALANCE_REFERENCE.md) for content data.
 
+## Version 1.8: roads, witnesses and a living garden
+
+Campaign is now a dedicated illustrated overworld with nine encounter landmarks.
+Each encounter has its own witness, reason to defend the location, three short
+story pages, two optional dialogue responses and an aftermath after victory.
+Next Stage opens the next witness's story. Choices are kept in the journey
+journal and some are recalled by NPCs; they do not change combat statistics or
+unlock a stage without winning the preceding encounter.
+
+Six original visitors join the eight cultivators in the sanctuary: Mei the
+boatwoman, lantern artisan Tao, envoy Qiao, gardener Lin, archivist Suyin and
+courier Ren. Speak to them about their lives and the road ahead; their greetings
+react to campaign progress. Cultivators also have optional conversation topics.
+Three optional favors record keepsakes in the journal. Ten environmental details
+can be noticed with a click/E; flowers and grass react nearby, water splashes,
+chimes ring and cranes stir. These details do not create a currency farm.
+
+Garden is now a **walkable 2D workyard**, using the same character/camera style
+as the sanctuary. Click a bed, choose a seed, then Plant. The avatar walks to the
+bed and performs planting, watering, tending and gathering animations. Seedlings,
+grown plants, overgrown beds, wet soil, herbs, butterflies and garden NPCs are
+visible in the scene. The inspector appears only for a selected bed. Existing
+seed/yield/growth, irrigation, fertilizer and preparation rules remain unchanged.
+Alchemy/Merchant/Missions/Research/Ledger remain available from the garden tabs.
+
+Movement has **eight facings**, 192 registered walking frames, 24 standing poses
+and 48 interaction frames across the three avatars. Acceleration, a short stop,
+footfall effects, breathing and registered feet complement the native pose
+changes. Greet bows; inspecting a detail crouches; garden tools use their own
+poses and sound effects. These are authored raster cycles, not a skeletal rig.
+
+The runtime still needs only Python 3.10+ and a browser. Existing V1/V2 saves
+migrate with wallet, inventory, talents and campaign progress intact. New story
+records live inside the existing save/export. New dialogue is text; music and
+existing character voice tracks are retained.
+
+## Version 1.7: close camera and a new sanctuary interface
+
+The courtyard opens at **1.85× zoom** and scrolls with your character. Use the
++ / − controls to choose 1.45–2.4×. The profile, currency icons, illustrated
+minimap and facility dock stay fixed on screen. Nearby NPC labels replace the
+old “Click to approach” hover text.
+
+- **M / MAP:** open a dedicated illustrated parchment map; select a landmark,
+  then Travel Here to walk there, or Open Facility for immediate access.
+- The screen-space HTML/CSS interface has icon buttons, clear focus/disabled
+  states, currency tooltips, NPC conversation panels and a commission journal.
+- Each of three avatars has **eight walking frames per direction**, separate
+  directional idle poses and registered feet. Walking follows distance traveled;
+  routes no longer pause at every grid waypoint or restart the gait there.
+- WASD/arrows, Shift, E/Enter, saves, quests and existing facilities still work.
+  Position-only saves avoid refreshing combat previews. Art stays bundled offline.
+
+See [UI references and movement diagnosis](docs/UI_REFERENCE_1_7.md) for the
+accessible research sources and the official Gunny sites blocked by the network.
+
+## Version 1.6: Celestial Sanctuary
+
+The main screen is now an interactive HD-2D sect courtyard: a native
+1672×941 painted environment, detailed character cutouts, four-direction walking,
+water reflections, drifting petals and warm light. The hub uses smooth rendering
+and system fonts; combat keeps its existing pixel presentation. “32/64-bit” is
+not used as a visual quality claim.
+
+- Walk with WASD/arrows, hold Shift to run, click the ground or an NPC, and press
+  E/Enter to speak. MAP or Tab/M lists eight destinations with automatic routes.
+  Collision keeps the player away from buildings, planted beds, cliffs and water.
+- NPCs link to Campaign, Talents, Bestiary, Alchemy, Garden, Merchant, Commissions
+  and Trials. The bottom bar also opens these systems immediately.
+- Commissions show objectives/progress/rewards and can be pinned. Progress still
+  counts automatically; following a commission adds no new grind or reward source.
+- Avatar selects Shen Zhu or Yun; Mu Qing becomes available after Wharf III.
+  Appearance is cosmetic. Position, appearance and followed commission persist in
+  the existing save slots/export. Ambient motion can be disabled in Avatar, and
+  defaults to the browser's reduced-motion preference for new saves.
+- Owned lantern canopy, jade chimes and ward banner appear in the courtyard.
+  Existing saves migrate without losing currency, inventory or learned talents.
+
+Runtime is still Python's standard library and a browser. All hub images are
+bundled; no new account or runtime dependency is needed.
+
+## Version 1.5: animated combat and regional trials
+
+- **336 authored animation frames:** all eight cultivators and thirteen enemy/altar
+  identities have separate attack, cast, recoil and death artwork; enemies also
+  have four-frame walk cycles. Hero ultimates use four frames. Frames follow the
+  simulation clock, pause with combat and use the real attack windup. Idle uses
+  a single pose. New sheets load on demand and decode to bounded-size bitmaps.
+- **Clearer combat:** dimmed battlefield, smaller rescue devices, smart HP/mana
+  bars, compact damage text and reduced particle opacity. Choose Clear/Cinematic,
+  Smart/All bars and Compact/Full/Off damage text under Settings → Battle Visuals.
+  Danger circles/segments/lanes now show the actual affected area and countdown.
+- **Elite squads:** Guards protect nearby elites; Menders channel limited healing
+  that damage/freeze can interrupt. Support roles trade some HP for their utility.
+  Read exact rules from Squad Tactics in the pause menu or Regional Trials.
+- **Three optional trials on existing maps:** escort the Lantern Caravan, protect
+  Twin Jade Beacons, or challenge the Bone Court with honor seals. Medals never
+  gate campaign progression; best medals persist. First wins grant 20 stones and
+  1 Insight, repeats 6 stones and a regional seed. The Oath's ward reduces incoming
+  hero damage by 25%; losing all honor seals still permits a Bronze victory.
+- **Economy:** fertilizer costs 2 stones. Spirit Tea gives the first three summons
+  +10 MP and +20 Dao without waiving ultimate costs. The estate's Ledger shows
+  recent harvests, spending and battle rewards. The lobby calls out ready crops.
+
+Version-1/2 saves remain compatible. No new hero or campaign map is required.
+The authored animation PNGs and new objective props are bundled offline.
+
 ## Version 1.4: the Sect Estate
 
 Open **Sect Estate / Linh Dien** from the lobby. Spirit Stones remain the main

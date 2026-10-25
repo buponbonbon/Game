@@ -1,0 +1,58 @@
+{
+  "version": "1.7.0",
+  "avatars": {
+    "sword/south": {
+      "unique_walk_frames": 8,
+      "idle_pose_loaded": true
+    },
+    "sword/west": {
+      "unique_walk_frames": 8,
+      "idle_pose_loaded": true
+    },
+    "sword/east": {
+      "unique_walk_frames": 8,
+      "idle_pose_loaded": true
+    },
+    "sword/north": {
+      "unique_walk_frames": 8,
+      "idle_pose_loaded": true
+    },
+    "gatherer/south": {
+      "unique_walk_frames": 8,
+      "idle_pose_loaded": true
+    },
+    "gatherer/west": {
+      "unique_walk_frames": 8,
+      "idle_pose_loaded": true
+    },
+    "gatherer/east": {
+      "unique_walk_frames": 8,
+      "idle_pose_loaded": true
+    },
+    "gatherer/north": {
+      "unique_walk_frames": 8,
+      "idle_pose_loaded": true
+    },
+    "herbalist/south": {
+      "unique_walk_frames": 8,
+      "idle_pose_loaded": true
+    },
+    "herbalist/west": {
+      "unique_walk_frames": 8,
+      "idle_pose_loaded": true
+    },
+    "herbalist/east": {
+      "unique_walk_frames": 8,
+      "idle_pose_loaded": true
+    },
+    "herbalist/north": {
+      "unique_walk_frames": 8,
+      "idle_pose_loaded": true
+    }
+  },
+  "authored_icon_buttons": 9,
+  "currency_art": 2,
+  "camera_transformed_ground_click": true,
+  "modal_keyboard_navigation": true,
+  "errors": []
+}

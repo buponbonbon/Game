@@ -1,4 +1,4 @@
-# VAN DAO 1.4 balance reference
+# VAN DAO 1.5 balance reference
 
 Python is authoritative. Base content is in `game/content.py`, version-1.2
 contracts in `game/design.py`, and talent-adjusted previews in `game/rules.py`.
@@ -156,14 +156,14 @@ This remains a portable, editable local save, not an online anti-cheat economy.
 | Azure Bamboo | 2 | 2 | 5 | 2 |
 | Soul Lingzhi | 3 | 2 | 7 | 3 |
 
-Water adds 1 yield (2 at irrigation II). Fertilizer costs 5 stones and adds 1.
+Water adds 1 yield (2 at irrigation II). Fertilizer costs 2 stones and adds 1.
 Research I costs 1 Insight and adds 1 yield; research II costs 2 Insight, cuts
 one growth battle (minimum one) and returns a seed when harvested. Plots expand
 3→6 for 60 stones and 6→9 for 120. Irrigation costs 40 then 90; I waters on a
 growth event, II waters immediately and improves the water bonus. No real timer,
 withering or seed-to-currency shortcut exists.
 
-Tea costs 3 Qi Grass + 2 stones: +10 starting MP (clamped) for the first three
+Tea costs 3 Qi Grass + 2 stones: +10 starting MP (clamped) and +20 Dao for the first three
 successful summons. Dew costs 2 Lotus + 2 Bamboo + 3 stones (1 Insight formula):
 8s first-tide calm, or purify one corrupted node and +15 MP on its orthogonal
 radius-one cross, or 6s immunity to the first grave-mist mana penalty. Soul Ward
@@ -189,3 +189,40 @@ commissions/achievements/research may still grant their listed rewards.
 A talent reset refunds the recorded amount paid: the first is free, later fees
 are 10 stones deducted from the refund. Legacy rank-3-equivalent strings count
 as the original 35-stone purchase, including when subsequently advanced.
+
+## Elite squads and optional objectives (1.5)
+
+Only elite/captain units gain squad roles; normal enemies and bosses receive no
+squad protection/healing. Elite Hounds/Drowned are Guards, with 12% less HP than
+the standard elite profile: radius 1.25, 15% final non-True damage prevention,
+capped at 3 per hit, nonstacking, excludes other Guards/bosses/altars. Freezing
+or defeating the Guard breaks its link. Elite Lanterns/Rottenwood are Menders
+(10% less HP): 1s interruptible channel, 8s cooldown, radius 1.5, at most two
+other wounded elites, 4% max HP each capped at 16. Any damage or freeze cancels.
+Other elites are Strikers and gain no extra multiplier beyond their old rank.
+Visual recoil does not stun movement or cancel an ordinary attack.
+
+Trials are separate from STAGES. Caravan and Beacons use six waves; the Bone
+Court uses eight waves with its boss at 194s. Caravan: 420 HP, moves toward x=8.5
+at 0.065 tiles/s while a damage/tank/control hero is within radius 1.5, or freely
+after the final enemies are cleared. Beacons: two 240-HP objects at lanes 1/3,
+x=2.5. In either mode, non-frozen raiders within radius 0.9 deal 12 HP/s each,
+capped at 24 per object; a nearby fighter halves it. Losing a protected object
+fails that trial. Pause freezes objectives as well as combat.
+
+Bone Court: 10 honor seals, one lost per cultivator death. Zero seals does not
+fail the encounter. An explicit court ward reduces incoming hero damage by 25%.
+Bronze requires a win; Silver also needs an intact gate and at most three losses;
+Gold needs intact gate/no losses. Caravan/Beacons Silver additionally require
+70% minimum objective health and at most one loss; Gold needs 90% and no losses.
+Best medals never downgrade, while the result shows the medal for the actual run.
+First wins pay 20 stones/1 Insight; repeats pay 6 stones and a regional seed.
+Trials never add campaign clears or unlock mandatory campaign progression.
+
+Fertilizer now costs 2 rather than 5 stones: the old surcharge exceeded the
+sale value of its +1 ingredient for every crop. Fertilizer remains a yield choice,
+not a required growth timer. Tea adds 20 Dao to its existing 10 initial MP for
+three successful summons (60 Dao maximum), because early mana alone often caps
+before it creates a useful ultimate opening. Ultimate mana/Qi/Dao/cooldowns and
+the shared Qi cap remain unchanged. A bounded 32-entry local journal records
+actual spending and rewards; no external telemetry is sent.

@@ -1,4 +1,85 @@
-# Art and audio — version 1.4
+# Art and audio — version 1.8
+
+## Exploration and character interactions (1.8)
+
+`web/assets/exploration` contains an original three-region campaign map, six
+visitor portraits, twelve garden/environment props and a 48-frame interaction
+sheet. `tools/register_exploration.py` copies the generated source PNGs unchanged
+and writes source-coordinate/foot registration metadata. It also registers
+192 walking poses across three avatars/eight facings and a shared 24-pose idle
+sheet. One missing facing in a generated source is supplied by a separate authored
+strip, referenced explicitly in frame metadata. Uneven transparent gutters are
+registered from source alpha; no source pixels are rewritten. Three obsolete
+cardinal-only idle sheets were replaced by the shared directional idle atlas.
+
+The app draws actual crop sprites on raised soil beds, with wet/overgrown variants,
+sway, butterfly/petal motion and water/harvest effects. Garden and sanctuary use
+the same avatar renderer. Tool use, greeting and inspection have distinct poses.
+Tiny paper cranes, ripples and footfall effects are drawn by the renderer.
+Optional ambient motion still follows the existing setting. Foliage responds near
+the player; environmental discoveries are narrative records, not infinite drops.
+
+Water/rustle/soil/footstep/chime feedback uses the existing local Web Audio buses
+and volume settings. No new music or voice tracks were added. New conversations
+are text. All art is bundled; no runtime authoring dependency, CDN or external
+image service is required. Raster cycles are not a skeletal-animation system.
+
+## Sanctuary camera / UI / walking (1.7)
+
+Three new 8×4 walking source sheets provide 96 walking frames. Twelve directional
+idle poses are registered from the previous source sheets, retained separately.
+A cleaned eight-NPC sheet, a separate illustrated parchment sanctuary map and
+new interface icon art accompany them. Source PNGs stay unchanged; atlas data
+contains source checksums, frame crops, body height and per-frame foot anchors.
+No image/audio authoring service is required at runtime.
+
+The HTML/CSS HUD is independent of camera rendering. Original SVG symbols remain
+as accessible interface fallbacks and map markers. The world renders only its
+visible source crop at 1.45–2.4x, with 1.85x default zoom and an eased following
+camera. NPC sliding patrol loops were removed; walking belongs to real travel.
+Audio is unchanged in this update.
+
+## Sanctuary (1.6)
+
+`web/assets/hub` bundles six new image-generated source PNGs: painted sect scene,
+eight standing NPC portraits, three four-direction avatar sheets (16 source
+frames each), and three decorative props. Native source pixels are copied
+unchanged. `atlas.json` stores source checksums and crop/registration metadata;
+`tools/register_sanctuary.py` is optional authoring tooling using Pillow.
+Gameplay/startup does not require Pillow or a generation service.
+
+The HD-2D hub renders to the existing 1536×864 canvas with smoothing, system-ui
+body text and Georgia headers. Combat preserves VT323 and its existing render
+path. Three wandering NPCs, water rings, light pools and petals provide motion;
+this is a fixed painted environment, not a 3D world. Ambient motion can be disabled
+under Avatar. Existing purchased cosmetics have distinct hub cutouts.
+
+## Frame animation (1.5)
+
+`web/assets/motion` holds 21 retained, image-generated transparent 4×4 sheets:
+336 source frames. Each hero has idle (1), recoil (1), death (2), attack (4),
+skill (4), ultimate (4); enemies/altar have walk (4), attack (4), skill (4),
+idle (1), recoil (1), death (2). These are separate source drawings, not copies
+of one transformed pose. Idle is a single pose; this is a compact animation set,
+not a full studio-authored animation production.
+
+`motion.json` records native dimensions, source SHA-256, frame rectangles and
+registration offsets. `tools/register_motion.py` optionally reads alpha
+connectivity to exclude detached neighboring-cell fragments, writing metadata
+without modifying PNG pixels (Pillow is authoring-only). The stdlib asset
+preservation command copies the entire motion directory unchanged.
+
+`web/combat_motion.js` selects frames from simulation time and attack windup;
+pausing freezes them. Source images load only when an actor is rendered and are
+decoded to a maximum width of 768 pixels. Native detail remains in the repository.
+Death remains survive 0.8 simulation seconds and never become combat targets.
+The old large portraits/pose atlases remain fallbacks and lobby artwork.
+
+`objectives.png` retains three new props: jade caravan, Azure beacon and Bone
+Court tablet; `objectives.json` stores separate source rectangles. Combat VFX use
+a separate canvas before being composited at the chosen clarity opacity. Threat
+outlines/countdowns remain legible above that layer. Existing music and English
+voice assets are unchanged in this release.
 
 ## Authored actors and botany (1.4)
 
