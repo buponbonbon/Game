@@ -38,6 +38,24 @@ nhận ra bản lưu.
 Đây là bản game chơi được, chuyển thể gọn từ tài liệu thiết kế bạn gửi; xem
 [tình trạng triển khai](docs/BUILD_STATUS.md) để biết phần đã kiểm thử và giới hạn.
 
+## Bản 1.7: camera cận cảnh và UI mới
+
+- Sảnh mặc định **phóng 1,85×**, camera lướt theo nhân vật. Nút **+ / −** chỉnh
+  từ 1,45 đến 2,4×. Cụm chân dung, tiền tệ có icon, minimap và thanh chức năng
+  đứng yên trên màn hình, không chạy theo cảnh.
+- **M / MAP:** bản đồ giấy minh họa riêng, có các công trình, đường đi và vị trí
+  người chơi. Chọn địa điểm → **Travel Here** để đi tới; **Open Facility** mở nhanh.
+- Giao diện HTML/CSS rõ nét, nút có icon, hội thoại NPC và bảng nhiệm vụ mới.
+  Bỏ dòng “Click to approach”; chỉ hiện nhãn NPC quanh khu vực đang đứng.
+- Mỗi avatar có **8 frame đi bộ cho mỗi hướng**, tư thế đứng riêng và căn điểm
+  đặt chân. Nhịp bước theo quãng đường; không dừng một frame tại từng nút đường
+  đi, không khởi động lại hoạt ảnh ở mỗi nút.
+- Vẫn dùng WASD/mũi tên, Shift để chạy, E/Enter để nói chuyện. Vị trí và tiến
+  trình được lưu như trước; lưu vị trí không làm mới lại dữ liệu nhân vật chiến đấu.
+
+[Tham khảo UI và chẩn đoán chuyển động](docs/UI_REFERENCE_1_7.md) ghi rõ nguồn đã
+đọc và các trang Gunny chính thức bị mạng môi trường chặn.
+
 ## Bản 1.6: Thiên Cung môn phái
 
 Sảnh chính được làm lại theo hướng **HD-2D**: tiên cung giữa núi mây, sân đá,

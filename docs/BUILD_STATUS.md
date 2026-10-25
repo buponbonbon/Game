@@ -1,7 +1,53 @@
-# Build status — version 1.6
+# Build status — version 1.7
 
 Run `python run.py` or Windows `play.bat`. Python 3.10+ and a modern browser are
 still the only runtime requirements; art, font and audio are bundled offline.
+
+## 1.7 changes
+
+- Screen-space HTML/CSS sanctuary HUD: avatar/profile, illustrated currency icons,
+  facility dock, persistent quest card, contextual NPC labels and modern dialogue
+  panels. Removes the old hover instruction; focus/disabled controls stay usable.
+- Default 1.85x close camera, time-based following and 1.45–2.4x zoom controls.
+  Source-cropped scene rendering and inverse camera mapping for ground input.
+  Dedicated parchment map with landmark selection, travel/direct-open actions,
+  player location and an overview minimap showing the camera's visible area.
+- 96 new walking frames across three avatars/four directions plus twelve retained
+  directional idle poses. Feet registered from source alpha; gait phase follows
+  distance. Collision-safe route simplification and full distance consumption at
+  waypoints remove one-frame stops. NPCs no longer slide in place while walking.
+- Position saves are throttled while moving and skip combat preview refresh.
+  Save compatibility, existing facilities and combat parameters stay unchanged.
+- Research sources and proxy-blocked official Gunny pages are documented in
+  `UI_REFERENCE_1_7.md`. No official Gunny client inspection is claimed.
+
+## 1.7 verification
+
+- **142 stdlib tests passed**. After idle/icon source registration, affected
+  sanctuary integrity and generator-preservation checks also passed.
+- Chromium checked all **64** facility pairs across 14,949 movement steps:
+  no unintended waypoint stops, collision violations or jumps. Real map travel
+  rendered all eight walk frames and moved the camera with the HUD fixed.
+- All eight NPC/facility links, commission tracking/claim, disabled repeat claims,
+  appearance/ambient settings, zoom, save reload, existing settings/garden and
+  campaign briefing/deployment/Auto/pause passed. 960x540 touch map buttons stayed
+  visible and reached/opened the garden. No JS errors or external requests.
+  Evidence: `validation/SANCTUARY_BROWSER_1_7.json`.
+- In this headless Chromium run, median/p95 requestAnimationFrame interval was
+  16.7ms and measured hub draw work averaged 2.383ms. These are local observations,
+  not a performance guarantee for other devices or browsers.
+
+- Final art/input checks rendered eight distinct frames for every direction of
+  all three avatars, loaded twelve idle poses and nine authored dock icons/two
+  currency illustrations. Inverse-camera ground clicks and modal keyboard
+  navigation passed. Evidence: `validation/SANCTUARY_ART_INPUT_1_7.json`.
+- Fresh ZIP extracted into a directory with spaces and launched from another cwd
+  with `python -S`: close camera/art HUD, actual UI/garden planting, tick-zero
+  campaign briefing, 125-Qi deployment, Auto and pause passed. No JS errors or
+  external requests. Evidence: `validation/RELEASE_SMOKE_1_7.json`.
+
+The sections below are historical verification for earlier releases. Combat
+balance policies were not rerun for this sanctuary presentation update.
 
 ## 1.6 changes
 

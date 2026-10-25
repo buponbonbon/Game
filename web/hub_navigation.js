@@ -106,7 +106,21 @@
             k = parent.get(k);
           }
           result.unshift(start);
-          return result;
+          // Preserve turns around obstacles, removing the grid's visible zigzag.
+          const smooth = [];
+          let anchor = from,
+            index = 0;
+          while (index < result.length) {
+            let far = index;
+            for (let j = index + 1; j < result.length; j++) {
+              if (!this.clear(anchor, result[j])) break;
+              far = j;
+            }
+            smooth.push(result[far]);
+            anchor = result[far];
+            index = far + 1;
+          }
+          return smooth;
         }
         if (closed.has(current)) continue;
         closed.add(current);

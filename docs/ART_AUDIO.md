@@ -1,4 +1,19 @@
-# Art and audio — version 1.6
+# Art and audio — version 1.7
+
+## Sanctuary camera / UI / walking (1.7)
+
+Three new 8×4 walking source sheets provide 96 walking frames. Twelve directional
+idle poses are registered from the previous source sheets, retained separately.
+A cleaned eight-NPC sheet, a separate illustrated parchment sanctuary map and
+new interface icon art accompany them. Source PNGs stay unchanged; atlas data
+contains source checksums, frame crops, body height and per-frame foot anchors.
+No image/audio authoring service is required at runtime.
+
+The HTML/CSS HUD is independent of camera rendering. Original SVG symbols remain
+as accessible interface fallbacks and map markers. The world renders only its
+visible source crop at 1.45–2.4x, with 1.85x default zoom and an eased following
+camera. NPC sliding patrol loops were removed; walking belongs to real travel.
+Audio is unchanged in this update.
 
 ## Sanctuary (1.6)
 

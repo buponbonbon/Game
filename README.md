@@ -65,6 +65,26 @@ adaptation, rather than a claim that every detail of the production document is
 implemented. See [build status](docs/BUILD_STATUS.md) for verified coverage and
 limitations and [balance reference](docs/BALANCE_REFERENCE.md) for content data.
 
+## Version 1.7: close camera and a new sanctuary interface
+
+The courtyard opens at **1.85× zoom** and scrolls with your character. Use the
++ / − controls to choose 1.45–2.4×. The profile, currency icons, illustrated
+minimap and facility dock stay fixed on screen. Nearby NPC labels replace the
+old “Click to approach” hover text.
+
+- **M / MAP:** open a dedicated illustrated parchment map; select a landmark,
+  then Travel Here to walk there, or Open Facility for immediate access.
+- The screen-space HTML/CSS interface has icon buttons, clear focus/disabled
+  states, currency tooltips, NPC conversation panels and a commission journal.
+- Each of three avatars has **eight walking frames per direction**, separate
+  directional idle poses and registered feet. Walking follows distance traveled;
+  routes no longer pause at every grid waypoint or restart the gait there.
+- WASD/arrows, Shift, E/Enter, saves, quests and existing facilities still work.
+  Position-only saves avoid refreshing combat previews. Art stays bundled offline.
+
+See [UI references and movement diagnosis](docs/UI_REFERENCE_1_7.md) for the
+accessible research sources and the official Gunny sites blocked by the network.
+
 ## Version 1.6: Celestial Sanctuary
 
 The main screen is now an interactive HD-2D sect courtyard: a native

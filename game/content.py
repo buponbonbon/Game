@@ -6,7 +6,7 @@ All data is JSON serializable and shared by the Python simulation and canvas UI.
 """
 from copy import deepcopy
 
-VERSION = "1.6.0"
+VERSION = "1.7.0"
 
 REGIONS = [
     {"id": "wharf", "name": "Glass Lantern Wharf", "subtitle": "The river remembers", "chapter": 1, "color": "#58c8bd", "description": "Protect a lantern-lit town as the corrupted river rises.", "mechanic": "Tide Cycle", "intro": "Keeper, the lanterns are going dark. Gather Spirit Qi and hold the river gate.", "outro": "The River Lord was bound to a broken seal. Its last breath points toward the Azure Terraces."},

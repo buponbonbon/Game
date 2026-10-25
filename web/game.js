@@ -199,7 +199,7 @@
     return d;
   }
   profile = loadProfile(slot);
-  function saveProfile() {
+  function saveProfile(options = {}) {
     profile.updated = Date.now();
     profileSaved = false;
     try {
@@ -210,7 +210,7 @@
       notify("SAVE STORAGE IS FULL. EXPORT YOUR SAVE.", C.red, 6);
     }
     mirrorSave();
-    refreshPreviews();
+    if (!options.positionOnly) refreshPreviews();
   }
   let saveDB = null;
   try {
@@ -3121,6 +3121,7 @@
     buttons = [];
     ctx.setTransform(3, 0, 0, 3, 0, 0);
     ctx.imageSmoothingEnabled = false;
+    sanctuary?.setVisible(scene === "title" && !overlay);
     if (scene === "title") drawTitle();
     else if (scene === "campaign") drawCampaign();
     else if (scene === "roster") drawRoster();
@@ -4040,6 +4041,19 @@
   });
   addEventListener("keydown", (e) => {
     if (
+      scene === "title" &&
+      !overlay &&
+      e.target.closest?.("#sanctuary-hud button") &&
+      ["Enter", "Space", "Tab"].includes(e.code)
+    )
+      return;
+    if (
+      scene === "title" &&
+      e.repeat &&
+      ["KeyE", "Enter", "Tab", "KeyM", "Escape"].includes(e.code)
+    )
+      return;
+    if (
       ["Space", "ArrowUp", "ArrowDown", "ArrowLeft", "ArrowRight"].includes(
         e.code,
       )
@@ -4107,7 +4121,7 @@
       await document.fonts.load("13px VT323");
       await document.fonts.ready;
       catalog = await api("/api/catalog");
-      if (catalog.version !== "1.6.0")
+      if (catalog.version !== "1.7.0")
         throw Error("Stop the old Python server and run the updated run.py.");
       for (const key of ["heroes", "enemies", "stages", "relics"])
         if (!Array.isArray(catalog[key]))
@@ -4158,6 +4172,9 @@
       await estateAction("inspect", {}, true);
       const hubNames = [
         "scene",
+        "idle_sword",
+        "idle_gatherer",
+        "idle_herbalist",
         "npcs",
         "sword",
         "gatherer",
@@ -4172,17 +4189,21 @@
         throw Error("Sanctuary artwork could not load. Reload the page.");
       const hubAtlas = await (await fetch("/assets/hub/atlas.json")).json();
       sanctuary = new window.VanDaoSanctuary(catalog.hub, images, hubAtlas, {
+        hudRoot: document.getElementById("game-shell"),
         register: (b) => buttons.push(b),
         clearButtons: () => (buttons = []),
         position: (pos) => {
           if (profile.estate?.hub) {
             Object.assign(profile.estate.hub, pos);
             profile.estate.hub.help_seen = true;
-            saveProfile();
+            saveProfile({ positionOnly: true });
           }
         },
         visit: (id) => estateAction("hub_visit", { facility: id }, true),
-        chime: () => audio.play("select"),
+        chime: () => {
+          audio.init();
+          audio.play("select");
+        },
         notice: (msg) => notify(msg),
         avatar: (id) => estateAction("hub_avatar", { avatar: id }, true),
         track: (id) => estateAction("hub_track", { id }, true),
