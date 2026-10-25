@@ -71,6 +71,9 @@
     actorArt = {},
     botany = {},
     sanctuary = null,
+    adventure = null,
+    gardenWorld = null,
+    worldToast = null,
     estateData = null,
     economyBusy = false,
     claimPromise = null,
@@ -391,7 +394,17 @@
     if (
       battleId &&
       isPlaying(state) &&
-      !["inspect", "hub_visit", "hub_avatar", "hub_track"].includes(action)
+      ![
+        "inspect",
+        "hub_visit",
+        "hub_avatar",
+        "hub_track",
+        "story_seen",
+        "story_choice",
+        "story_met",
+        "story_observe",
+        "story_favor",
+      ].includes(action)
     ) {
       notify("Finish or leave the battle before changing the estate.", C.gold);
       return null;
@@ -422,7 +435,29 @@
     overlay = null;
     if (!estateData) estateAction("inspect", {}, true);
   }
+  function explorationView() {
+    return {
+      scene,
+      profile,
+      data: estateData,
+      pointer,
+      now,
+      active: !overlay,
+      overlay,
+      busy: economyBusy,
+      realm: realm(),
+    };
+  }
   function drawEstate() {
+    if (
+      gardenWorld &&
+      estateData &&
+      profile.estate &&
+      window.VanDaoEstate.tab === "Garden"
+    ) {
+      gardenWorld.draw(ctx, explorationView());
+      return;
+    }
     window.VanDaoEstate.draw({
       ctx,
       C,
@@ -970,12 +1005,14 @@
   }
   function drawTitle() {
     if (sanctuary) {
+      sanctuary.externalModal = !!adventure?.hasModal;
       sanctuary.draw(ctx, {
         profile,
         data: estateData,
         pointer,
         now,
         active: !overlay,
+        hideHUD: !!adventure?.hasModal,
         realm: realm(),
         busy: economyBusy,
         resume: !!battleId && isPlaying(state),
@@ -1094,6 +1131,10 @@
     drawAmbient("title");
   }
   function drawCampaign() {
+    if (adventure) {
+      adventure.draw(ctx, explorationView());
+      return;
+    }
     bg("title", 0.58);
     header("THE FRACTURED LEYLINES");
     text("CHOOSE AN ENCOUNTER", 13, 32, C.muted);
@@ -2525,15 +2566,18 @@
       202,
       151,
       23,
-      () => {
+      async () => {
         if (!resultApplied) return;
         if (s.mode === "nursery") return startBattle("garden-defense");
         if (s.mode === "trial") return startBattle(s.stage);
         const next = catalog.stages.find(
           (x) => x.index === (stages[s.stage]?.index ?? 0) + 1,
         );
-        if (won && next) startBattle(next.id);
-        else if (won) leaveBattle();
+        if (won && next) {
+          await leaveBattle({ showAftermath: false });
+          if (adventure) adventure.open(next.id);
+          else startBattle(next.id);
+        } else if (won) leaveBattle();
         else startBattle(s.stage);
       },
       { disabled: !resultApplied },
@@ -3061,6 +3105,8 @@
               return notify("Finish the current battle or save first.");
             estateEpoch++;
             sanctuary?.reset();
+            adventure?.reset();
+            gardenWorld?.reset();
             slot = i;
             profile = loadProfile(i);
             estateData = null;
@@ -3096,6 +3142,8 @@
           return notify("Finish the current battle or save first.");
         estateEpoch++;
         sanctuary?.reset();
+        adventure?.reset();
+        gardenWorld?.reset();
         profile = freshProfile();
         estateData = null;
         estateAction("inspect", {}, true);
@@ -3105,7 +3153,33 @@
       });
     }
   }
+  function layoutWorldToast() {
+    if (!worldToast) return;
+    const box = canvas.getBoundingClientRect(),
+      parent = canvas.parentElement.getBoundingClientRect();
+    worldToast.style.left = box.left - parent.left + box.width / 2 + "px";
+    worldToast.style.top = box.top - parent.top + box.height * 0.82 + "px";
+    worldToast.style.maxWidth = box.width * 0.8 + "px";
+    worldToast.style.fontSize =
+      Math.max(11, Math.min(18, box.width / 100)) + "px";
+  }
   function drawToast() {
+    const modern =
+      !overlay &&
+      (scene === "title" ||
+        scene === "campaign" ||
+        (scene === "estate" && window.VanDaoEstate.tab === "Garden"));
+    if (worldToast) {
+      worldToast.hidden = !modern || !toast || now > toast.until;
+      if (modern) {
+        if (toast && now <= toast.until) {
+          worldToast.textContent = toast.message;
+          worldToast.style.borderColor = toast.color;
+        }
+        return;
+      }
+    }
+
     if (!toast || now > toast.until) return;
     const message =
         toast.message.length > 59
@@ -3121,7 +3195,16 @@
     buttons = [];
     ctx.setTransform(3, 0, 0, 3, 0, 0);
     ctx.imageSmoothingEnabled = false;
-    sanctuary?.setVisible(scene === "title" && !overlay);
+    sanctuary?.setVisible(
+      scene === "title" && !overlay && !adventure?.hasModal,
+    );
+    gardenWorld?.setVisible(
+      scene === "estate" &&
+        window.VanDaoEstate.tab === "Garden" &&
+        !overlay &&
+        !adventure?.hasModal,
+    );
+    if (adventure && scene !== "campaign") adventure.root.hidden = true;
     if (scene === "title") drawTitle();
     else if (scene === "campaign") drawCampaign();
     else if (scene === "roster") drawRoster();
@@ -3129,6 +3212,8 @@
     else if (scene === "estate") drawEstate();
     else if (scene === "trials") drawTrials();
     else if (scene === "battle") drawBattle();
+    if (adventure && ["title", "estate"].includes(scene) && !overlay)
+      adventure.draw(ctx, explorationView());
     if (overlay) buttons = [];
     if (overlay) {
       const offset = { x: (W - 384) / 2, y: (H - 216) / 2 },
@@ -3163,7 +3248,12 @@
         : scene === "battle" && state && !isPlaying(state)
           ? "results"
           : scene;
-    canvas.dataset.hub = scene === "title" ? "true" : "false";
+    canvas.dataset.hub =
+      scene === "title" ||
+      scene === "campaign" ||
+      (scene === "estate" && window.VanDaoEstate.tab === "Garden")
+        ? "true"
+        : "false";
     canvas.dataset.battleId = battleId || "";
     canvas.style.cursor = buttons.some((b) => inside(pointer, b) && !b.disabled)
       ? "pointer"
@@ -3175,7 +3265,7 @@
       lane = Math.floor((p.y - B.y) / B.ch);
     return col >= 1 && col <= 9 && lane >= 0 && lane < 5 ? { col, lane } : null;
   }
-  async function leaveBattle() {
+  async function leaveBattle(options = {}) {
     if (claimPromise) await claimPromise;
     if (state && !isPlaying(state) && !resultApplied)
       return notify(
@@ -3183,6 +3273,10 @@
         C.red,
         6,
       );
+    const finishedChapter =
+      state?.status === "victory" && !["nursery", "trial"].includes(state?.mode)
+        ? state.stage
+        : null;
     const nursery = state?.mode === "nursery",
       trial = state?.mode === "trial";
     abilityBursts = [];
@@ -3194,6 +3288,9 @@
     selectedHero = null;
     inspectUnit = null;
     scene = nursery ? "estate" : trial ? "trials" : "campaign";
+    if (nursery) window.VanDaoEstate.open("Garden");
+    if (finishedChapter && options.showAftermath !== false)
+      adventure?.open(finishedChapter);
     overlay = null;
     sessionStorage.removeItem("vanDao.battle");
     if (old) fetch("/api/battle/" + old, { method: "DELETE" }).catch(() => {});
@@ -3588,6 +3685,8 @@
         );
       estateEpoch++;
       sanctuary?.reset();
+      adventure?.reset();
+      gardenWorld?.reset();
       profile = normalizeProfile(data);
       saveProfile();
       await estateAction("inspect", {}, true);
@@ -3994,7 +4093,15 @@
       }
       return;
     }
-    if (overlay) return;
+    if (overlay || adventure?.hasModal) return;
+    if (
+      scene === "estate" &&
+      window.VanDaoEstate.tab === "Garden" &&
+      gardenWorld
+    ) {
+      gardenWorld.point(pointer);
+      return;
+    }
     if (scene === "title" && sanctuary) {
       sanctuary.point(pointer);
       return;
@@ -4041,9 +4148,24 @@
   });
   addEventListener("keydown", (e) => {
     if (
-      scene === "title" &&
       !overlay &&
-      e.target.closest?.("#sanctuary-hud button") &&
+      adventure?.hasModal &&
+      e.target.closest?.(".world-panel") &&
+      [
+        "PageDown",
+        "PageUp",
+        "Home",
+        "End",
+        "ArrowUp",
+        "ArrowDown",
+        "Space",
+      ].includes(e.code)
+    )
+      return;
+    if (
+      ["title", "campaign", "estate"].includes(scene) &&
+      !overlay &&
+      e.target.closest?.("#sanctuary-hud button,.world-ui button") &&
       ["Enter", "Space", "Tab"].includes(e.code)
     )
       return;
@@ -4060,6 +4182,22 @@
     )
       e.preventDefault();
     audio.init();
+    if (!overlay && adventure?.hasModal) {
+      if (adventure.key(e.code)) {
+        e.preventDefault();
+        return;
+      }
+      return;
+    }
+    if (
+      !overlay &&
+      scene === "estate" &&
+      window.VanDaoEstate.tab === "Garden" &&
+      gardenWorld?.key(e.code, true)
+    ) {
+      e.preventDefault();
+      return;
+    }
     if (scene === "title" && !overlay && sanctuary?.key(e.code, true)) {
       e.preventDefault();
       return;
@@ -4083,12 +4221,16 @@
     else if (e.code === "KeyQ" && inspectUnit !== null)
       command({ action: "ultimate", unit: inspectUnit });
   });
-  addEventListener("keyup", (e) => sanctuary?.key(e.code, false));
+  addEventListener("keyup", (e) => {
+    sanctuary?.key(e.code, false);
+    gardenWorld?.key(e.code, false);
+  });
   addEventListener("blur", () => {
     if (sanctuary) {
       sanctuary.stop();
       sanctuary.persist();
     }
+    gardenWorld?.world.stop();
   });
   function resize() {
     const w = innerWidth,
@@ -4097,6 +4239,7 @@
     const scale = profile.settings.integer && fit >= 1 ? Math.floor(fit) : fit;
     canvas.style.width = Math.floor(W * scale) + "px";
     canvas.style.height = Math.floor(H * scale) + "px";
+    layoutWorldToast();
   }
   addEventListener("resize", resize);
   document.addEventListener("visibilitychange", () => {
@@ -4121,7 +4264,7 @@
       await document.fonts.load("13px VT323");
       await document.fonts.ready;
       catalog = await api("/api/catalog");
-      if (catalog.version !== "1.7.0")
+      if (catalog.version !== "1.8.0")
         throw Error("Stop the old Python server and run the updated run.py.");
       for (const key of ["heroes", "enemies", "stages", "relics"])
         if (!Array.isArray(catalog[key]))
@@ -4172,9 +4315,6 @@
       await estateAction("inspect", {}, true);
       const hubNames = [
         "scene",
-        "idle_sword",
-        "idle_gatherer",
-        "idle_herbalist",
         "npcs",
         "sword",
         "gatherer",
@@ -4188,7 +4328,100 @@
       if (hubImages.some((im) => !im))
         throw Error("Sanctuary artwork could not load. Reload the page.");
       const hubAtlas = await (await fetch("/assets/hub/atlas.json")).json();
+      const explorationArt = await (
+        await fetch("/assets/exploration/exploration.json")
+      ).json();
+      const explorationNames = ["campaign_map", "npcs", "props", "actions"];
+      const explorationImages = await Promise.all(
+        explorationNames.map((n) =>
+          loadImage("/assets/exploration/" + n + ".png"),
+        ),
+      );
+      explorationNames.forEach(
+        (n, i) =>
+          (images[n === "campaign_map" ? n : "explore_" + n] =
+            explorationImages[i]),
+      );
+      if (explorationImages.some((im) => !im))
+        throw Error("Exploration artwork could not load. Reload the page.");
+      if (hubAtlas.extra_sources)
+        for (const name of Object.keys(hubAtlas.extra_sources))
+          images["hub_" + name] = await loadImage(
+            "/assets/hub/" + name + ".png",
+          );
+      const worldOpen = (action) => {
+        if (action === "title") {
+          scene = "title";
+          overlay = null;
+        } else if (
+          ["campaign", "roster", "archive", "trials"].includes(action)
+        ) {
+          scene = action;
+          overlay = null;
+        } else {
+          window.VanDaoEstate.open(action);
+          openEstate();
+        }
+      };
+      const worldSound = (kind) => {
+        audio.init();
+        if (kind === "water") {
+          audio.noise(0.32, 0.035, 3500);
+          audio.tone(780, 0.08, "sine", 0.025, "sfx", 0.1);
+          audio.tone(1060, 0.08, "sine", 0.02, "sfx", 0.22);
+        } else if (kind === "chime" || kind === "harvest") {
+          audio.pluck(kind === "chime" ? 880 : 660, 0.35, 0.055);
+        } else if (kind === "foot") {
+          audio.noise(0.035, 0.018, 700);
+        } else {
+          audio.noise(0.09, 0.035, 1500);
+        }
+      };
+      const worldChime = () => {
+        audio.init();
+        audio.play("select");
+      };
+      adventure = new VanDaoAdventure(catalog.story, images, explorationArt, {
+        root: document.getElementById("game-shell"),
+        profile: () => profile,
+        busy: () => economyBusy,
+        act: estateAction,
+        start: startBattle,
+        open: worldOpen,
+        register: (b) => buttons.push(b),
+        heroes,
+        hubAtlas,
+        chime: worldChime,
+      });
+      gardenWorld = new VanDaoGarden(
+        catalog.garden_world,
+        images,
+        hubAtlas,
+        explorationArt,
+        botany,
+        {
+          root: document.getElementById("game-shell"),
+          profile: () => profile,
+          busy: () => economyBusy,
+          act: estateAction,
+          start: startBattle,
+          open: worldOpen,
+          register: (b) => buttons.push(b),
+          tab: (t) => window.VanDaoEstate.open(t),
+          converse: (id) => adventure.converse(id),
+          modal: () => adventure.hasModal,
+          notice: (msg) => notify(msg),
+          chime: worldChime,
+          sound: worldSound,
+        },
+      );
       sanctuary = new window.VanDaoSanctuary(catalog.hub, images, hubAtlas, {
+        exploration: catalog.story,
+        explorationArt,
+        sound: worldSound,
+        converse: (id) => adventure.converse(id),
+        observe: (item) => adventure.observe(item),
+        journal: () => adventure.journal(),
         hudRoot: document.getElementById("game-shell"),
         register: (b) => buttons.push(b),
         clearButtons: () => (buttons = []),
@@ -4238,6 +4471,11 @@
         await fetch("/assets/audio/music/music.json")
       ).json();
       await refreshPreviews();
+      worldToast = document.createElement("div");
+      worldToast.id = "world-toast";
+      worldToast.hidden = true;
+      worldToast.setAttribute("role", "status");
+      document.getElementById("game-shell").appendChild(worldToast);
       document.getElementById("loading").hidden = true;
       resize();
       requestAnimationFrame(render);
@@ -4270,6 +4508,17 @@
     estateAction,
     get hub() {
       return sanctuary?.snapshot || null;
+    },
+    get journey() {
+      return {
+        dialog: adventure?.dialog || null,
+        selected: adventure?.selected,
+      };
+    },
+    get garden() {
+      return gardenWorld
+        ? JSON.parse(JSON.stringify(gardenWorld.snapshot))
+        : null;
     },
     get estate() {
       return {

@@ -1,4 +1,28 @@
-# Art and audio — version 1.7
+# Art and audio — version 1.8
+
+## Exploration and character interactions (1.8)
+
+`web/assets/exploration` contains an original three-region campaign map, six
+visitor portraits, twelve garden/environment props and a 48-frame interaction
+sheet. `tools/register_exploration.py` copies the generated source PNGs unchanged
+and writes source-coordinate/foot registration metadata. It also registers
+192 walking poses across three avatars/eight facings and a shared 24-pose idle
+sheet. One missing facing in a generated source is supplied by a separate authored
+strip, referenced explicitly in frame metadata. Uneven transparent gutters are
+registered from source alpha; no source pixels are rewritten. Three obsolete
+cardinal-only idle sheets were replaced by the shared directional idle atlas.
+
+The app draws actual crop sprites on raised soil beds, with wet/overgrown variants,
+sway, butterfly/petal motion and water/harvest effects. Garden and sanctuary use
+the same avatar renderer. Tool use, greeting and inspection have distinct poses.
+Tiny paper cranes, ripples and footfall effects are drawn by the renderer.
+Optional ambient motion still follows the existing setting. Foliage responds near
+the player; environmental discoveries are narrative records, not infinite drops.
+
+Water/rustle/soil/footstep/chime feedback uses the existing local Web Audio buses
+and volume settings. No new music or voice tracks were added. New conversations
+are text. All art is bundled; no runtime authoring dependency, CDN or external
+image service is required. Raster cycles are not a skeletal-animation system.
 
 ## Sanctuary camera / UI / walking (1.7)
 

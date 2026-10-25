@@ -38,6 +38,31 @@ nhận ra bản lưu.
 Đây là bản game chơi được, chuyển thể gọn từ tài liệu thiết kế bạn gửi; xem
 [tình trạng triển khai](docs/BUILD_STATUS.md) để biết phần đã kiểm thử và giới hạn.
 
+## Bản 1.8: hành trình, nhân vật và vườn 2D
+
+- **Bản đồ hành trình riêng:** chín địa điểm ứng với chín ải hiện có. Mỗi chặng
+  có NPC dẫn chuyện, lý do phải bảo vệ nơi đó, ba trang hội thoại ngắn, hai lựa
+  chọn trả lời và phần tiếp diễn sau chiến thắng. Nút qua chặng đưa tới câu
+  chuyện kế tiếp. Có thể bắt đầu trận mà không cần đọc hết hoặc chọn lời đáp.
+- **Sáu NPC mới** xuất hiện cùng tám cultivator trong sảnh: Mei, Tao, Qiao,
+  Lin, Suyin và Ren. Có chủ đề trò chuyện tự do, lời chào theo tiến độ, ba việc
+  nhờ giúp và kỷ vật lưu trong nhật ký. Cultivator cũng có chủ đề trò chuyện riêng.
+- **Mười chi tiết ven đường:** nhấp vào hoặc đến gần rồi nhấn E để xem hoa,
+  cỏ, nước, chuông, thư, hạc giấy và đá khắc. Cảnh vật có phản ứng; phát hiện được
+  ghi lại. Đây là khám phá và kể chuyện, không phải nguồn đá vô hạn.
+- **Linh Điền thành khu vườn 2D đi lại được:** luống đất, luống cỏ dại, cây con,
+  cây chín, nước tưới, bướm và NPC nằm trực tiếp trong cảnh. Nhấp luống → chọn
+  hạt → Plant; nhân vật đi tới và làm động tác trồng/tưới/bón/thu hoạch. Bảng thao
+  tác chỉ hiện khi chọn một luống. Các mục Alchemy/Merchant/Research/Ledger vẫn có.
+- **Hoạt ảnh:** tám hướng nhìn, 192 khung đi bộ, 24 tư thế đứng và 48 khung chào,
+  cúi xem, tưới/hái cho ba avatar. Có tăng tốc, dừng nhẹ, nhịp chân và hiệu ứng
+  tương tác. Ngoại hình, chuyển động không thay đổi chỉ số chiến đấu.
+
+Cây vẫn lớn sau các trận hoàn tất theo luật cũ, không lớn theo giờ thực và không
+héo khi nghỉ chơi. Lựa chọn hội thoại lưu trong nhật ký và được một số NPC nhắc
+lại; không tự mở ải hoặc sửa độ khó. Bản lưu cũ vẫn giữ tiền, đồ, thiên phú và ải
+đã hoàn tất. Hội thoại mới dùng chữ, không bổ sung lồng tiếng NPC trong bản này.
+
 ## Bản 1.7: camera cận cảnh và UI mới
 
 - Sảnh mặc định **phóng 1,85×**, camera lướt theo nhân vật. Nút **+ / −** chỉnh

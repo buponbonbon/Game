@@ -1,6 +1,8 @@
 /* Screen-space sanctuary interface: semantic buttons, illustrated map and stable HUD. */
 window.VanDaoSanctuaryHUD = (() => {
   const paths = {
+    lock: '<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V6a4 4 0 0 1 8 0v4m-4 5v2"/>',
+    talk: '<path d="M21 11a8 8 0 0 1-8 8H7l-5 3 2-6a8 8 0 0 1-1-5 9 9 0 0 1 18 0Z"/><path d="M7 10h10m-10 4h6"/>',
     stone:
       '<path fill="#85e8d0" d="m12 2 7 5 2 9-9 7L3 16l2-9Z"/><path fill="#d6fff0" d="m12 2-2 10-5-5Z"/><path fill="#3bafaf" d="m10 12 11 4-9 7Z"/><path fill="none" stroke="#eafffa" d="m5 7 5 5 9-5M10 12l2 11"/>',
     insight:
@@ -95,6 +97,12 @@ window.VanDaoSanctuaryHUD = (() => {
       this.handlers.set("settings", () => this.open("settings"));
       this.handlers.set("avatar", () => world.openAvatar());
       this.handlers.set("hub-map", () => world.openMap());
+      const extra = document.createElement("div");
+      extra.className = "hub-world-extras";
+      extra.innerHTML = `<button data-hub-id="hub-journal">${icon("archive")} Journal</button><button data-hub-id="hub-greet">${icon("avatar")} Greet</button>`;
+      this.root.appendChild(extra);
+      this.handlers.set("hub-journal", () => world.hooks.journal?.());
+      this.handlers.set("hub-greet", () => world.playAction("greet", 1));
       this.handlers.set("hub-zoom-out", () =>
         world.setZoom((world.zoomTarget || world.camera.zoom) - 0.2),
       );
@@ -102,11 +110,13 @@ window.VanDaoSanctuaryHUD = (() => {
         world.setZoom((world.zoomTarget || world.camera.zoom) + 0.2),
       );
       this.labels = new Map();
-      for (const f of world.map.facilities) {
+      for (const f of world
+        .interactionTargets()
+        .filter((f) => f.kind !== "prop")) {
         const b = document.createElement("button");
         b.className = "hub-world-label";
         b.dataset.hubId = "hub-go-" + f.id;
-        b.innerHTML = `${icon(f.id)}<span>${esc(f.name)}</span>`;
+        b.innerHTML = `${icon(f.kind === "visitor" ? "talk" : f.id)}<span>${esc(f.name)}</span>`;
         b.title = f.keeper;
         b.setAttribute("aria-label", f.name + " — speak to " + f.keeper);
         this.root.querySelector(".hub-world-labels").appendChild(b);
@@ -262,7 +272,7 @@ window.VanDaoSanctuaryHUD = (() => {
         this.dirty = true;
       }
       const scale = this.box.width / 512;
-      for (const f of w.map.facilities) {
+      for (const f of w.interactionTargets().filter((f) => f.kind !== "prop")) {
         const node = this.labels.get(f.id),
           screen = w.worldToScreen({ x: f.x, y: f.y + 7 });
         const show =
@@ -295,7 +305,7 @@ window.VanDaoSanctuaryHUD = (() => {
         this.interactKey = interactKey;
         interaction.hidden = !interactKey;
         interaction.innerHTML = interactKey
-          ? `<button data-hub-id="hub-interact"><kbd>E</kbd><span><small>${esc(near.f.name)}</small><b>Speak to ${esc(near.f.keeper)}</b></span>${icon("arrow")}</button>`
+          ? `<button data-hub-id="hub-interact"><kbd>E</kbd><span><small>${esc(near.f.name)}</small><b>${near.f.kind === "prop" ? "Notice " + esc(near.f.name) : "Speak to " + esc(near.f.keeper)}</b></span>${icon("arrow")}</button>`
           : "";
         this.handlers.set("hub-interact", () => w.talk(near.f));
         this.dirty = true;
@@ -317,7 +327,9 @@ window.VanDaoSanctuaryHUD = (() => {
       for (const b of this.cache) {
         if (b.node.classList.contains("hub-world-label")) {
           if (!b.node.classList.contains("is-visible")) continue;
-          const f = w.map.facilities.find((f) => "hub-go-" + f.id === b.id),
+          const f = w
+              .interactionTargets()
+              .find((f) => "hub-go-" + f.id === b.id),
             s = w.worldToScreen({ x: f.x, y: f.y + 7 });
           this.world.hooks.register({
             ...b.rect,
@@ -476,8 +488,19 @@ window.VanDaoSanctuaryHUD = (() => {
         const c = layer.querySelector("canvas").getContext("2d");
         w.cutout(c, w.assets.hub_npcs, w.atlas.npcs[f.npc], 140, 325, 300);
         this.handlers.set("hub-open-" + f.id, () => w.activate(f));
+        const extra = document.createElement("button");
+        extra.className = "hub-secondary";
+        extra.dataset.hubId = "hub-talk-" + f.npc;
+        extra.textContent = "Talk about the journey";
+        layer.querySelector(".hub-conversation>div").appendChild(extra);
+        this.handlers.set("hub-talk-" + f.npc, () => {
+          w.dialog = null;
+          w.hooks.converse?.(f.npc);
+        });
       }
     }
   }
+  HUD.icon = icon;
+  HUD.escape = esc;
   return HUD;
 })();

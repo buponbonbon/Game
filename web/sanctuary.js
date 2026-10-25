@@ -21,6 +21,11 @@ window.VanDaoSanctuary = (() => {
       this.travel = 0;
       this.lastDirection = "south";
       this.wasActive = false;
+      this.exploration = hooks.exploration;
+      this.explorationArt = hooks.explorationArt;
+      this.effects = [];
+      this.pace = 0;
+      this.action = null;
       this.ui = hooks.hudRoot
         ? new VanDaoSanctuaryHUD(this, hooks.hudRoot)
         : null;
@@ -30,14 +35,7 @@ window.VanDaoSanctuary = (() => {
     }
     async prepareImages() {
       if (typeof createImageBitmap === "undefined") return;
-      for (const name of [
-        "sword",
-        "gatherer",
-        "herbalist",
-        "idle_sword",
-        "idle_gatherer",
-        "idle_herbalist",
-      ]) {
+      for (const name of ["sword", "gatherer", "herbalist", "direction_idle"]) {
         const image = this.assets["hub_" + name];
         if (!image) continue;
         try {
@@ -59,6 +57,9 @@ window.VanDaoSanctuary = (() => {
       this.route = [];
       this.target = null;
       this.moving = false;
+      this.pace = 0;
+      this.action = null;
+      this.coast = null;
     }
     sync(profile) {
       const data = profile.estate?.hub || {};
@@ -77,27 +78,59 @@ window.VanDaoSanctuary = (() => {
       this.profile = profile;
       this.avatar = data.avatar || "sword";
     }
+    interactionTargets() {
+      if (
+        this._targetFacilities === this.map.facilities &&
+        this._targetExploration === this.exploration &&
+        this._targets
+      )
+        return this._targets;
+      this._targetFacilities = this.map.facilities;
+      this._targetExploration = this.exploration;
+      this._targets = [
+        ...this.map.facilities,
+        ...(this.exploration?.npcs || []).map((n) => ({
+          ...n,
+          id: "person-" + n.id,
+          npc: n.id,
+          keeper: n.name,
+          name: n.name,
+          kind: "visitor",
+        })),
+        ...(this.exploration?.observations || []).map((o) => ({
+          ...o,
+          id: "detail-" + o.id,
+          observation: o.id,
+          keeper: "",
+          kind: "prop",
+        })),
+      ];
+      return this._targets;
+    }
     nearest() {
       let best = null;
-      for (const f of this.map.facilities) {
+      for (const f of this.interactionTargets()) {
         const d = Math.hypot(f.x - this.position.x, f.y - this.position.y);
         if (!best || d < best.d) best = { f, d };
       }
       return best;
     }
     npcs() {
-      return this.map.facilities.map((f, i) => ({
-        ...f,
-        direction: "south",
-        moving: false,
-        phase: this.clock * 0.4 + i,
-      }));
+      return this.interactionTargets()
+        .filter((f) => f.kind !== "prop")
+        .map((f, i) => ({
+          ...f,
+          direction: "south",
+          moving: false,
+          phase: this.clock * 0.4 + i,
+        }));
     }
     go(id) {
-      const f = this.map.facilities.find((f) => f.id === id);
+      const f = this.interactionTargets().find((f) => f.id === id);
       if (!f) return;
       this.keys.clear();
       this.dialog = null;
+      this.coast = null;
       if (Math.hypot(f.x - this.position.x, f.y - this.position.y) < 19)
         return this.talk(f);
       this.route = this.nav.route(this.position, f);
@@ -108,17 +141,45 @@ window.VanDaoSanctuary = (() => {
     point(screen) {
       if (this.dialog) return;
       const p = this.screenToWorld(screen),
-        f = this.map.facilities.find(
-          (f) => Math.hypot(f.x - p.x, f.y - p.y) < 12,
+        f = this.interactionTargets().find(
+          (f) =>
+            Math.hypot(f.x - p.x, f.y - p.y) < (f.kind === "prop" ? 8 : 12),
         );
       if (f) return this.go(f.id);
       this.keys.clear();
+      this.coast = null;
       this.route = this.nav.route(this.position, p);
       this.target = null;
     }
     talk(f) {
       this.stop();
       this.persist();
+      if (f.kind === "visitor") {
+        this.playAction("greet", 0.85);
+        this.hooks.converse?.(f.npc);
+        return;
+      }
+      if (f.kind === "prop") {
+        this.playAction("inspect", 1.1);
+        this.effects.push({
+          id: f.observation,
+          x: f.x,
+          y: f.y,
+          at: this.clock,
+          kind: f.kind,
+        });
+        this.hooks.sound?.(
+          f.kind === "prop"
+            ? this.exploration.observations.find((o) => o.id === f.observation)
+                ?.kind || "leaf"
+            : "leaf",
+        );
+        this.hooks.observe?.(
+          this.exploration.observations.find((o) => o.id === f.observation),
+        );
+        return;
+      }
+      this.playAction("greet", 0.85);
       this.dialog = { kind: "npc", id: f.id };
       this.hooks.visit(f.id);
       this.hooks.chime();
@@ -197,6 +258,11 @@ window.VanDaoSanctuary = (() => {
       this.hooks.position({ ...this.position });
       this.saved = this.clock;
     }
+    playAction(kind, duration = 1) {
+      this.stop();
+      this.action = { kind, at: this.clock, duration };
+      this.direction = "southwest";
+    }
     setZoom(value) {
       this.zoomTarget = clamp(value, 1.45, 2.4);
     }
@@ -226,24 +292,36 @@ window.VanDaoSanctuary = (() => {
       this.clock += dt;
       const before = { ...this.position },
         wasMoving = this.moving;
-      if (!this.dialog) {
+      if (this.action && this.clock - this.action.at >= this.action.duration)
+        this.action = null;
+      if (!this.dialog && !this.externalModal && !this.action) {
         let dx =
           Number(this.keys.has("KeyD") || this.keys.has("ArrowRight")) -
           Number(this.keys.has("KeyA") || this.keys.has("ArrowLeft"));
         let dy =
           Number(this.keys.has("KeyS") || this.keys.has("ArrowDown")) -
           Number(this.keys.has("KeyW") || this.keys.has("ArrowUp"));
-        const speed =
-          42 *
+        const desiredSpeed =
+          (dx || dy || this.route.length ? 42 : 0) *
           (this.keys.has("ShiftLeft") || this.keys.has("ShiftRight") ? 1.5 : 1);
+        this.pace += (desiredSpeed - this.pace) * (1 - Math.exp(-dt * 14));
+        const speed = this.pace;
         if (dx || dy) {
           const length = Math.hypot(dx, dy);
+          this.coast = { x: dx / length, y: dy / length };
           this.position = this.nav.move(
             this.position,
             (dx / length) * speed * dt,
             (dy / length) * speed * dt,
           );
+        } else if (!this.route.length && this.coast && this.pace > 1) {
+          this.position = this.nav.move(
+            this.position,
+            this.coast.x * speed * dt,
+            this.coast.y * speed * dt,
+          );
         } else {
+          if (this.route.length) this.coast = null;
           // Consume the whole frame's distance across waypoints: no one-frame stop at grid nodes.
           let budget = speed * dt,
             guard = 0;
@@ -282,10 +360,30 @@ window.VanDaoSanctuary = (() => {
       if (this.moving) {
         this.travel += distance;
         this.step = this.travel / 24;
-        if (Math.abs(dx) > Math.abs(dy) * 1.15)
-          this.direction = dx > 0 ? "east" : "west";
-        else if (Math.abs(dy) > Math.abs(dx) * 1.15)
-          this.direction = dy > 0 ? "south" : "north";
+        const angle = Math.atan2(dy, dx),
+          directions = [
+            "east",
+            "southeast",
+            "south",
+            "southwest",
+            "west",
+            "northwest",
+            "north",
+            "northeast",
+          ];
+        this.direction =
+          directions[(Math.round(angle / (Math.PI / 4)) + 8) % 8];
+        const oldStep = Math.floor((this.travel - distance) / 12),
+          newStep = Math.floor(this.travel / 12);
+        if (newStep !== oldStep) {
+          this.hooks.sound?.("foot");
+          this.effects.push({
+            kind: "foot",
+            x: this.position.x,
+            y: this.position.y,
+            at: this.clock,
+          });
+        }
       }
       if (
         (wasMoving && !this.moving) ||
@@ -293,7 +391,7 @@ window.VanDaoSanctuary = (() => {
       )
         this.persist();
       if (this.target) {
-        const f = this.map.facilities.find((f) => f.id === this.target);
+        const f = this.interactionTargets().find((f) => f.id === this.target);
         if (Math.hypot(f.x - this.position.x, f.y - this.position.y) < 18)
           this.talk(f);
       }
@@ -326,42 +424,161 @@ window.VanDaoSanctuary = (() => {
         height,
       );
     }
-    character(c, id, x, y, height, direction, moving, phase) {
+    character(c, id, x, y, height, direction, moving, phase, player = false) {
       const walk = this.atlas.avatars?.[id],
-        meta = !moving && walk?.idle ? walk.idle : walk,
-        key = !moving && walk?.idle ? "idle_" + id : id,
-        original = this.assets["hub_" + key],
-        image = this.decoded[key] || original;
+        action = player && this.action && this.explorationArt?.actions?.[id];
+      const meta = action
+        ? this.explorationArt.actions[id]
+        : !moving && walk?.idle
+          ? walk.idle
+          : walk;
+      const key = meta?.source || (!moving && walk?.idle ? "idle_" + id : id);
+      const image = action
+        ? this.assets.explore_actions
+        : this.decoded[key] || this.assets["hub_" + key];
       c.fillStyle = "#10252135";
       c.beginPath();
       c.ellipse(x, y + 0.6, height * 0.19, 1.5, 0, 0, Math.PI * 2);
       c.fill();
       if (!meta || !image) {
-        this.cutout(c, this.assets.hub_npcs, this.atlas.npcs[id], x, y, height);
-        return;
+        const f = this.explorationArt?.npcs?.[id] || this.atlas.npcs[id];
+        this.cutout(
+          c,
+          this.explorationArt?.npcs?.[id]
+            ? this.assets.explore_npcs
+            : this.assets.hub_npcs,
+          f,
+          x,
+          y,
+          height,
+        );
+        return -1;
       }
-      const seq = meta.states[direction] || meta.states.south,
-        n = seq.length,
-        index = moving ? Math.floor(phase * n) % n : 0,
-        frame = seq[index];
-      const scale = height / (meta.body_height || meta.cell_h * 0.86),
-        ratio = image.width / meta.width;
-      const anchorX = frame.anchor_x ?? frame.w / 2,
-        anchorY = frame.anchor_y ?? frame.h;
+      const facing = meta.states[direction]
+        ? direction
+        : direction.includes("north")
+          ? "north"
+          : direction.includes("south")
+            ? "south"
+            : direction;
+      const seq = action
+        ? meta.states[this.action.kind] || meta.states.inspect
+        : meta.states[facing] || meta.states.south;
+      const progress = action
+          ? Math.max(
+              0,
+              Math.min(
+                0.999,
+                (this.clock - this.action.at) / this.action.duration,
+              ),
+            )
+          : 0,
+        index = action
+          ? Math.floor(progress * seq.length)
+          : moving
+            ? Math.floor(phase * seq.length) % seq.length
+            : 0,
+        f = seq[index];
+      const source = f.source ? this.assets["hub_" + f.source] : image,
+        scale =
+          height / (f.body_height || meta.body_height || meta.cell_h * 0.86),
+        ratio = source.width / (f.source_width || meta.width),
+        ax = f.anchor_x ?? f.w / 2,
+        ay = f.anchor_y ?? f.h;
+      c.save();
+      c.translate(x, y);
+      if (player && !action && moving)
+        c.rotate(
+          Math.sin(phase * Math.PI * 2) * 0.008 + (this.pace > 48 ? 0.012 : 0),
+        );
+      if (!moving && !action && this.profile?.settings.hubMotion !== false)
+        c.scale(1, 1 + Math.sin(this.clock * 1.7) * 0.003);
       c.drawImage(
-        image,
-        frame.x * ratio,
-        frame.y * ratio,
-        frame.w * ratio,
-        frame.h * ratio,
-        x - anchorX * scale,
-        y - anchorY * scale,
-        frame.w * scale,
-        frame.h * scale,
+        source,
+        f.x * ratio,
+        f.y * ratio,
+        f.w * ratio,
+        f.h * ratio,
+        -ax * scale,
+        -ay * scale,
+        f.w * scale,
+        f.h * scale,
       );
+      c.restore();
       if (this.renderedFrames)
         this.renderedFrames[id + ":" + direction] = index;
-      return moving ? index : -1;
+      return moving || action ? index : -1;
+    }
+    drawProp(c, o, t, ambient) {
+      if (["stone", "letter"].includes(o.kind) || o.id === "lotus") return;
+      if (o.kind === "lantern") {
+        this.cutout(
+          c,
+          this.assets.hub_decor,
+          this.atlas.decor.lantern,
+          o.x,
+          o.y,
+          10,
+        );
+        return;
+      }
+      if (o.kind === "crane") {
+        c.save();
+        c.translate(o.x, o.y - 5);
+        c.rotate(ambient ? Math.sin(t * 0.7) * 0.08 : 0);
+        c.fillStyle = "#ffefd2";
+        c.beginPath();
+        c.moveTo(-5, 0);
+        c.lineTo(0, -2);
+        c.lineTo(5, 0);
+        c.lineTo(0, 2);
+        c.closePath();
+        c.fill();
+        c.strokeStyle = "#c4ad83";
+        c.lineWidth = 0.3;
+        c.beginPath();
+        c.moveTo(-5, 0);
+        c.lineTo(0, 1);
+        c.lineTo(5, 0);
+        c.stroke();
+        c.restore();
+        return;
+      }
+
+      const f = this.explorationArt?.props?.[o.prop];
+      if (!f) return;
+      const distance = Math.hypot(o.x - this.position.x, o.y - this.position.y),
+        react = Math.max(0, 1 - distance / 22);
+      const recent = this.effects.find((f) => f.id === o.id && t - f.at < 1.8);
+      const sway = ambient
+        ? Math.sin(t * 1.5 + o.x) * 0.012 +
+          Math.sin(t * 7) * react * 0.12 +
+          (recent ? Math.sin((t - recent.at) * 9) * 0.09 : 0)
+        : 0;
+      const h =
+          o.kind === "grass"
+            ? 10
+            : o.kind === "flower"
+              ? 13
+              : o.kind === "water"
+                ? 10
+                : 12,
+        w = (h * f.w) / f.h;
+      c.save();
+      c.translate(o.x, o.y);
+      c.rotate(sway);
+      c.drawImage(
+        this.assets.explore_props,
+        f.x,
+        f.y,
+        f.w,
+        f.h,
+        -w / 2,
+        -h,
+        w,
+        h,
+      );
+      c.restore();
     }
     draw(c, view) {
       const started = performance.now();
@@ -457,9 +674,17 @@ window.VanDaoSanctuary = (() => {
       }
       const actors = [
         ...this.npcs().map((n) => ({ ...n, player: false })),
+        ...(this.exploration?.observations || []).map((o) => ({
+          ...o,
+          propActor: true,
+        })),
         { id: "player", npc: this.avatar, ...this.position, player: true },
       ].sort((a, b) => a.y - b.y);
       for (const a of actors) {
+        if (a.propActor) {
+          this.drawProp(c, a, t, ambient);
+          continue;
+        }
         if (a.player) {
           c.strokeStyle = "#fff4b780";
           c.lineWidth = 0.35;
@@ -482,11 +707,45 @@ window.VanDaoSanctuary = (() => {
           a.player ? this.direction : a.direction,
           a.player ? this.moving : a.moving,
           a.player ? this.step : a.phase,
+          a.player,
         );
         if (a.player) this.playerFrame = frame;
       }
+      this.effects = this.effects.filter((f) => t - f.at < 1.8);
+      if (ambient)
+        for (const fx of this.effects) {
+          const age = t - fx.at;
+          c.globalAlpha = Math.max(
+            0,
+            1 - age / (fx.kind === "foot" ? 0.5 : 1.8),
+          );
+          if (fx.kind === "foot") {
+            c.strokeStyle = "#d5bd8a70";
+            c.lineWidth = 0.4;
+            c.beginPath();
+            c.ellipse(fx.x, fx.y, 1 + age * 4, 0.5 + age, 0, 0, Math.PI * 2);
+            c.stroke();
+          } else {
+            for (let i = 0; i < 8; i++) {
+              c.fillStyle =
+                fx.id === "lotus" || fx.id === "spring" ? "#b7f4f5" : "#f8c9d6";
+              c.beginPath();
+              c.ellipse(
+                fx.x + Math.cos(i * 2.1 + age) * age * 11,
+                fx.y - age * 8 + Math.sin(i * 2.1) * age * 4,
+                0.6,
+                0.35,
+                age,
+                0,
+                Math.PI * 2,
+              );
+              c.fill();
+            }
+          }
+        }
+      c.globalAlpha = 1;
       c.restore();
-      this.ui?.draw(view);
+      this.ui?.draw({ ...view, active: view.active && !view.hideHUD });
       if (view.active) this.frameMetrics.push(performance.now() - started);
       if (this.frameMetrics.length > 180) this.frameMetrics.shift();
     }
@@ -509,6 +768,8 @@ window.VanDaoSanctuary = (() => {
         camera: { ...this.camera },
         renderedFrames: { ...this.renderedFrames },
         playerFrame: this.playerFrame,
+        action: this.action ? { ...this.action } : null,
+        facings: Object.keys(this.atlas.avatars?.[this.avatar]?.states || {}),
         walkFrames: this.atlas.avatars?.[this.avatar]?.states.south.length || 0,
         renderMs: this.frameMetrics.length
           ? this.frameMetrics.reduce((a, b) => a + b, 0) /

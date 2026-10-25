@@ -11,13 +11,14 @@
     return inside;
   }
   function walkable(map, x, y, r = 3) {
+    const bounds = map.bounds || { left: 5, right: 507, top: 74, bottom: 251 };
     if (
       !Number.isFinite(x) ||
       !Number.isFinite(y) ||
-      x <= 5 ||
-      x >= 507 ||
-      y <= 74 ||
-      y >= 251
+      x <= bounds.left ||
+      x >= bounds.right ||
+      y <= bounds.top ||
+      y >= bounds.bottom
     )
       return false;
     for (const [dx, dy] of [
@@ -29,7 +30,7 @@
     ])
       if (!map.walkways.some((p) => polygon(x + dx, y + dy, p))) return false;
     const f = map.fountain;
-    if (((x - f.x) / (f.rx + r)) ** 2 + ((y - f.y) / (f.ry + r)) ** 2 < 1)
+    if (f && ((x - f.x) / (f.rx + r)) ** 2 + ((y - f.y) / (f.ry + r)) ** 2 < 1)
       return false;
     return !map.blockers.some(
       (b) =>

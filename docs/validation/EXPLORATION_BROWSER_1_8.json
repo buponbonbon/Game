@@ -1,0 +1,27 @@
+{
+  "version": "1.8.0",
+  "checks": [
+    "Real camera-space clicks inspect flowers, oath stone and grass; discoveries persist without generating currency; 14 sanctuary NPCs and 8 movement facings present",
+    "All 6 original visitor NPCs reached physically; optional topics work, courier favor checks three discoveries and grants one persistent keepsake with no extra currency",
+    "Graphical garden has 9 world beds, 6 cultivated after expansion; real walking/planting, four-frame water action, fertilizer and irrigation persist through the Python economy; Ledger/Garden tabs roundtrip",
+    "Actual existing first-battle engine record won with legal taught deployment policy and zero invalid commands; outcome grows crop/unlocks only Wharf II, Next Stage opens Tao story instead of bypassing narrative, completed Wharf I shows aftermath",
+    "Mature crop from actual victory harvested at advertised yield; gardener favor records keepsake; choices/discoveries/people/keepsakes, garden and wallet survive browser reload",
+    "Completed-campaign UI fixture verifies all 9 authored chapter aftermaths, speakers and revisit actions",
+    "960x540 touch: chapter read/close, long journal physically scrolls with touch, garden bed selection and seed planting complete"
+  ],
+  "water_action_frames": [
+    0,
+    1,
+    2,
+    3
+  ],
+  "tutorial_victory": {
+    "status": "victory",
+    "invalid_commands": 0,
+    "gate": 3
+  },
+  "actual_harvest_yield": 4,
+  "errors": [],
+  "external_requests": [],
+  "notes": "Only Wharf I was replayed for this presentation update, through the existing legal taught policy in the live battle record. Later chapter/aftermath and touch-journal checks use explicit completed-campaign UI fixtures; they are not additional balance wins."
+}

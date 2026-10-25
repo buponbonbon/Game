@@ -65,6 +65,42 @@ adaptation, rather than a claim that every detail of the production document is
 implemented. See [build status](docs/BUILD_STATUS.md) for verified coverage and
 limitations and [balance reference](docs/BALANCE_REFERENCE.md) for content data.
 
+## Version 1.8: roads, witnesses and a living garden
+
+Campaign is now a dedicated illustrated overworld with nine encounter landmarks.
+Each encounter has its own witness, reason to defend the location, three short
+story pages, two optional dialogue responses and an aftermath after victory.
+Next Stage opens the next witness's story. Choices are kept in the journey
+journal and some are recalled by NPCs; they do not change combat statistics or
+unlock a stage without winning the preceding encounter.
+
+Six original visitors join the eight cultivators in the sanctuary: Mei the
+boatwoman, lantern artisan Tao, envoy Qiao, gardener Lin, archivist Suyin and
+courier Ren. Speak to them about their lives and the road ahead; their greetings
+react to campaign progress. Cultivators also have optional conversation topics.
+Three optional favors record keepsakes in the journal. Ten environmental details
+can be noticed with a click/E; flowers and grass react nearby, water splashes,
+chimes ring and cranes stir. These details do not create a currency farm.
+
+Garden is now a **walkable 2D workyard**, using the same character/camera style
+as the sanctuary. Click a bed, choose a seed, then Plant. The avatar walks to the
+bed and performs planting, watering, tending and gathering animations. Seedlings,
+grown plants, overgrown beds, wet soil, herbs, butterflies and garden NPCs are
+visible in the scene. The inspector appears only for a selected bed. Existing
+seed/yield/growth, irrigation, fertilizer and preparation rules remain unchanged.
+Alchemy/Merchant/Missions/Research/Ledger remain available from the garden tabs.
+
+Movement has **eight facings**, 192 registered walking frames, 24 standing poses
+and 48 interaction frames across the three avatars. Acceleration, a short stop,
+footfall effects, breathing and registered feet complement the native pose
+changes. Greet bows; inspecting a detail crouches; garden tools use their own
+poses and sound effects. These are authored raster cycles, not a skeletal rig.
+
+The runtime still needs only Python 3.10+ and a browser. Existing V1/V2 saves
+migrate with wallet, inventory, talents and campaign progress intact. New story
+records live inside the existing save/export. New dialogue is text; music and
+existing character voice tracks are retained.
+
 ## Version 1.7: close camera and a new sanctuary interface
 
 The courtyard opens at **1.85× zoom** and scrolls with your character. Use the

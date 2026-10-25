@@ -1,7 +1,69 @@
-# Build status — version 1.7
+# Build status — version 1.8
 
 Run `python run.py` or Windows `play.bat`. Python 3.10+ and a modern browser are
 still the only runtime requirements; art, font and audio are bundled offline.
+
+## 1.8 changes
+
+- Illustrated three-region journey map replaces the campaign card list. Nine
+  authored encounter stories provide witnesses, motives, 27 introduction pages,
+  18 optional responses and nine aftermaths. Next Stage opens the next story.
+- Six original visitor NPCs join the eight cultivators; free conversation topics,
+  progress/choice-aware greetings, three optional keepsake favors and a persistent
+  journal. Ten environmental discoveries use actual walking/inspection and local
+  foliage/water/chime reactions. Story actions grant no wallet/combat rewards.
+- Garden is a walkable 2D workyard: nine physical beds, crop stages, wet and wild
+  soil, character/tool interaction poses, foliage/butterflies and NPCs. Selecting
+  a bed opens a compact inspector; actions walk to an approach point before using
+  the existing Python transaction. Seed/growth/yield/preparation rules unchanged.
+- Three avatars now have eight facings: 192 walking frames, 24 standing poses and
+  48 greeting/inspection/water/gather frames. Foot registration, acceleration,
+  short stopping movement, breathing and footfall effects improve presentation.
+  Original PNGs remain unchanged. Source variants are explicit in atlas metadata.
+- Bounded story state migrates into existing V1/V2 saves; wallet, inventory,
+  learned talents, settings and campaign progression are preserved. Keyboard and
+  touch scrolling support the longer journal. Runtime is still stdlib/browser.
+
+## 1.8 verification
+
+- **150 stdlib tests passed**. Fifteen affected story/save/source/preservation
+  checks also passed after final directional idle registration. New checks cover
+  invalid/locked story actions, idempotent discoveries, real favor prerequisites,
+  portable bounded state, no currency/completion from reading and authored assets.
+- Chromium reached all six visitors and inspected real environment objects,
+  selected a saved branch, planted/watered/fertilized a physical bed, expanded to
+  six beds, upgraded irrigation and used the existing Ledger. Four water action
+  frames were observed during an actual transaction.
+- The live first-encounter record won through the existing legal taught deployment
+  policy with zero invalid commands and three gate seals. Its normal settlement
+  grew the crop and unlocked only Wharf II. Next Stage opened Tao's story; the
+  completed first chapter showed its aftermath. The crop yielded the advertised
+  four produce; gardener/courier favors and save reload passed.
+- Explicit completed-campaign fixtures verified all nine aftermaths and revisit
+  actions. 960x540 touch read/closed story, physically scrolled the long journal
+  and planted a bed. No JS errors/external requests. These later story fixtures
+  are UI checks, not extra campaign balance wins.
+  Evidence: `validation/EXPLORATION_BROWSER_1_8.json`.
+- Chromium rendered all **192** walking, **24** directional standing and **48**
+  interaction poses. The measured steady hub draw work in this run averaged about
+  5.2ms; this is not a hardware-independent FPS guarantee.
+  Evidence: `validation/EXPLORATION_ART_1_8.json`.
+- Keyboard PageDown scrolled the journal, Enter advanced narrative and Tab stayed
+  in the dialogue. Long touch scrolling was exercised separately above.
+  Evidence: `validation/EXPLORATION_FOCUS_1_8.json`.
+- Fresh ZIP extracted to a directory with spaces and launched using `python -S`
+  from another cwd: actual bed selection/planting, story-led entry, tick-zero
+  briefing, 125-Qi deployment, Auto and pause passed without external requests.
+  Evidence: `validation/RELEASE_SMOKE_1_8.json`.
+- The mature nine-bed garden overview is an explicit art fixture, not an extra
+  progression run. Actual planting, battle growth and four-yield harvest are
+  covered by the live-record browser check above. Combat rules were unchanged;
+  full nine-stage balance policies were not rerun for this presentation update.
+
+Previous release evidence below is historical. Saves remain local/editable;
+active battles do not survive Python restarts. Native Windows/macOS and other
+browser engines were not executed here. Dialogue is text; existing synthetic
+English voices and Chinese-inspired music remain bundled.
 
 ## 1.7 changes
 

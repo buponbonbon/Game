@@ -133,14 +133,31 @@ class SanctuaryTests(unittest.TestCase):
         for name, source in atlas["sources"].items():
             data = (folder / (name + ".png")).read_bytes()
             self.assertEqual(hashlib.sha256(data).hexdigest(), source["sha256"])
-            self.assertGreaterEqual(source["width"], 1024 if name == "icons" else 1500)
+            self.assertGreaterEqual(source["width"], 1024)
         for id, meta in atlas["avatars"].items():
-            self.assertEqual(set(meta["states"]), {"north", "south", "east", "west"})
+            self.assertEqual(set(meta["idle"]["states"]), set(meta["states"]))
+            self.assertEqual(
+                set(meta["states"]),
+                {
+                    "north",
+                    "south",
+                    "east",
+                    "west",
+                    "northeast",
+                    "northwest",
+                    "southeast",
+                    "southwest",
+                },
+            )
             for frames in meta["states"].values():
                 self.assertEqual(len(frames), 8)
                 self.assertEqual(len({(f["x"], f["y"]) for f in frames}), 8)
                 for f in frames:
                     self.assertGreater(f["w"], 0)
                     self.assertGreater(f["h"], 0)
-                    self.assertLessEqual(f["x"] + f["w"], meta["width"])
-                    self.assertLessEqual(f["y"] + f["h"], meta["height"])
+                    self.assertLessEqual(
+                        f["x"] + f["w"], atlas["sources"][f.get("source", id)]["width"]
+                    )
+                    self.assertLessEqual(
+                        f["y"] + f["h"], atlas["sources"][f.get("source", id)]["height"]
+                    )

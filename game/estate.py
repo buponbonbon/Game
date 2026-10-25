@@ -7,6 +7,16 @@ from .estate_content import CROPS, RECIPES, DECORATIONS, CONTRACTS, ACHIEVEMENTS
 from .rules import validate_upgrades
 from .estate_content import FERTILIZER_PRICE
 from .sanctuary import new_hub, normalize_hub, FACILITY_IDS, AVATARS
+from .world_story import (
+    new_story,
+    normalize_story,
+    CHAPTER_BY_ID,
+    NPC_BY_ID,
+    OBSERVATION_BY_ID,
+    FAVORS,
+    chapter_open,
+    favor_progress,
+)
 
 
 class EconomyError(ValueError):
@@ -61,6 +71,7 @@ def new_estate():
             "fertilizer": 3,
         },
         hub=new_hub(),
+        story=new_story(),
         trial_medals={},
         trial_wins={},
         journal=[],
@@ -260,6 +271,7 @@ def normalize_profile(raw):
                         ),
                     )
                 )
+    e["story"] = normalize_story(old.get("story") if isinstance(old, dict) else None)
     e["hub"] = normalize_hub(
         old.get("hub") if isinstance(old, dict) else None, realm(p)
     )
@@ -418,6 +430,44 @@ def act(raw, action, **data):
     notice = ""
     if action == "inspect":
         pass
+    elif action in ("story_seen", "story_choice"):
+        id = data.get("chapter")
+        if not isinstance(id, str) or not chapter_open(p, id):
+            raise EconomyError("Reach this chapter before recording its story.")
+        if id not in e["story"]["seen"]:
+            e["story"]["seen"].append(id)
+        if action == "story_choice":
+            choice = data.get("choice")
+            if not isinstance(choice, str) or choice not in {
+                c["id"] for c in CHAPTER_BY_ID[id]["choices"]
+            }:
+                raise EconomyError("Choose one of this chapter's responses.")
+            if e["story"]["choices"].get(id) != choice:
+                e["story"]["choices"][id] = choice
+                notice = "Your response was added to the journey journal."
+    elif action == "story_met":
+        id = data.get("npc")
+        if not isinstance(id, str) or id not in NPC_BY_ID:
+            raise EconomyError("Choose a person in the sanctuary.")
+        if id not in e["story"]["met"]:
+            e["story"]["met"].append(id)
+    elif action == "story_observe":
+        id = data.get("id")
+        if not isinstance(id, str) or id not in OBSERVATION_BY_ID:
+            raise EconomyError("Choose a detail in the sanctuary.")
+        if id not in e["story"]["observations"]:
+            e["story"]["observations"].append(id)
+    elif action == "story_favor":
+        id = data.get("id")
+        favor = next((f for f in FAVORS if f["id"] == id), None)
+        if (
+            not favor
+            or id in e["story"]["favors"]
+            or favor_progress(p, favor) < favor["target"]
+        ):
+            raise EconomyError("This favor is not ready to complete.")
+        e["story"]["favors"].append(id)
+        notice = "A keepsake and a new memory were added to your journal."
     elif action == "hub_visit":
         id = data.get("facility")
         if not isinstance(id, str) or id not in FACILITY_IDS:
