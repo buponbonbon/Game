@@ -16,7 +16,7 @@ from typing import Any
 from urllib.parse import unquote, urlsplit
 
 
-VERSION = "1.4.0"
+VERSION = "1.5.0"
 MAX_BODY_BYTES = 65_536
 LOGGER = logging.getLogger(__name__)
 

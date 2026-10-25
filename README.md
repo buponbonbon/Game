@@ -65,6 +65,32 @@ adaptation, rather than a claim that every detail of the production document is
 implemented. See [build status](docs/BUILD_STATUS.md) for verified coverage and
 limitations and [balance reference](docs/BALANCE_REFERENCE.md) for content data.
 
+## Version 1.5: animated combat and regional trials
+
+- **336 authored animation frames:** all eight cultivators and thirteen enemy/altar
+  identities have separate attack, cast, recoil and death artwork; enemies also
+  have four-frame walk cycles. Hero ultimates use four frames. Frames follow the
+  simulation clock, pause with combat and use the real attack windup. Idle uses
+  a single pose. New sheets load on demand and decode to bounded-size bitmaps.
+- **Clearer combat:** dimmed battlefield, smaller rescue devices, smart HP/mana
+  bars, compact damage text and reduced particle opacity. Choose Clear/Cinematic,
+  Smart/All bars and Compact/Full/Off damage text under Settings → Battle Visuals.
+  Danger circles/segments/lanes now show the actual affected area and countdown.
+- **Elite squads:** Guards protect nearby elites; Menders channel limited healing
+  that damage/freeze can interrupt. Support roles trade some HP for their utility.
+  Read exact rules from Squad Tactics in the pause menu or Regional Trials.
+- **Three optional trials on existing maps:** escort the Lantern Caravan, protect
+  Twin Jade Beacons, or challenge the Bone Court with honor seals. Medals never
+  gate campaign progression; best medals persist. First wins grant 20 stones and
+  1 Insight, repeats 6 stones and a regional seed. The Oath's ward reduces incoming
+  hero damage by 25%; losing all honor seals still permits a Bronze victory.
+- **Economy:** fertilizer costs 2 stones. Spirit Tea gives the first three summons
+  +10 MP and +20 Dao without waiving ultimate costs. The estate's Ledger shows
+  recent harvests, spending and battle rewards. The lobby calls out ready crops.
+
+Version-1/2 saves remain compatible. No new hero or campaign map is required.
+The authored animation PNGs and new objective props are bundled offline.
+
 ## Version 1.4: the Sect Estate
 
 Open **Sect Estate / Linh Dien** from the lobby. Spirit Stones remain the main

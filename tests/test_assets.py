@@ -243,10 +243,13 @@ class AssetTests(unittest.TestCase):
         with tempfile.TemporaryDirectory(prefix="van-dao-art-") as folder:
             generator.OUT = Path(folder)
             generator.main()
-            for path in Path(folder).iterdir():
+            for path in Path(folder).rglob("*"):
+                if not path.is_file():
+                    continue
                 with self.subTest(asset=path.name):
                     self.assertEqual(
-                        path.read_bytes(), (ASSETS / path.name).read_bytes()
+                        path.read_bytes(),
+                        (ASSETS / path.relative_to(folder)).read_bytes(),
                     )
 
 

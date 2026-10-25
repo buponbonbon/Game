@@ -14,7 +14,7 @@ import sys
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
-from game.content import HEROES, STAGES
+from game.content import HEROES, STAGES, TRIALS
 from game.engine import Battle
 
 
@@ -28,12 +28,19 @@ def can_cast(hero, state):
     )
 
 
-def play_stage(stage_id, seed, upgrades, realm, tactics=None):
+def play_stage(stage_id, seed, upgrades, realm, tactics=None, preparation=None):
     """Build economy, cover incoming lanes, then add fire and use charged arts."""
-    late_tomb = stage_id in ("tomb-2", "tomb-3")
+    late_tomb = stage_id in ("tomb-2", "tomb-3", "trial-oath")
     from game.nursery import NURSERY
-    content = NURSERY if stage_id == "garden-defense" else STAGES[stage_id]
+
+    content = (
+        NURSERY
+        if stage_id == "garden-defense"
+        else TRIALS[stage_id] if stage_id in TRIALS else STAGES[stage_id]
+    )
     battle = Battle(stage_id, seed=seed, upgrades=dict(upgrades), realm=realm)
+    if preparation:
+        battle.apply_preparation(preparation)
     battle.command({"action": "auto_ultimate", "enabled": True})
     actions = []
 
@@ -79,6 +86,66 @@ def play_stage(stage_id, seed, upgrades, realm, tactics=None):
             if hero["type"] in ("sword", "fire", "frost", "lightning")
         }
         gatherers = sum(hero["type"] == "gatherer" for hero in heroes)
+        if (
+            stage_id.startswith("tomb-")
+            and tactics.get("healer")
+            and elapsed >= 90
+            and not any(h["type"] == "herbalist" for h in heroes)
+            and state["qi"] >= 125
+            and state["cards"]["herbalist"] <= 0
+            and (2, 5) not in occupied
+        ):
+            place("herbalist", 2, 5)
+            battle.advance(0.2)
+            continue
+        if stage_id == "trial-oath":
+            if any(e["type"] == "boneemperor" for e in enemies):
+                for unit in list(battle.heroes.values()):
+                    if unit["type"] == "gatherer":
+                        battle.command(dict(action="sell", unit=unit["id"]))
+            support = (
+                ("herbalist", 2, 4)
+                if elapsed >= 90 and not any(h["type"] == "herbalist" for h in heroes)
+                else (
+                    ("formation", 2, 5)
+                    if elapsed >= 150
+                    and not any(h["type"] == "formation" for h in heroes)
+                    else (
+                        ("frost", 2, 3)
+                        if elapsed >= 175
+                        and not any(h["type"] == "frost" for h in heroes)
+                        else None
+                    )
+                )
+            )
+            if (
+                support
+                and state["qi"] >= HEROES[support[0]]["cost"]
+                and state["cards"][support[0]] <= 0
+                and (support[1], support[2]) not in occupied
+            ):
+                place(*support)
+                battle.advance(0.2)
+                continue
+        if (
+            tactics.get("healer", stage_id == "trial-oath")
+            and realm >= 1
+            and elapsed > 50
+            and state["qi"] >= 125
+            and state["cards"]["herbalist"] <= 0
+            and not any(h["type"] == "herbalist" for h in heroes)
+            and any(
+                h["hp"] < h["max_hp"] * 0.75 and h["type"] != "gatherer" for h in heroes
+            )
+        ):
+            placed = False
+            for lane, col in ((2, 2), (2, 3), (1, 2), (3, 2)):
+                if (lane, col) not in occupied and place("herbalist", lane, col):
+                    placed = True
+                    break
+            if placed:
+                battle.advance(0.2)
+                continue
         if (
             stage_id == "tomb-3"
             and elapsed > 280
@@ -176,7 +243,14 @@ def play_stage(stage_id, seed, upgrades, realm, tactics=None):
                         break
         if late_tomb:
             if (
-                elapsed > 100
+                (
+                    any(
+                        t["kind"] == "ROYAL DECREE" and t["ttl"] < 0.3
+                        for t in state["telegraphs"]
+                    )
+                    if stage_id == "trial-oath"
+                    else elapsed > 100
+                )
                 and any(h["hp"] < h["max_hp"] * 0.6 for h in heroes)
                 and "tide_pearl" not in state["relics_used"]
             ):
@@ -200,7 +274,16 @@ def play_stage(stage_id, seed, upgrades, realm, tactics=None):
         "status": state["status"],
         "duration": state["time"],
         "gate": state["gate"],
-        "nursery_beds": state.get("nursery_beds",[]),
+        "nursery_beds": state.get("nursery_beds", []),
+        "objective": state.get("objective"),
+        "remaining_enemies": [
+            {k: e[k] for k in ("type", "hp", "x", "lane")} for e in state["enemies"]
+        ],
+        "mode": state["mode"],
+        "region": state["region"],
+        "wave": state["wave"],
+        "wave_count": state["wave_count"],
+        "preparation": state.get("preparation"),
         "kills": state["kills"],
         "qi_remaining": state["qi"],
         "metrics": state["metrics"],

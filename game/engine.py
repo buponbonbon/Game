@@ -12,7 +12,7 @@ import math
 import random
 from collections import deque
 
-from .content import ENEMIES, HEROES, RELICS, STAGES
+from .content import ENEMIES, HEROES, RELICS, STAGES, TRIALS
 from .rules import hero_data
 from .nursery import NURSERY
 
@@ -39,13 +39,59 @@ class Battle:
         if (
             not isinstance(stage_id, str)
             or stage_id not in STAGES
+            and stage_id not in TRIALS
             and stage_id != "garden-defense"
         ):
             raise ValueError("Unknown stage")
         self.stage = copy.deepcopy(
-            NURSERY if stage_id == "garden-defense" else STAGES[stage_id]
+            NURSERY
+            if stage_id == "garden-defense"
+            else (TRIALS[stage_id] if stage_id in TRIALS else STAGES[stage_id])
         )
-        self.mode = "nursery" if stage_id == "garden-defense" else "campaign"
+        self.mode = (
+            "nursery"
+            if stage_id == "garden-defense"
+            else "trial" if stage_id in TRIALS else "campaign"
+        )
+        kind = self.stage.get("objective_kind")
+        self.objective = (
+            dict(
+                kind=kind,
+                failed=False,
+                objects=(
+                    [
+                        dict(
+                            id="caravan",
+                            name="Jade Caravan",
+                            lane=2,
+                            x=2.0,
+                            hp=420,
+                            max_hp=420,
+                            arrived=False,
+                        )
+                    ]
+                    if kind == "escort"
+                    else (
+                        [
+                            dict(
+                                id="beacon-" + str(lane),
+                                name="Jade Beacon",
+                                lane=lane,
+                                x=2.5,
+                                hp=240,
+                                max_hp=240,
+                            )
+                            for lane in (1, 3)
+                        ]
+                        if kind == "beacons"
+                        else []
+                    )
+                ),
+            )
+            if kind
+            else None
+        )
+        self.remains = []
         self.nursery_beds = (
             [{"lane": lane, "hp": 2, "max_hp": 2} for lane in (1, 2, 3)]
             if self.mode == "nursery"
@@ -69,7 +115,7 @@ class Battle:
         self._music_level = 0
         self._music_fall_at = 0
         self._accumulator = 0.0
-        self.qi = 175 if self.realm >= 1 else 150
+        self.qi = self.stage.get("starting_qi", 175 if self.realm >= 1 else 150)
         self.gate = int(self.stage.get("gate", 3))
         self.kills = 0
         self.defenses = [
@@ -118,6 +164,11 @@ class Battle:
             "hero_types_used": [],
             "rituals_used": 0,
             "nodes_purified": 0,
+            "squad_guarded": 0,
+            "squad_healing": 0,
+            "squad_interrupts": 0,
+            "preparation_mana": 0,
+            "preparation_dao": 0,
         }
         self._waves = sorted(
             self.stage.get("waves", []), key=lambda w: w.get("at", w.get("time", 0))
@@ -518,10 +569,14 @@ class Battle:
                 and self.preparation["id"] == "spirit_tea"
                 and self.preparation["remaining"]
             ):
+                before = unit["mana"]
                 self._mana(unit, 10)
+                self.metrics["preparation_mana"] += unit["mana"] - before
+                self._resonance(unit, 20)
+                self.metrics["preparation_dao"] += 20
                 self.preparation["remaining"] -= 1
                 self.preparation["used"] = self.preparation["remaining"] == 0
-                self._effect("heal", unit["x"], lane, "+10 MP", 1)
+                self._effect("heal", unit["x"], lane, "+10 MP / +20 DAO", 1)
             for key, value in (
                 ("roles_used", data["role"]),
                 ("hero_types_used", hero_id),
@@ -672,6 +727,7 @@ class Battle:
             tell for tell in self.telegraphs if tell["until"] > self.tick
         ]
         self._update_zones()
+        self._squad_tick()
         self._auto_ultimate_tick()
         for hero in list(self.heroes.values()):
             self._hero_tick(hero)
@@ -689,6 +745,8 @@ class Battle:
                     "col"
                 ] in (3, 4):
                     self._hurt_hero(hero, 15, "Water")
+        self._objective_tick()
+        self.remains = [r for r in self.remains if r["until"] > self.tick]
         self._music_tick()
         if self.gate <= 0:
             self.status = "defeat"
@@ -700,6 +758,11 @@ class Battle:
             self._spawn_index >= len(self._spawn_queue)
             and not self.enemies
             and not any(item[2] == "spawn" for item in self.pending)
+            and (
+                not self.objective
+                or self.objective["kind"] != "escort"
+                or self.objective["objects"][0]["arrived"]
+            )
         ):
             self.status = "victory"
             if not self._rewarded:
@@ -780,6 +843,22 @@ class Battle:
             "conductive_until": 0,
             "armor_break_until": 0,
             "action": "walk",
+            "action_started": self.tick,
+            "squad_role": (
+                (
+                    "guard"
+                    if enemy_type in ("hound", "drowned")
+                    else (
+                        "mender"
+                        if enemy_type in ("lantern", "rottenwood")
+                        else "striker"
+                    )
+                )
+                if rank in ("elite", "captain") and not data.get("boss")
+                else None
+            ),
+            "squad_token": 0,
+            "next_mend": self.tick + ticks(4),
             "action_until": 0,
             "phase": 1,
             "invulnerable_until": 0,
@@ -795,6 +874,12 @@ class Battle:
             "flight_until": 0,
             "next_edict": self.tick + ticks(15),
         }
+        # Support utility replaces some durability rather than stacking a free
+        # health increase on top of the existing elite budget.
+        if enemy["squad_role"] in ("guard", "mender"):
+            factor = 0.88 if enemy["squad_role"] == "guard" else 0.9
+            data["hp"] = round(data["hp"] * factor)
+            enemy["hp"] = enemy["max_hp"] = data["hp"]
         self.enemies[enemy_id] = enemy
         if data.get("boss"):
             self._event(
@@ -802,6 +887,115 @@ class Battle:
             )
             self._effect("boss", x, enemy["lane"], "BOSS", 2)
         return enemy
+
+    def _remember_death(self, unit, friendly):
+        self.remains.append(
+            dict(
+                id=unit["id"],
+                type=unit["type"],
+                lane=unit["lane"],
+                x=unit["x"],
+                friendly=friendly,
+                born=self.tick,
+                until=self.tick + ticks(0.8),
+            )
+        )
+        self.remains = self.remains[-48:]
+
+    def _squad_guard(self, enemy):
+        if (
+            enemy["data"].get("boss")
+            or enemy.get("squad_role") in (None, "guard")
+            or enemy["type"] == "altar"
+        ):
+            return None
+        return next(
+            (
+                e
+                for e in self.enemies.values()
+                if e.get("squad_role") == "guard"
+                and e["frozen_until"] <= self.tick
+                and self._near(e, enemy, 1.25)
+            ),
+            None,
+        )
+
+    def _squad_tick(self):
+        for enemy in list(self.enemies.values()):
+            if (
+                enemy.get("squad_role") != "mender"
+                or enemy["next_mend"] > self.tick
+                or enemy["frozen_until"] > self.tick
+                or enemy["action_until"] > self.tick
+            ):
+                continue
+            if not any(
+                e["id"] != enemy["id"]
+                and e.get("squad_role")
+                and not e["data"].get("boss")
+                and e["hp"] < e["max_hp"]
+                and self._near(e, enemy, 1.5)
+                for e in self.enemies.values()
+            ):
+                continue
+            enemy.update(
+                action="mend",
+                action_started=self.tick,
+                action_until=self.tick + HZ,
+                next_mend=self.tick + ticks(8),
+            )
+            enemy["squad_token"] += 1
+            self._tell("MENDING CHANT", [enemy["lane"]], 1, x=enemy["x"])
+            self._schedule(1, "mend", enemy=enemy["id"], token=enemy["squad_token"])
+            self._event(
+                "warning",
+                "Mender channel: hit it to interrupt!",
+                enemy["x"],
+                enemy["lane"],
+            )
+
+    def _objective_tick(self):
+        o = self.objective
+        if not o:
+            return
+        if o["kind"] == "oath":
+            o["deaths"] = self.metrics["deaths"]
+            o["limit"] = self.stage.get("loss_limit", 10)
+            o["remaining"] = max(0, o["limit"] - o["deaths"])
+            o["failed"] = False
+        else:
+            for target in o["objects"]:
+                guarded = any(
+                    h["data"]["role"] in ("damage", "tank", "control")
+                    and self._near(h, target, 1.5)
+                    for h in self.heroes.values()
+                )
+                target["guarded"] = guarded
+                if o["kind"] == "escort" and (
+                    guarded
+                    or (
+                        self._spawn_index >= len(self._spawn_queue) and not self.enemies
+                    )
+                ):
+                    target["x"] = min(8.5, target["x"] + 0.065 * STEP)
+                    target["arrived"] = target["x"] >= 8.5
+                if self.tick % HZ == 0:
+                    nearby = sum(
+                        e["type"] != "altar"
+                        and e["frozen_until"] <= self.tick
+                        and self._near(e, target, 0.9)
+                        for e in self.enemies.values()
+                    )
+                    amount = min(24, nearby * 12) * (0.5 if guarded else 1)
+                    target["hp"] = max(0, target["hp"] - amount)
+                    if amount:
+                        self._effect(
+                            "hurt", target["x"], target["lane"], "-" + str(int(amount))
+                        )
+            o["failed"] = any(t["hp"] <= 0 for t in o["objects"])
+        if o["failed"]:
+            self.gate = 0
+            self._event("objective", "Trial objective lost. Try another formation.")
 
     def _near(self, a, b, radius):
         return math.hypot(a["x"] - b["x"], a["lane"] - b["lane"]) <= radius
@@ -1278,6 +1472,9 @@ class Battle:
                 enemy["frozen_until"], self.tick + ticks(duration)
             )
             enemy["channel_token"] += 1
+            enemy["squad_token"] += 1
+            if enemy["action"] == "mend":
+                self.metrics["squad_interrupts"] += 1
             self._effect(
                 "freeze", enemy["x"], enemy["lane"], duration=min(1.5, duration)
             )
@@ -1306,6 +1503,15 @@ class Battle:
         if abs(resist) > 1:
             resist /= 100
         amount = damage_amount(raw, armor, resist, damage_type == "True")
+        guard = self._squad_guard(enemy)
+        if guard and damage_type != "True":
+            before = amount
+            amount = (
+                max(1, amount - min(3, max(0, math.floor(amount * 0.15))))
+                if amount
+                else 0
+            )
+            self.metrics["squad_guarded"] += before - amount
         if self._hidden(enemy):
             amount = max(1, math.floor(amount * 0.6))
         if enemy["type"] == "mountainlord" and enemy["shield"] > 0:
@@ -1345,6 +1551,17 @@ class Battle:
                 "interrupt", "Drain channel interrupted!", enemy["x"], enemy["lane"]
             )
         total = amount + shield_damage
+        if total > 0:
+            enemy["hurt_at"] = self.tick
+            if enemy["action"] == "mend":
+                enemy["squad_token"] += 1
+                self.metrics["squad_interrupts"] += 1
+                enemy.update(
+                    action="walk", action_started=self.tick, action_until=self.tick
+                )
+                self._event(
+                    "interrupt", "Mender interrupted!", enemy["x"], enemy["lane"]
+                )
         self._effect("damage", enemy["x"], enemy["lane"], str(math.floor(total)), 0.5)
         if owner:
             key = owner["type"]
@@ -1361,6 +1578,7 @@ class Battle:
     def _hurt_hero(self, hero, raw, damage_type="Physical"):
         if hero["id"] not in self.heroes or self.tick - hero["born"] < ticks(0.25):
             return
+        raw *= self.stage.get("incoming_damage_multiplier", 1)
         _, _, reduction = self._buffs(hero)
         damage_type = damage_type.title()
         if hero["type"] == "monk" and damage_type == "Physical":
@@ -1379,6 +1597,7 @@ class Battle:
             hero["action"] not in ("ultimate", "skill")
             or hero["action_until"] <= self.tick
         ):
+            hero["action_started"] = self.tick
             hero["action"] = "hurt"
             hero["action_until"] = self.tick + ticks(0.2)
         self._effect("hurt", hero["x"], hero["lane"], str(amount), 0.4)
@@ -1387,6 +1606,7 @@ class Battle:
         if hero["hp"] <= 0:
             del self.heroes[hero["id"]]
             self.metrics["deaths"] += 1
+            self._remember_death(hero, True)
             self._event(
                 "death",
                 hero["data"].get("name", hero["type"]) + " has fallen.",
@@ -1398,6 +1618,7 @@ class Battle:
     def _kill(self, enemy, owner):
         if enemy["id"] not in self.enemies:
             return
+        self._remember_death(enemy, False)
         del self.enemies[enemy["id"]]
         self.kills += 1
         if enemy["type"] != "altar":
@@ -1568,7 +1789,35 @@ class Battle:
 
     def _resolve(self, kind, data):
         hero = self.heroes.get(data.get("hero"))
-        if kind == "hero_attack":
+        if kind == "mend":
+            caster = self.enemies.get(data["enemy"])
+            if (
+                not caster
+                or caster["squad_token"] != data["token"]
+                or caster["frozen_until"] > self.tick
+            ):
+                return
+            targets = sorted(
+                (
+                    e
+                    for e in self.enemies.values()
+                    if e["id"] != caster["id"]
+                    and e.get("squad_role")
+                    and not e["data"].get("boss")
+                    and e["hp"] < e["max_hp"]
+                    and self._near(e, caster, 1.5)
+                ),
+                key=lambda e: (e["hp"] / e["max_hp"], e["id"]),
+            )[:2]
+            for target in targets:
+                amount = min(
+                    target["max_hp"] - target["hp"],
+                    min(16, round(target["max_hp"] * 0.04)),
+                )
+                target["hp"] += amount
+                self.metrics["squad_healing"] += amount
+                self._effect("heal", target["x"], target["lane"], "+" + str(amount))
+        elif kind == "hero_attack":
             target = self.enemies.get(data["target"])
             if not hero or not target or hero["disabled_until"] > self.tick:
                 return
@@ -1847,6 +2096,8 @@ class Battle:
             return
         if kind == "altar":
             return
+        if enemy["action"] == "mend" and enemy["action_until"] > self.tick:
+            return
         if enemy["action_until"] <= self.tick:
             enemy["action"] = "walk"
         if data.get("boss"):
@@ -1880,6 +2131,7 @@ class Battle:
                         )
             elif kind == "drainer" and self.qi >= 30:
                 enemy["channel_token"] += 1
+                enemy["action_started"] = self.tick
                 enemy["action"] = "channel"
                 enemy["action_until"] = self.tick + ticks(1)
                 self._schedule(
@@ -1897,6 +2149,7 @@ class Battle:
                     if hero["lane"] == enemy["lane"] and 0 < enemy["x"] - hero["x"] < 2
                 ]
                 if not blockers:
+                    enemy["action_started"] = self.tick
                     enemy["action"] = "ability"
                     enemy["action_until"] = self.tick + ticks(1.1)
                     self._tell(
@@ -1904,6 +2157,7 @@ class Battle:
                     )
                     self._schedule(1.1, "hound_rush", enemy=enemy["id"])
             elif kind == "rottenwood":
+                enemy["action_started"] = self.tick
                 enemy["action"] = "ability"
                 enemy["action_until"] = self.tick + HZ
                 self._tell("SPORE CLOUD", [enemy["lane"]], 1, x=enemy["x"])
@@ -1945,6 +2199,7 @@ class Battle:
         attack_range = data.get("range", 0.8)
         if target and enemy["x"] - target["x"] <= attack_range:
             if enemy["next_attack"] <= self.tick and enemy["action_until"] <= self.tick:
+                enemy["action_started"] = self.tick
                 enemy["action"] = "attack"
                 windup = data.get("windup", 0.6)
                 enemy["action_until"] = self.tick + ticks(windup + 0.15)
@@ -2042,6 +2297,7 @@ class Battle:
             boss["hp"] = max(boss["hp"], math.ceil(boss["max_hp"] * threshold))
             boss["phase"] += 1
             boss["invulnerable_until"] = self.tick + ticks(1.3)
+            boss["action_started"] = self.tick
             boss["action"] = "phase"
             boss["action_until"] = boss["invulnerable_until"]
             boss["next_boss"] = boss["invulnerable_until"] + ticks(1)
@@ -2088,6 +2344,21 @@ class Battle:
             "kind": kind,
             "lanes": list(lanes),
             "until": self.tick + ticks(delay),
+            "born": self.tick,
+            "shape": (
+                "circle"
+                if kind in ("SPORE CLOUD", "MENDING CHANT")
+                else "segment" if kind == "SHOULDER RUSH" else "lanes"
+            ),
+            "radius": (
+                1.5
+                if kind == "MENDING CHANT"
+                else (
+                    1.2
+                    if kind == "SPORE CLOUD"
+                    else 0.75 if kind == "SHOULDER RUSH" else 0
+                )
+            ),
             "x": x,
         }
         self.telegraphs.append(tell)
@@ -2133,6 +2404,7 @@ class Battle:
             damage=amount,
             damage_type=damage_type,
         )
+        boss["action_started"] = self.tick
         boss["action"] = "ability"
         boss["action_until"] = self.tick + ticks(delay)
         self._event(
@@ -2411,6 +2683,10 @@ class Battle:
                 boss=bool(enemy["data"].get("boss")),
                 invulnerable=enemy["invulnerable_until"] > self.tick,
                 action_until=enemy["action_until"] / HZ,
+                action_started=enemy["action_started"] / HZ,
+                hurt_at=enemy.get("hurt_at", -6000) / HZ,
+                squad_role=enemy.get("squad_role"),
+                guarded_by=(self._squad_guard(enemy) or {}).get("id"),
                 conductive=enemy["conductive"],
                 plates=(
                     math.ceil(enemy["shield"] / enemy["data"].get("plate_hp", 180))
@@ -2424,6 +2700,12 @@ class Battle:
         return {
             "stage": self.stage_id,
             "mode": self.mode,
+            "objective": copy.deepcopy(self.objective),
+            "remains": [
+                {k: v for k, v in r.items() if k != "until"}
+                | {"age": round((self.tick - r["born"]) / HZ, 3)}
+                for r in self.remains
+            ],
             "nursery_beds": copy.deepcopy(self.nursery_beds),
             "preparation": copy.deepcopy(self.preparation),
             "region": self.region,
@@ -2505,6 +2787,9 @@ class Battle:
                     "lanes": tell["lanes"],
                     "x": tell.get("x"),
                     "ttl": round((tell["until"] - self.tick) / HZ, 3),
+                    "duration": round((tell["until"] - tell["born"]) / HZ, 3),
+                    "shape": tell["shape"],
+                    "radius": tell["radius"],
                 }
                 for tell in self.telegraphs
             ],

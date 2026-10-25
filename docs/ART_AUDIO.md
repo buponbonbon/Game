@@ -1,4 +1,31 @@
-# Art and audio — version 1.4
+# Art and audio — version 1.5
+
+## Frame animation (1.5)
+
+`web/assets/motion` holds 21 retained, image-generated transparent 4×4 sheets:
+336 source frames. Each hero has idle (1), recoil (1), death (2), attack (4),
+skill (4), ultimate (4); enemies/altar have walk (4), attack (4), skill (4),
+idle (1), recoil (1), death (2). These are separate source drawings, not copies
+of one transformed pose. Idle is a single pose; this is a compact animation set,
+not a full studio-authored animation production.
+
+`motion.json` records native dimensions, source SHA-256, frame rectangles and
+registration offsets. `tools/register_motion.py` optionally reads alpha
+connectivity to exclude detached neighboring-cell fragments, writing metadata
+without modifying PNG pixels (Pillow is authoring-only). The stdlib asset
+preservation command copies the entire motion directory unchanged.
+
+`web/combat_motion.js` selects frames from simulation time and attack windup;
+pausing freezes them. Source images load only when an actor is rendered and are
+decoded to a maximum width of 768 pixels. Native detail remains in the repository.
+Death remains survive 0.8 simulation seconds and never become combat targets.
+The old large portraits/pose atlases remain fallbacks and lobby artwork.
+
+`objectives.png` retains three new props: jade caravan, Azure beacon and Bone
+Court tablet; `objectives.json` stores separate source rectangles. Combat VFX use
+a separate canvas before being composited at the chosen clarity opacity. Threat
+outlines/countdowns remain legible above that layer. Existing music and English
+voice assets are unchanged in this release.
 
 ## Authored actors and botany (1.4)
 

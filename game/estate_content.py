@@ -1,5 +1,7 @@
 """Sect economy: one wallet, battle-grown crops and limited preparations."""
 
+FERTILIZER_PRICE = 2
+
 CROPS = {
     "qi_grass": dict(
         id="qi_grass",
@@ -53,7 +55,7 @@ RECIPES = {
         ingredients={"qi_grass": 3},
         fee=2,
         insight_cost=0,
-        description="The first three cultivators summoned start with +10 mana. One tea per battle.",
+        description="The first three cultivators summoned start with +10 mana and +20 Dao. Mana still respects its cap; ultimate costs and cooldowns are unchanged. One tea per battle.",
     ),
     "purifying_dew": dict(
         id="purifying_dew",

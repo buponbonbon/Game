@@ -2,9 +2,10 @@
 
 from copy import deepcopy
 import math, uuid
-from .content import HEROES, ENEMIES, STAGES
+from .content import HEROES, ENEMIES, STAGES, TRIALS
 from .estate_content import CROPS, RECIPES, DECORATIONS, CONTRACTS, ACHIEVEMENTS
 from .rules import validate_upgrades
+from .estate_content import FERTILIZER_PRICE
 
 
 class EconomyError(ValueError):
@@ -58,6 +59,9 @@ def new_estate():
             "pills": {},
             "fertilizer": 3,
         },
+        trial_medals={},
+        trial_wins={},
+        journal=[],
         talent_paid={},
         crop_research={},
         blueprints=["spirit_tea"],
@@ -228,6 +232,32 @@ def normalize_profile(raw):
         e["talent_paid"][key] = number(paid.get(key), maximum, maximum)
     if not isinstance(old, dict):
         e["stats"]["wins"] = len(p["completed"])
+    if isinstance(old, dict):
+        for key in ("trial_medals", "trial_wins"):
+            data = old.get(key, {})
+            data = data if isinstance(data, dict) else {}
+            e[key] = {
+                k: number(data.get(k), 0, 3 if key == "trial_medals" else 99999)
+                for k in TRIALS
+            }
+        for row in sequence(old.get("journal"))[-32:]:
+            if isinstance(row, dict) and isinstance(row.get("note"), str):
+                e["journal"].append(
+                    dict(
+                        note=row["note"][:150],
+                        kind=str(row.get("kind", ""))[:25],
+                        stones=(
+                            max(-999999, min(999999, int(row.get("stones", 0))))
+                            if isinstance(row.get("stones", 0), int)
+                            else 0
+                        ),
+                        insight=(
+                            max(-999999, min(999999, int(row.get("insight", 0))))
+                            if isinstance(row.get("insight", 0), int)
+                            else 0
+                        ),
+                    )
+                )
     p["estate"] = e
     if len(e["contracts"]["entries"]) != 3:
         _rotate(p, initial=True)
@@ -365,6 +395,7 @@ def view(p):
             else 120 if e["garden"]["size"] == 6 else None
         ),
         irrigation_cost=[40, 90, None][e["garden"]["irrigation"]],
+        fertilizer_price=FERTILIZER_PRICE,
         respec_fee=0 if e["stats"].get("respecs", 0) == 0 else 10,
     )
 
@@ -372,6 +403,7 @@ def view(p):
 def act(raw, action, **data):
     p = normalize_profile(raw)
     e = p["estate"]
+    before_stones, before_insight = p["stones"], p["insight"]
     notice = ""
     if action == "inspect":
         pass
@@ -449,7 +481,7 @@ def act(raw, action, **data):
         if isinstance(qty, bool) or not isinstance(qty, int) or not 1 <= qty <= 99:
             raise EconomyError("Quantity must be 1–99.")
         if action == "buy" and item == "fertilizer":
-            _spend(p, 5 * qty)
+            _spend(p, FERTILIZER_PRICE * qty)
             _give(p, {"fertilizer": qty})
             notice = f"Bought {qty} fertilizer."
         elif (
@@ -643,7 +675,22 @@ def act(raw, action, **data):
         notice = "Talent awakened."
     else:
         raise EconomyError("Unknown estate action.")
+    if action != "inspect":
+        _journal(
+            p,
+            action,
+            notice,
+            p["stones"] - before_stones,
+            p["insight"] - before_insight,
+        )
     return dict(ok=True, profile=p, catalogue=view(p), notice=notice)
+
+
+def _journal(p, kind, note, stones=0, insight=0):
+    p["estate"]["journal"].append(
+        dict(kind=kind, note=note[:150], stones=stones, insight=insight)
+    )
+    p["estate"]["journal"] = p["estate"]["journal"][-32:]
 
 
 def prepare(raw):
@@ -677,6 +724,7 @@ def settle(raw, battle_id, state):
     e["ledger"] = e["ledger"][-512:]
     won = state["status"] == "victory"
     nursery = state.get("mode") == "nursery"
+    trial = state.get("mode") == "trial"
     m = state.get("metrics", {})
     growth = (
         won
@@ -729,6 +777,48 @@ def settle(raw, battle_id, state):
             notice = (
                 f"Nursery defended: {beds} beds survived. Seeds and supplies awarded."
             )
+        elif trial:
+            id = state["stage"]
+            first = not e["trial_wins"].get(id)
+            objects = (state.get("objective") or {}).get("objects", [])
+            health = min((t["hp"] / t["max_hp"] for t in objects), default=1)
+            intact = state.get("gate", 0) >= 3
+            medal = (
+                3
+                if intact and not m.get("deaths", 0) and health >= 0.9
+                else (
+                    2
+                    if intact
+                    and m.get("deaths", 0)
+                    <= (
+                        3 if (state.get("objective") or {}).get("kind") == "oath" else 1
+                    )
+                    and health >= 0.7
+                    else 1
+                )
+            )
+            e["trial_medals"][id] = max(e["trial_medals"].get(id, 0), medal)
+            e["trial_wins"][id] = e["trial_wins"].get(id, 0) + 1
+            _give(
+                p,
+                {
+                    "stones": 20 if first else 6,
+                    "insight": 1 if first else 0,
+                    "seeds": {
+                        {
+                            "wharf": "river_lotus",
+                            "terrace": "azure_bamboo",
+                            "tomb": "soul_lingzhi",
+                        }[state["region"]]: 1
+                    },
+                },
+            )
+            notice = (
+                TRIALS[id]["name"]
+                + " completed: "
+                + ["", "Bronze", "Silver", "Gold"][medal]
+                + " medal."
+            )
         else:
             stage = STAGES[state["stage"]]
             first = state["stage"] not in p["completed"]
@@ -767,6 +857,9 @@ def settle(raw, battle_id, state):
             if growth
             else "Battle recorded. Reach half the waves and 60 seconds, or win, to grow crops."
         )
+    _journal(
+        p, "battle", notice, p["stones"] - before_stones, p["insight"] - before_insight
+    )
     return dict(
         ok=True,
         profile=p,
@@ -783,6 +876,7 @@ def settle(raw, battle_id, state):
             },
             fertilizer=e["bag"]["fertilizer"] - before_fertilizer,
             garden_grew=growth,
+            medal=medal if trial and won else None,
             beds=(
                 sum(b["hp"] > 0 for b in state.get("nursery_beds", []))
                 if nursery

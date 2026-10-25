@@ -1,0 +1,602 @@
+{
+  "passed": true,
+  "scope": "One seeded legal policy with region-appropriate earned talents; objective tests and medal scoring are separate from UI fixtures.",
+  "runs": [
+    {
+      "stage": "trial-caravan",
+      "seed": 4701,
+      "realm": 0,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        }
+      },
+      "status": "victory",
+      "duration": 174.55,
+      "gate": 3,
+      "nursery_beds": [],
+      "objective": {
+        "kind": "escort",
+        "failed": false,
+        "objects": [
+          {
+            "id": "caravan",
+            "name": "Jade Caravan",
+            "lane": 2,
+            "x": 8.5,
+            "hp": 150.0,
+            "max_hp": 420,
+            "arrived": true,
+            "guarded": false
+          }
+        ]
+      },
+      "remaining_enemies": [],
+      "mode": "trial",
+      "region": "wharf",
+      "wave": 6,
+      "wave_count": 6,
+      "preparation": null,
+      "kills": 44,
+      "qi_remaining": 253,
+      "metrics": {
+        "damage": {
+          "sword": 3258,
+          "fire": 3803
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 2,
+        "qi": {
+          "starting": 175,
+          "gatherer": 740,
+          "passive": 420,
+          "enemy_drop": 160,
+          "ultimate": 192
+        },
+        "spent": 1434,
+        "deaths": 0,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 26,
+          "lantern": 8,
+          "drowned": 8,
+          "hound": 2
+        },
+        "roles_used": [
+          "economy",
+          "damage"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "squad_guarded": 0,
+        "squad_healing": 0,
+        "squad_interrupts": 0,
+        "preparation_mana": 0,
+        "preparation_dao": 0,
+        "peak_enemies": 20
+      },
+      "rewards": {
+        "stones": 20,
+        "insight": 1,
+        "stage": "trial-caravan",
+        "kills": 44,
+        "replay_stones": 10
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 8.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 17.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 2
+        },
+        {
+          "time": 36.0,
+          "hero": "fire",
+          "lane": 1,
+          "col": 5
+        },
+        {
+          "time": 47.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 60.0,
+          "hero": "fire",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 72.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 79.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 96.0,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 105.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 2
+        },
+        {
+          "time": 116.6,
+          "hero": "sword",
+          "lane": 4,
+          "col": 2
+        },
+        {
+          "time": 127.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 145.6,
+          "hero": "sword",
+          "lane": 2,
+          "col": 5
+        }
+      ]
+    },
+    {
+      "stage": "trial-beacons",
+      "seed": 4701,
+      "realm": 1,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        },
+        "sword": {
+          "branch": "A",
+          "rank": 3
+        }
+      },
+      "status": "victory",
+      "duration": 148.35,
+      "gate": 3,
+      "nursery_beds": [],
+      "objective": {
+        "kind": "beacons",
+        "failed": false,
+        "objects": [
+          {
+            "id": "beacon-1",
+            "name": "Jade Beacon",
+            "lane": 1,
+            "x": 2.5,
+            "hp": 240.0,
+            "max_hp": 240,
+            "guarded": true
+          },
+          {
+            "id": "beacon-3",
+            "name": "Jade Beacon",
+            "lane": 3,
+            "x": 2.5,
+            "hp": 240.0,
+            "max_hp": 240,
+            "guarded": true
+          }
+        ]
+      },
+      "remaining_enemies": [],
+      "mode": "trial",
+      "region": "terrace",
+      "wave": 6,
+      "wave_count": 6,
+      "preparation": null,
+      "kills": 39,
+      "qi_remaining": 212,
+      "metrics": {
+        "damage": {
+          "sword": 7555,
+          "fire": 2321
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 7,
+        "qi": {
+          "starting": 175,
+          "gatherer": 632,
+          "passive": 360,
+          "enemy_drop": 280,
+          "ultimate": 120
+        },
+        "spent": 1325,
+        "deaths": 0,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 22,
+          "hound": 7,
+          "lantern": 4,
+          "rottenwood": 2,
+          "drainer": 4
+        },
+        "roles_used": [
+          "economy",
+          "damage"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "squad_guarded": 69,
+        "squad_healing": 0,
+        "squad_interrupts": 1,
+        "preparation_mana": 0,
+        "preparation_dao": 0,
+        "peak_enemies": 24
+      },
+      "rewards": {
+        "stones": 20,
+        "insight": 1,
+        "stage": "trial-beacons",
+        "kills": 39,
+        "replay_stones": 10
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 8.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 17.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 25.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 48.0,
+          "hero": "fire",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 60.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 81.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 104.0,
+          "hero": "fire",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 104.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 5
+        },
+        {
+          "time": 111.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 120.0,
+          "hero": "sword",
+          "lane": 4,
+          "col": 4
+        }
+      ]
+    },
+    {
+      "stage": "trial-oath",
+      "seed": 4701,
+      "realm": 2,
+      "policy": "Three Yun, fire/staff/lightning defense, a late formation circuit, automatic arts and timed relics",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        },
+        "sword": {
+          "branch": "A",
+          "rank": 3
+        },
+        "fire": {
+          "branch": "B",
+          "rank": 5
+        },
+        "monk": {
+          "branch": "A",
+          "rank": 2
+        }
+      },
+      "status": "victory",
+      "duration": 429.05,
+      "gate": 3,
+      "nursery_beds": [],
+      "objective": {
+        "kind": "oath",
+        "failed": false,
+        "objects": [],
+        "deaths": 15,
+        "limit": 10,
+        "remaining": 0
+      },
+      "remaining_enemies": [],
+      "mode": "trial",
+      "region": "tomb",
+      "wave": 8,
+      "wave_count": 8,
+      "preparation": null,
+      "kills": 68,
+      "qi_remaining": 17,
+      "metrics": {
+        "damage": {
+          "sword": 7488,
+          "monk": 5894,
+          "fire": 8853
+        },
+        "healing": 3002,
+        "altars_destroyed": 0,
+        "plates_broken": 3,
+        "qi": {
+          "starting": 220,
+          "gatherer": 1112,
+          "passive": 1120,
+          "ultimate": 288,
+          "enemy_drop": 165,
+          "recall": 75
+        },
+        "spent": 2826,
+        "deaths": 15,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "soul": 47,
+          "swordcorpse": 9,
+          "lantern": 3,
+          "rottenwood": 2,
+          "drainer": 3,
+          "hound": 3,
+          "boneemperor": 1
+        },
+        "roles_used": [
+          "economy",
+          "damage",
+          "tank",
+          "support"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "monk",
+          "fire",
+          "herbalist"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "squad_guarded": 61,
+        "squad_healing": 20,
+        "squad_interrupts": 0,
+        "preparation_mana": 0,
+        "preparation_dao": 0,
+        "peak_enemies": 22
+      },
+      "rewards": {
+        "stones": 20,
+        "insight": 1,
+        "stage": "trial-oath",
+        "kills": 68,
+        "replay_stones": 10
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 8.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 16.0,
+          "hero": "gatherer",
+          "lane": 3,
+          "col": 1
+        },
+        {
+          "time": 17.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 38.0,
+          "hero": "monk",
+          "lane": 1,
+          "col": 6
+        },
+        {
+          "time": 42.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 57.2,
+          "hero": "fire",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 65.2,
+          "hero": "monk",
+          "lane": 3,
+          "col": 6
+        },
+        {
+          "time": 81.2,
+          "hero": "fire",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 84.6,
+          "hero": "sword",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 96.0,
+          "hero": "monk",
+          "lane": 2,
+          "col": 6
+        },
+        {
+          "time": 122.0,
+          "hero": "sword",
+          "lane": 4,
+          "col": 3
+        },
+        {
+          "time": 132.0,
+          "hero": "herbalist",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 145.2,
+          "hero": "monk",
+          "lane": 4,
+          "col": 6
+        },
+        {
+          "time": 153.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 3
+        },
+        {
+          "time": 166.2,
+          "hero": "fire",
+          "lane": 4,
+          "col": 4
+        },
+        {
+          "time": 169.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 5
+        },
+        {
+          "time": 180.0,
+          "hero": "monk",
+          "lane": 0,
+          "col": 6
+        },
+        {
+          "time": 194.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 276.0,
+          "hero": "fire",
+          "lane": 2,
+          "col": 5
+        },
+        {
+          "time": 384.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 420.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 3
+        }
+      ]
+    }
+  ]
+}

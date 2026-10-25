@@ -38,6 +38,29 @@ nhận ra bản lưu.
 Đây là bản game chơi được, chuyển thể gọn từ tài liệu thiết kế bạn gửi; xem
 [tình trạng triển khai](docs/BUILD_STATUS.md) để biết phần đã kiểm thử và giới hạn.
 
+## Bản 1.5
+
+- **Animation mới:** 336 khung hình riêng cho 8 cultivator và 13 loại quái/pháp đàn.
+  Có chuẩn bị đánh, ra đòn, thu chiêu, dùng skill, ultimate, trúng đòn và tử trận;
+  quái có chu kỳ di chuyển 4 khung. Nhịp đánh dùng thời gian của trận, tạm dừng
+  cũng dừng animation. Tư thế đứng dùng một khung. Hình được tải theo nhu cầu.
+- **Dễ đọc trận hơn:** nền chiến trường dịu xuống, pháp khí cứu nguy gọn hơn,
+  thanh máu thông minh, gom số sát thương và giảm độ đậm hiệu ứng. Vào
+  **Settings → Battle Visuals** để chỉnh. Cảnh báo ghi rõ vùng tròn/đoạn/lane và
+  số giây trước khi chiêu trúng.
+- **Quái tinh anh phối hợp:** Guard bảo vệ tinh anh khác ở gần; Mender niệm hồi
+  phục, có thể ngắt bằng sát thương hoặc đóng băng. Xem **Squad Tactics** trong
+  menu tạm dừng để đọc phạm vi và cách khắc chế chính xác.
+- **Regional Trials** ở sảnh: hộ tống xe ngọc, giữ hai đài ngọc và thử thách triều
+  đình xương trên các map hiện có. Huy chương không chặn chiến dịch. Trong thử
+  thách xương, mất người làm giảm ấn danh dự; hết ấn vẫn có thể thắng huy chương
+  đồng. Bạc cần tối đa 3 tổn thất, vàng cần không mất ai và giữ cổng nguyên vẹn.
+- Phân bón giảm còn **2 đá**. Spirit Tea cho 3 lượt triệu hồi đầu **+10 mana và
+  +20 Dao**; vẫn phải trả đủ mana/Qi và chờ hồi chiêu để ultimate. Thêm **Ledger**
+  trong Linh Điền để xem giao dịch, thu hoạch và thưởng trận; sảnh báo cây đã chín.
+
+Giữ nguyên 8 nhân vật và 9 ải chiến dịch. Bản lưu cũ vẫn dùng được.
+
 ## Bản 1.4: Linh Điền và kinh tế môn phái
 
 Tại sảnh, chọn **Sect Estate / Linh Dien**:

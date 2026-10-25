@@ -66,6 +66,8 @@
     atlas = {},
     cultivators = {},
     guardianAtlas = {},
+    objectiveAtlas = {},
+    motionAtlas = {},
     actorArt = {},
     botany = {},
     estateData = null,
@@ -132,6 +134,9 @@
       shake: true,
       integer: false,
       autoUltimate: false,
+      clarity: true,
+      smartBars: true,
+      damageText: "compact",
     },
     updated: Date.now(),
   });
@@ -174,9 +179,20 @@
         ? Math.max(0, Math.min(1, value))
         : d.settings[k];
     }
-    for (const k of ["shake", "integer", "autoUltimate"])
+    for (const k of [
+      "shake",
+      "integer",
+      "autoUltimate",
+      "clarity",
+      "smartBars",
+    ])
       d.settings[k] =
         typeof v.settings?.[k] === "boolean" ? v.settings[k] : d.settings[k];
+    d.settings.damageText = ["compact", "full", "off"].includes(
+      v.settings?.damageText,
+    )
+      ? v.settings.damageText
+      : "compact";
     return d;
   }
   profile = loadProfile(slot);
@@ -452,6 +468,277 @@
     for (const lane of [0, 4])
       rect(B.x, B.y + lane * B.ch, 384, 32, "#14251cba");
   }
+  const abilityCanvas = document.createElement("canvas");
+  abilityCanvas.width = W * 3;
+  abilityCanvas.height = H * 3;
+  const abilityContext = abilityCanvas.getContext("2d");
+  abilityContext.setTransform(3, 0, 0, 3, 0, 0);
+  abilityContext.imageSmoothingEnabled = false;
+  function drawAbilityLayer(s, layer) {
+    abilityContext.clearRect(0, 0, W, H);
+    window.VanDaoBattleArt.effects(
+      abilityContext,
+      s,
+      abilityBursts,
+      B,
+      () => {},
+      layer,
+    );
+    ctx.save();
+    ctx.globalAlpha = profile.settings.clarity
+      ? layer === "front"
+        ? 0.48
+        : 0.7
+      : 1;
+    ctx.drawImage(abilityCanvas, 0, 0, W, H);
+    ctx.restore();
+  }
+  function readableEffects(s) {
+    const mode = profile.settings.damageText,
+      all = s.effects || [];
+    if (mode === "full") return all;
+    const other = all.filter((e) => !["damage", "hurt"].includes(e.kind));
+    if (mode === "off") return other;
+    const groups = new Map();
+    for (const e of all) {
+      if (!["damage", "hurt"].includes(e.kind) || !/^\d+$/.test(e.text || ""))
+        continue;
+      const key =
+        e.kind +
+        ":" +
+        e.lane +
+        ":" +
+        Math.floor(e.x * 2) +
+        ":" +
+        Math.floor((s.time - e.age) * 4);
+      if (!groups.has(key)) groups.set(key, { ...e, text: "0" });
+      const row = groups.get(key);
+      row.text = String(Number(row.text) + Number(e.text));
+      row.ttl = Math.max(row.ttl, e.ttl);
+    }
+    return [...other.slice(-35), ...[...groups.values()].slice(-12)];
+  }
+  function drawTrialObjects(s) {
+    if (
+      s.objective?.kind === "oath" &&
+      objectiveAtlas.oath &&
+      images.objectives
+    ) {
+      const a = objectiveAtlas.oath,
+        h = 54,
+        w = (h * a.w) / a.h;
+      ctx.drawImage(
+        images.objectives,
+        a.x,
+        a.y,
+        a.w,
+        a.h,
+        46 - w / 2,
+        151,
+        w,
+        h,
+      );
+    }
+    for (const o of s.objective?.objects || []) {
+      const x = B.x + o.x * B.cw,
+        y = B.y + (o.lane + 1) * B.ch;
+      ctx.save();
+      ctx.globalAlpha = 0.92;
+      const a =
+          objectiveAtlas[s.objective.kind === "escort" ? "caravan" : "beacon"],
+        w = s.objective.kind === "escort" ? 49 : 30,
+        h = a ? (w * a.h) / a.w : 32;
+      if (a && images.objectives)
+        ctx.drawImage(
+          images.objectives,
+          a.x,
+          a.y,
+          a.w,
+          a.h,
+          x - w / 2,
+          y - h,
+          w,
+          h,
+        );
+      rect(x - 14, y - 34, 28, 4, C.deep);
+      rect(
+        x - 14,
+        y - 34,
+        (28 * o.hp) / o.max_hp,
+        3,
+        o.hp / o.max_hp < 0.3 ? C.red : C.jade,
+      );
+      ctx.restore();
+    }
+  }
+  function drawObjectiveHUD(s) {
+    if (!s.objective) return;
+    const o = s.objective;
+    panel(7, 88, 78, 55, C.gold, "#11252ef2");
+    text("TRIAL GOAL", 46, 93, C.gold, 0.7, "center");
+    const labels =
+      o.kind === "oath"
+        ? ["HONOR " + (o.remaining ?? 10) + "/" + (o.limit || 10)]
+        : o.objects.map(
+            (t) =>
+              (o.kind === "escort" ? "CART" : "BEACON") +
+              " " +
+              Math.ceil((t.hp / t.max_hp) * 100) +
+              "%",
+          );
+    labels.forEach((l, i) =>
+      text(l, 46, 108 + i * 12, C.cream, 0.72, "center"),
+    );
+  }
+  function drawVisualSettings() {
+    panel(39, 8, 306, 206, C.gold);
+    text("BATTLE READABILITY", 192, 21, C.gold, 1.2, "center");
+    button(
+      "clarity",
+      "EFFECTS: " + (profile.settings.clarity ? "CLEAR" : "CINEMATIC"),
+      54,
+      49,
+      276,
+      27,
+      () => {
+        profile.settings.clarity = !profile.settings.clarity;
+        saveProfile();
+      },
+    );
+    button(
+      "smart-bars",
+      "HEALTH BARS: " + (profile.settings.smartBars ? "SMART" : "ALL"),
+      54,
+      83,
+      276,
+      27,
+      () => {
+        profile.settings.smartBars = !profile.settings.smartBars;
+        saveProfile();
+      },
+    );
+    button(
+      "damage-text",
+      "DAMAGE TEXT: " + profile.settings.damageText.toUpperCase(),
+      54,
+      117,
+      276,
+      27,
+      () => {
+        const modes = ["compact", "full", "off"];
+        profile.settings.damageText =
+          modes[(modes.indexOf(profile.settings.damageText) + 1) % 3];
+        saveProfile();
+      },
+    );
+    wrapped(
+      "Clear reduces particle opacity and darkens the field. Smart hides healthy bars until a unit is hurt, low on mana or selected. Compact combines nearby damage in short bursts.",
+      54,
+      153,
+      276,
+      C.muted,
+      11,
+      3,
+    );
+    button(
+      "visual-back",
+      "BACK",
+      111,
+      190,
+      162,
+      19,
+      () => (overlay = "settings"),
+    );
+  }
+  function drawTactics() {
+    panel(-50, -20, 484, 257, C.gold);
+    text("READ THE RAIDING PARTY", 192, -8, C.gold, 1.2, "center");
+    Object.entries(catalog.squad_roles || {}).forEach(([id, role], i) => {
+      const y = 25 + i * 58;
+      text(
+        role.name.toUpperCase(),
+        -35,
+        y,
+        i === 0 ? C.ice : i === 1 ? C.jade : C.gold,
+        1.1,
+      );
+      wrapped(role.description, 40, y, 374, C.cream, 11, 4);
+    });
+    text(
+      "Select a skill range to plan your interrupt or area strike.",
+      -35,
+      206,
+      C.muted,
+      0.9,
+    );
+    button(
+      "tactics-back",
+      "BACK",
+      132,
+      214,
+      120,
+      20,
+      () => (overlay = scene === "battle" ? "battleMenu" : null),
+    );
+  }
+  function drawTrials() {
+    bg("title", 0.6);
+    header("REGIONAL TRIALS");
+    rect(330, 0, 182, 24, "#101d26");
+    text(
+      "Optional objectives / campaign progression never requires medals",
+      12,
+      35,
+      C.jade,
+      0.9,
+    );
+    (catalog.trials || []).forEach((trial, i) => {
+      const x = 10 + i * 167,
+        open = profile.completed.includes(trial.unlock),
+        medal = profile.estate?.trial_medals?.[trial.id] || 0;
+      panel(x, 57, 160, 220, regionColor[trial.region], "#142832ee");
+      text(trial.name, x + 8, 68, C.gold, 1.02);
+      button(
+        "trial-medal-" + trial.id,
+        ["MEDAL TARGETS", "BRONZE", "SILVER", "GOLD"][medal],
+        x + 8,
+        86,
+        144,
+        18,
+        () => {
+          stagePreview = trial;
+          overlay = "trial-medals";
+        },
+      );
+      wrapped(trial.description, x + 8, 108, 144, C.cream, 11, 10);
+      text(
+        open ? "First clear: 20 stones + 1 Insight" : "Unlock: " + trial.unlock,
+        x + 8,
+        224,
+        open ? C.jade : C.dim,
+        0.75,
+      );
+      button(
+        "trial-" + trial.id,
+        open ? "ENTER TRIAL" : "LOCKED",
+        x + 8,
+        247,
+        144,
+        22,
+        () => startBattle(trial.id),
+        { disabled: !open },
+      );
+    });
+    button(
+      "trial-tactics",
+      "SQUAD TACTICS",
+      337,
+      5,
+      164,
+      16,
+      () => (overlay = "tactics"),
+    );
+  }
   function sprite(
     id,
     x,
@@ -462,12 +749,46 @@
     action = "idle",
     started = 0,
   ) {
+    if (scene === "battle" && state && motionAtlas[id]) {
+      const hero = heroes[id],
+        unit = [...(state.heroes || []), ...(state.enemies || [])].find(
+          (u) =>
+            u.type === id &&
+            u.action === action &&
+            Math.abs((u.action_started || 0) - started) < 0.001,
+        );
+      const until =
+        action === "death"
+          ? started + 0.8
+          : unit?.action_until ||
+            started +
+              (action === "ultimate" ? 1.2 : action === "attack" ? 0.65 : 0.5);
+      if (
+        window.VanDaoMotion.draw(
+          ctx,
+          id,
+          motionAtlas[id],
+          x + 16 * scale,
+          y + 32 * scale,
+          32 * scale,
+          action,
+          state.time,
+          started,
+          until,
+          hero?.windup || 0.6,
+          alpha,
+        )
+      )
+        return;
+    }
     const authored = actorArt[id];
     if (authored) {
       const poseKey =
         action === "ultimate"
           ? "ultimate"
-          : ["skill", "deploy", "ability", "channel", "phase"].includes(action)
+          : ["skill", "deploy", "ability", "channel", "phase", "mend"].includes(
+                action,
+              )
             ? "skill"
             : action === "attack"
               ? "attack"
@@ -722,6 +1043,29 @@
     button("estate", "SECT ESTATE / LINH DIEN", 278, 227, 202, 29, openEstate);
     text("Garden / Alchemy / Commissions", 379, 264, C.jade, 0.9, "center");
     drawDecorations("lobby");
+    if (!battleId || !isPlaying(state))
+      button(
+        "trials",
+        "REGIONAL TRIALS",
+        278,
+        101,
+        202,
+        23,
+        () => (scene = "trials"),
+      );
+    const ready =
+      estateData?.plots?.filter((p) => p.crop && p.growth >= p.need).length ||
+      0;
+    if (ready)
+      button(
+        "harvest-ready",
+        ready + " PLOTS READY",
+        278,
+        199,
+        202,
+        20,
+        openEstate,
+      );
     if (battleId && state && isPlaying(state))
       button("resume", "RESUME BATTLE", 281, 103, 196, 24, () => {
         scene = "battle";
@@ -1351,6 +1695,9 @@
       return;
     }
     bg(s.mode === "nursery" ? "garden" : s.region || "wharf");
+    if (profile.settings.clarity)
+      rect(B.x, B.y, B.cw * 12, B.ch * 5, "#07151d38");
+    drawTrialObjects(s);
     drawDecorations("stronghold");
     if (s.mode === "nursery") drawNurseryBeds(s);
     drawRanges(s);
@@ -1432,19 +1779,7 @@
         );
       }
     }
-    for (const tell of s.telegraphs || []) {
-      for (const lane of tell.lanes || []) {
-        const y = B.y + lane * B.ch;
-        ctx.globalAlpha = 0.12 + Math.sin(now / 80) * 0.05;
-        rect(B.x + B.cw, y, 10 * B.cw, B.ch, C.red);
-        ctx.globalAlpha = 1;
-        for (let x = B.x + B.cw; x < B.x + 11 * B.cw; x += 6) {
-          rect(x, y, 3, 1, C.red);
-          rect(x, y + B.ch - 1, 3, 1, C.red);
-        }
-        text("!", B.x + 7, y + 9, C.red);
-      }
-    }
+    window.VanDaoMotion.threats(ctx, s, B, false);
     const upcoming = (stages[s.stage]?.waves || []).find(
       (w) => (w.at ?? w.time) > s.time + 0.05,
     );
@@ -1460,7 +1795,20 @@
     drawDefenses(s);
     drawMapEffects(s);
     drawAmbient(s.region || "wharf");
-    window.VanDaoBattleArt.effects(ctx, s, abilityBursts, B, text, "floor");
+    drawAbilityLayer(s, "floor");
+    for (const r of s.remains || []) {
+      const size = r.friendly ? 32 : enemies[r.type]?.boss ? 44 : 32;
+      sprite(
+        r.type,
+        B.x + r.x * B.cw - size / 2,
+        B.y + (r.lane + 1) * B.ch - size + 3,
+        size / 32,
+        null,
+        clamp((0.8 - r.age) / 0.25, 0, 1),
+        "death",
+        r.born / 60,
+      );
+    }
     const units = [
       ...(s.heroes || []).map((x) => ({ ...x, friendly: true })),
       ...(s.enemies || []).map((x) => ({ ...x, friendly: false })),
@@ -1495,47 +1843,56 @@
         size / 32,
         null,
         u.hidden ? 0.42 : 1,
-        u.action,
-        u.action_started || 0,
+        !u.friendly &&
+          u.hurt_at != null &&
+          s.time - u.hurt_at < 0.14 &&
+          ["walk", "hurt"].includes(u.action)
+          ? "hurt"
+          : u.frozen > 0
+            ? "idle"
+            : u.action,
+        !u.friendly &&
+          s.time - u.hurt_at < 0.14 &&
+          ["walk", "hurt"].includes(u.action)
+          ? u.hurt_at
+          : u.action_started || 0,
       );
-      const hp = clamp(Number(u.hp || 0) / Number(u.max_hp || u.hp || 1), 0, 1);
-      rect(x - 11, y - size - 7, 22, 3, C.deep);
-      rect(x - 11, y - size - 7, 22 * hp, 2, u.friendly ? C.jade : C.red);
-      if (u.shield > 0)
-        rect(
-          x - 11,
-          y - size - 5,
-          clamp(u.shield / (u.max_hp || 100), 0, 1) * 22,
-          1,
-          C.ice,
-        );
+      const hovered =
+        Math.abs(pointer.x - x) < 15 && Math.abs(pointer.y - (y - 16)) < 20;
+      window.VanDaoMotion.bars(
+        ctx,
+        u,
+        x,
+        y,
+        size,
+        selected,
+        hovered,
+        profile.settings.smartBars,
+      );
       if (u.friendly) {
-        rect(x - 11, y - size - 3, 22, 2, C.deep);
+        rect(x - 9, y + 2, 18, 2, C.deep);
         rect(
-          x - 11,
-          y - size - 3,
-          22 * clamp(u.mana / u.mana_max, 0, 1),
-          2,
-          C.ice,
-        );
-        rect(x - 10, y + 2, 20, 2, "#13222b");
-        rect(
-          x - 10,
+          x - 9,
           y + 2,
-          20 * clamp(u.resonance / 100, 0, 1),
-          2,
+          18 * clamp(u.resonance / 100, 0, 1),
+          1,
           u.resonance >= 100 ? C.gold : C.violet,
         );
-        if (u.resonance >= 100) icon("star", x - 3, y - 41, C.gold);
-      } else if (u.burn > 0) {
-        rect(x + 8, y - 15, 2, 4, "#ed8d4c");
-        rect(x + 9, y - 17, 2, 4, C.gold);
+        if (u.resonance >= 100) icon("star", x - 3, y - size - 14, C.gold);
+      }
+      if (u.guarded_by && (hovered || inspectUnit === u.id)) {
+        const guard = s.enemies.find((e) => e.id === u.guarded_by);
+        if (guard) line(x, y - 10, unitX(guard), unitY(guard) - 10, C.ice);
       }
       if (["elite", "captain"].includes(u.rank))
         text(
-          u.rank === "captain" ? "CAPT" : "ELITE",
+          u.squad_role
+            ? u.squad_role.toUpperCase()
+            : u.rank === "captain"
+              ? "CAPT"
+              : "ELITE",
           x,
-          y - 36,
+          y - size - 13,
           C.gold,
           0.65,
           "center",
@@ -1562,7 +1919,8 @@
       icon("qi", x - 4, y - 3, C.gold);
     }
     drawEffects(s);
-    window.VanDaoBattleArt.effects(ctx, s, abilityBursts, B, text, "front");
+    drawAbilityLayer(s, "front");
+    window.VanDaoMotion.threats(ctx, s, B, true);
     drawHUD(s);
     drawCards(s);
     const unit = (s.heroes || []).find((h) => h.id === inspectUnit);
@@ -1681,7 +2039,7 @@
         g,
         x,
         y,
-        41,
+        profile.settings.clarity ? (ward.status === "sweeping" ? 36 : 28) : 41,
         s.region,
         s.time,
         ward.status === "sweeping",
@@ -1707,6 +2065,7 @@
     }
   }
   function drawHUD(s) {
+    drawObjectiveHUD(s);
     if (s.preparation) {
       const p = s.preparation,
         label = { spirit_tea: "TEA", purifying_dew: "DEW", soul_ward: "WARD" }[
@@ -2003,7 +2362,8 @@
     );
   }
   function drawEffects(s) {
-    for (const e of s.effects || []) {
+    const effects = readableEffects(s);
+    for (const e of effects) {
       let x = B.x + Number(e.x ?? 0) * B.cw,
         y = B.y + (Number(e.lane ?? 0) + 0.55) * B.ch;
       const age = Number(e.age || 0),
@@ -2080,9 +2440,13 @@
         ? won
           ? "THE NURSERY ENDURES"
           : "THE GARDEN HAS FALLEN"
-        : won
-          ? "THE GATE ENDURES"
-          : "THE GATE HAS FALLEN",
+        : s.mode === "trial"
+          ? won
+            ? "TRIAL COMPLETE"
+            : "TRIAL LOST"
+          : won
+            ? "THE GATE ENDURES"
+            : "THE GATE HAS FALLEN",
       256,
       60,
       won ? C.gold : C.red,
@@ -2123,12 +2487,20 @@
           ? "Planted crops grew +1 battle."
           : "No crop growth this time.",
       );
+      if (r.medal)
+        lines.push(
+          ["", "Bronze", "Silver", "Gold"][r.medal] + " medal earned.",
+        );
       if (r.beds !== null) lines.push(r.beds + "/3 nursery beds survived.");
       wrapped(lines.join("  "), 94, 135, 324, C.cream, 12, 5);
     }
     button(
       "retry",
-      s.mode === "nursery" ? "DEFEND AGAIN" : won ? "NEXT STAGE" : "TRY AGAIN",
+      s.mode === "nursery" || s.mode === "trial"
+        ? "DEFEND AGAIN"
+        : won
+          ? "NEXT STAGE"
+          : "TRY AGAIN",
       94,
       202,
       151,
@@ -2136,6 +2508,7 @@
       () => {
         if (!resultApplied) return;
         if (s.mode === "nursery") return startBattle("garden-defense");
+        if (s.mode === "trial") return startBattle(s.stage);
         const next = catalog.stages.find(
           (x) => x.index === (stages[s.stage]?.index ?? 0) + 1,
         );
@@ -2147,7 +2520,11 @@
     );
     button(
       "results-campaign",
-      s.mode === "nursery" ? "SECT ESTATE" : "CAMPAIGN",
+      s.mode === "nursery"
+        ? "SECT ESTATE"
+        : s.mode === "trial"
+          ? "TRIALS"
+          : "CAMPAIGN",
       253,
       202,
       164,
@@ -2158,6 +2535,25 @@
   }
   function drawOverlay() {
     if (!overlay) return;
+    if (overlay === "visuals") return drawVisualSettings();
+    if (overlay === "tactics") return drawTactics();
+    if (overlay === "trial-medals") {
+      panel(35, 10, 314, 210, C.gold);
+      text("TRIAL MEDALS", 192, 23, C.gold, 1.2, "center");
+      Object.entries(stagePreview.medals).forEach(([name, description], i) => {
+        text(name.toUpperCase(), 48, 52 + i * 40, C.gold, 0.9);
+        wrapped(description, 113, 52 + i * 40, 221, C.cream, 11, 3);
+      });
+      text(
+        "First: 20 stones + 1 Insight. Repeat: 6 + seed.",
+        48,
+        178,
+        C.jade,
+        0.8,
+      );
+      button("medals-back", "BACK", 115, 196, 154, 18, () => (overlay = null));
+      return;
+    }
     ctx.fillStyle = "rgba(6,12,19,.8)";
     ctx.fillRect(-(W - 384) / 2, -(H - 216) / 2, W, H);
     if (overlay === "map-intro") {
@@ -2195,8 +2591,26 @@
         guardianAtlas,
         text,
       );
-      text(page[0], 217, 39, C.gold, 0.95);
-      wrapped(page[1], 217, 62, 207, C.cream, 13, 11);
+      text(
+        state?.mode === "trial" && tutorialPage === 0
+          ? "TRIAL OBJECTIVE"
+          : page[0],
+        217,
+        39,
+        C.gold,
+        0.95,
+      );
+      wrapped(
+        state?.mode === "trial" && tutorialPage === 0
+          ? stages[state.stage].description
+          : page[1],
+        217,
+        62,
+        207,
+        C.cream,
+        13,
+        11,
+      );
       button(
         "intro-prev",
         "PREV",
@@ -2421,7 +2835,7 @@
       return;
     }
     if (overlay === "settings") {
-      panel(69, 10, 246, 198, C.gold);
+      panel(69, 0, 246, 226, C.gold);
       text("SOUND & DISPLAY", 192, 23, C.gold, 1, "center");
       for (const [i, key] of ["master", "music", "sfx", "voice"].entries()) {
         const y = 61 + i * 24;
@@ -2468,7 +2882,16 @@
           resize();
         },
       );
-      button("close", "BACK", 128, 185, 128, 18, () => (overlay = null));
+      button(
+        "visual-settings",
+        "BATTLE VISUALS",
+        81,
+        181,
+        221,
+        18,
+        () => (overlay = "visuals"),
+      );
+      button("close", "BACK", 128, 204, 128, 18, () => (overlay = null));
       return;
     }
     if (overlay === "battleMenu") {
@@ -2516,6 +2939,15 @@
         () => (overlay = "controls"),
       );
       button("leave", "LEAVE BATTLE", 95, 182, 194, 22, () => leaveBattle());
+      button(
+        "battle-tactics",
+        "SQUAD TACTICS",
+        95,
+        207,
+        194,
+        18,
+        () => (overlay = "tactics"),
+      );
       return;
     }
     if (overlay === "region-guide") {
@@ -2672,6 +3104,7 @@
     else if (scene === "roster") drawRoster();
     else if (scene === "archive") drawArchive();
     else if (scene === "estate") drawEstate();
+    else if (scene === "trials") drawTrials();
     else if (scene === "battle") drawBattle();
     if (overlay) buttons = [];
     if (overlay) {
@@ -2726,7 +3159,8 @@
         C.red,
         6,
       );
-    const nursery = state?.mode === "nursery";
+    const nursery = state?.mode === "nursery",
+      trial = state?.mode === "trial";
     abilityBursts = [];
     audio.stopVoices();
     battleEpoch++;
@@ -2735,7 +3169,7 @@
     state = null;
     selectedHero = null;
     inspectUnit = null;
-    scene = nursery ? "estate" : "campaign";
+    scene = nursery ? "estate" : trial ? "trials" : "campaign";
     overlay = null;
     sessionStorage.removeItem("vanDao.battle");
     if (old) fetch("/api/battle/" + old, { method: "DELETE" }).catch(() => {});
@@ -2771,6 +3205,14 @@
   }
   async function startBattle(id) {
     if (claimPromise) await claimPromise;
+    if (
+      stages[id]?.mode === "trial" &&
+      !profile.completed.includes(stages[id].unlock)
+    )
+      return notify(
+        "Clear " + stages[id].unlock + " to open this optional trial.",
+        C.gold,
+      );
     if (economyBusy) return notify("Wait for the sect ledger to save.");
     if (state && !isPlaying(state) && !resultApplied)
       return notify("Record this battle before starting another.", C.red);
@@ -3626,7 +4068,7 @@
       await document.fonts.load("13px VT323");
       await document.fonts.ready;
       catalog = await api("/api/catalog");
-      if (catalog.version !== "1.4.0")
+      if (catalog.version !== "1.5.0")
         throw Error("Stop the old Python server and run the updated run.py.");
       for (const key of ["heroes", "enemies", "stages", "relics"])
         if (!Array.isArray(catalog[key]))
@@ -3634,10 +4076,11 @@
       heroes = Object.fromEntries(catalog.heroes.map((h) => [h.id, h]));
       enemies = Object.fromEntries(catalog.enemies.map((h) => [h.id, h]));
       stages = Object.fromEntries(
-        [...catalog.stages, ...(catalog.side_modes || [])].map((s) => [
-          s.id,
-          s,
-        ]),
+        [
+          ...catalog.stages,
+          ...(catalog.side_modes || []),
+          ...(catalog.trials || []),
+        ].map((s) => [s.id, s]),
       );
       const names = [
         "title",
@@ -3647,6 +4090,7 @@
         "sprites",
         "cultivators",
         "guardians",
+        "objectives",
         "garden",
         "crops",
         "heroes_idle",
@@ -3668,6 +4112,8 @@
       } catch {}
       cultivators = await (await fetch("/assets/cultivators.json")).json();
       guardianAtlas = await (await fetch("/assets/guardians.json")).json();
+      objectiveAtlas = await (await fetch("/assets/objectives.json")).json();
+      motionAtlas = await (await fetch("/assets/motion/motion.json")).json();
       actorArt = await (await fetch("/assets/actors.json")).json();
       botany = await (await fetch("/assets/crops.json")).json();
       await estateAction("inspect", {}, true);
@@ -3758,6 +4204,12 @@
     },
     get musicTracks() {
       return { ...audio.playedThemes };
+    },
+    get motion() {
+      return {
+        loaded: window.VanDaoMotion.loaded,
+        frames: window.VanDaoMotion.observed,
+      };
     },
     get castingEffects() {
       return abilityBursts.map((b) => ({ ...b }));
