@@ -7,40 +7,11 @@ explicit local inputs; no network or speech synthesis occurs during gameplay.
 from pathlib import Path
 import argparse, hashlib, json, subprocess, tempfile
 
-LINES = {
-    "gatherer": (
-        "am_puck",
-        "A little breath, a mountain of hope.",
-        "Spirit well, awaken!",
-    ),
-    "sword": ("bm_daniel", "My bamboo blade guards this gate.", "Ten thousand blades!"),
-    "fire": (
-        "af_bella",
-        "Let the lotus burn away the darkness.",
-        "Crimson lotus, bloom!",
-    ),
-    "frost": ("bf_lily", "Be still. Winter stands beside you.", "Thousand year frost!"),
-    "monk": (
-        "am_fenrir",
-        "Behind me, the mountain will not fall.",
-        "Mountain holds the sky!",
-    ),
-    "lightning": (
-        "am_liam",
-        "The storm has found its path.",
-        "Nine heavens, thunderfall!",
-    ),
-    "herbalist": (
-        "bf_emma",
-        "Where life remains, hope will grow.",
-        "Rain of green heaven!",
-    ),
-    "formation": (
-        "bm_george",
-        "One thread, one formation, one unbroken gate.",
-        "Grand array, unite!",
-    ),
-}
+import sys
+
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+from game.performances import PERFORMANCES
+
 EXPECTED = {
     "kokoro-v1.0.onnx": "beb0d1848dee9a49da392cc3df26958d46cfa35d321edf434f52949153f0df3a",
     "voices-v1.0.bin": "bca610b8308e8d99f32e6fe4197e7ec01679264efed0cac9140fe9c29f1fbf7d",
@@ -54,6 +25,12 @@ def main():
         "--output",
         type=Path,
         default=Path(__file__).resolve().parents[1] / "web/assets/audio/voices",
+    )
+    parser.add_argument(
+        "--heroes",
+        nargs="+",
+        choices=list(PERFORMANCES),
+        help="Regenerate only selected voices, preserving other committed takes.",
     )
     args = parser.parse_args()
     import onnxruntime as ort
@@ -81,16 +58,34 @@ def main():
         "synthesis": "Kokoro-82M v1.0, Apache-2.0 model, generated fictional character dialogue",
         "characters": {},
     }
+    if args.heroes and (args.output / "voices.json").exists():
+        manifest = json.loads((args.output / "voices.json").read_text())
     with tempfile.TemporaryDirectory() as tmp:
-        for hero, (voice, summon, ultimate) in LINES.items():
+        for hero, (voice, accent, summon, ultimate, direction) in PERFORMANCES.items():
+            if args.heroes and hero not in args.heroes:
+                continue
             entries = {}
             for action, text in [("summon", summon), ("ultimate", ultimate)]:
-                audio, rate = kokoro.create(
-                    text,
-                    voice=voice,
-                    speed=1.05 if action == "ultimate" else 1.0,
-                    lang="en-gb" if voice.startswith("b") else "en-us",
-                )
+                pieces = []
+                for phrase, pace, energy, pause in text:
+                    style = (
+                        kokoro.get_voice_style(voice) * 0.82
+                        + kokoro.get_voice_style(accent) * 0.18
+                    )
+                    pcm, rate = kokoro.create(
+                        phrase,
+                        voice=style,
+                        speed=pace,
+                        lang="en-gb" if voice.startswith("b") else "en-us",
+                        sentence_pause=0.12,
+                        clause_pause=0.06,
+                    )
+                    pcm = pcm * energy
+                    # The last phrase builds in energy instead of a flat, constant gain.
+                    pcm = pcm * np.linspace(0.91, 1.08, len(pcm))
+                    pieces.extend([pcm, np.zeros(round(pause * rate), np.float32)])
+                audio = np.concatenate(pieces)
+                spoken = " ".join(p[0] for p in text)
                 audio = np.nan_to_num(audio)
                 peak = float(np.max(np.abs(audio)))
                 if peak > 0:
@@ -109,6 +104,12 @@ def main():
                         "-y",
                         "-i",
                         str(wav),
+                        "-af",
+                        (
+                            "acompressor=threshold=0.28:ratio=2:attack=8:release=90,treble=g=2,aecho=0.8:0.35:48:0.10"
+                            if action == "ultimate"
+                            else "acompressor=threshold=0.35:ratio=1.5:attack=12:release=100"
+                        ),
                         "-c:a",
                         "libmp3lame",
                         "-b:a",
@@ -119,7 +120,12 @@ def main():
                 )
                 entries[action] = {
                     "file": name,
-                    "text": text,
+                    "text": spoken,
+                    "direction": direction,
+                    "phrases": [
+                        dict(text=p[0], pace=p[1], energy=p[2], pause=p[3])
+                        for p in text
+                    ],
                     "duration": round(len(audio) / rate, 3),
                     "voice": voice,
                 }

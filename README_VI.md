@@ -38,34 +38,34 @@ nhận ra bản lưu.
 Đây là bản game chơi được, chuyển thể gọn từ tài liệu thiết kế bạn gửi; xem
 [tình trạng triển khai](docs/BUILD_STATUS.md) để biết phần đã kiểm thử và giới hạn.
 
-## Bản 1.2
+## Bản 1.3
 
-- Giữ 8 cultivator và 9 ải, 12–21 wave/ải. Mỗi trận có giai đoạn chuẩn bị,
-  tăng áp lực và tổng công kích; tinh anh xuất hiện nhiều dần về cuối.
-- Mana riêng từng nhân vật; kỹ năng tự động tiêu mana. Ultimate cần đủ mana,
-  Qi và 100 Dao, kèm hồi chiêu. Nút **AUTO OFF** giúp giữ mana cho ultimate.
-- Qi tối đa 320 (thiên phú Treasury nâng lên 360 khi Yun còn sống). Chỉ đặt được
-  3 Yun; giá trị orb lần lượt 100% / 80% / 60%. Không còn tích 999+ Qi.
-- Rê chuột vào nhân vật hoặc thẻ để xem tầm; nút **Range** đổi giữa đánh thường,
-  skill và ultimate. **Menu → Cultivator / Enemy Skills** mở sách kỹ năng khi
-  tạm dừng: hệ số, sát thương, mana, hồi chiêu, số mục tiêu và phạm vi từng ô.
-- Cây thiên phú mỗi nhân vật có 2 nhánh, mỗi nhánh 5 mốc với 2 thiên phú đặc biệt.
-  Đá nhận từ chiến thắng; chơi lại ải đã thắng vẫn có phần thưởng nhỏ để nâng tiếp.
-- HP quái tăng 5% lũy tiến mỗi ải. Quái tinh anh có thêm HP, giáp và sát thương;
-  thủ lĩnh nhỏ buff tốc độ quái trong bán kính 1,5 ô.
-- Ba vùng có cảnh quan, kiến trúc và pháp khí cứu nguy riêng: Jade River Ark,
-  Heaven Sword Array, Soul-Sealing Bell. Mỗi hàng vẫn chỉ được cứu một lần.
-- Nghi thức riêng từng vùng: làm dịu thủy triều, thanh tẩy linh mạch hoặc soi hồn.
-  Mỗi lần tốn 35 Qi, hồi 30 giây; xem **Region Mechanics** để học cơ chế chi tiết.
-- Sprite nhân vật 64×64, animation riêng cho idle/đánh thường/skill/ultimate.
-- 16 câu thoại **tiếng Anh** cho triệu hồi và ultimate, có phụ đề và âm lượng riêng.
-  Đây là giọng tổng hợp, được đóng gói sẵn để phát offline.
-- Nhạc sảnh và 3 phối khí theo giai đoạn cho mỗi vùng, phong cách cổ phong với
-  âm sắc cổ cầm, cổ tranh, tỳ bà, sáo và bộ gõ. Nhạc được tổng hợp, không phải
-  bản thu nhạc cụ acoustic. SFX riêng cho từng nhân vật vẫn được giữ.
-- Sảnh có thêm chuyển động, bố cục nút cân đối; VT323 được đóng gói sẵn.
+- **Mỗi ải có nhạc riêng:** 9 chủ đề × 3 phối khí theo giai đoạn, cộng nhạc sảnh,
+  tổng 28 bản nhạc offline. Khi quái đông hoặc có áp lực tinh anh/boss, nhạc tự
+  chuyển cao trào; vẫn giữ âm sắc cổ cầm, cổ tranh, tỳ bà, sáo và bộ gõ.
+- **Đợt cuối dồn cả 5 lane:** 35–51 quái trong cùng đợt tổng công kích. Lính đông
+  quân có 80% HP và 85% ATK thường; tinh anh/thủ lĩnh vẫn giữ chỉ số riêng mạnh hơn.
+  Đội hình sát thương diện rộng, đỡ đòn và khắc chế theo vùng có vai trò rõ hơn.
+- Nút **A:ON / A:OFF** cạnh tốc độ, hoặc phím **A**, bật/tắt tự dùng ultimate.
+  Auto xét tầm của ultimate, lượng mana/Qi/Dao và hồi chiêu; chờ mục tiêu đáng dùng
+  chiêu, tự buff/hồi phục khi đồng đội cần. Cài đặt được giữ cho trận tiếp theo.
+- 16 câu thoại **tiếng Anh** mới, chia câu và thay đổi nhịp, ngắt nghỉ, năng lượng
+  để hợp tính cách. Đây vẫn là giọng tổng hợp được đóng gói sẵn, không cần mạng.
+- Thiên phú đã học có nền xanh, viền vàng và dấu tích; chưa học được làm xám.
+  Mốc kế tiếp có viền ngọc. Vẫn chọn được mốc khóa để đọc điều kiện/chỉ số.
+- Hiệu ứng riêng cho từng cultivator: linh tuyền, kiếm trận, sen lửa, băng tinh,
+  địa chấn, lôi kích, lá hồi phục và trận đồ. Tư thế tung chiêu được giữ khi bị đánh.
+- Mỗi lần vào ải có **3 trang hướng dẫn kèm hình**. Trận tạm dừng hoàn toàn cho
+  đến khi bấm **Enter Battle**; nút **?** và menu tạm dừng mở lại hướng dẫn.
+- Cảnh nền kiểu RPG 16-bit được thiết kế mới: phủ gỗ bến sông lồng đèn, đài ngọc
+  trên núi nổi và lăng mộ đồng dưới lòng đất. Cung điện và ba pháp khí cứu nguy
+  có thiết kế riêng, không dùng chung một hình đổi màu.
+
+Vẫn giữ 8 nhân vật, 9 ải, mana riêng từng đơn vị, Qi tối đa 320 và cây thiên phú
+hai nhánh. Mỗi hàng chỉ có một lần cứu nguy. Chơi lại ải đã thắng vẫn nhận ít đá
+để nâng thêm thiên phú. Xem **Menu → Cultivator / Enemy Skills** để đọc hệ số,
+chi phí và phạm vi từng ô; nút **Range** đổi vùng đánh thường/skill/ultimate.
 
 Để cập nhật: tắt server Python cũ, giải nén bản mới rồi chạy lại `python run.py`.
-Giữ cùng trình duyệt và cổng localhost để dùng tiếp bản lưu. Các nhánh A/B từ bản
-cũ giữ hiệu ứng cũ và được tính là mốc 3; mua mốc tiếp theo áp dụng đầy đủ chỉ số
-nhánh mới. Hãy xuất bản lưu trước khi chuyển máy hoặc xóa dữ liệu trình duyệt.
+Giữ cùng trình duyệt và cổng localhost để dùng tiếp bản lưu. Nên xuất bản lưu
+trước khi đổi máy hoặc xóa dữ liệu trình duyệt.

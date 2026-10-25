@@ -63,7 +63,11 @@
     previews = {},
     previewSignature = "",
     previewEpoch = 0;
-  let voiceCaption = null;
+  let voiceCaption = null,
+    abilityBursts = [],
+    tutorialPage = 0,
+    tutorialReturn = null,
+    sceneArt = { regions: {} };
   let scene = "title",
     overlay = null,
     selectedHero = null,
@@ -109,11 +113,12 @@
     best: {},
     settings: {
       master: 0.6,
-      music: 0.28,
+      music: 0.38,
       sfx: 0.65,
       voice: 0.8,
       shake: true,
       integer: false,
+      autoUltimate: false,
     },
     updated: Date.now(),
   });
@@ -154,7 +159,7 @@
         ? Math.max(0, Math.min(1, value))
         : d.settings[k];
     }
-    for (const k of ["shake", "integer"])
+    for (const k of ["shake", "integer", "autoUltimate"])
       d.settings[k] =
         typeof v.settings?.[k] === "boolean" ? v.settings[k] : d.settings[k];
     return d;
@@ -255,7 +260,17 @@
   const inside = (p, r) =>
     p.x >= r.x && p.x < r.x + r.w && p.y >= r.y && p.y < r.y + r.h;
   function button(id, label, x, y, w, h, fn, opt = {}) {
-    const r = { id, label, x, y, w, h, fn, disabled: !!opt.disabled };
+    const r = {
+      id,
+      label,
+      x,
+      y,
+      w,
+      h,
+      fn,
+      disabled: !!opt.disabled,
+      talentState: opt.talentState,
+    };
     buttons.push(r);
     const hover = inside(pointer, r) && !r.disabled;
     panel(
@@ -272,11 +287,43 @@
             : opt.edge || C.edge,
       r.disabled ? "#172128" : hover ? "#284238" : opt.fill || "#1b3035",
     );
+    if (opt.talentState) {
+      const owned = opt.talentState === "learned",
+        next = opt.talentState === "available";
+      panel(
+        x,
+        y,
+        w,
+        h,
+        owned ? C.gold : next ? C.jade : opt.active ? "#91989f" : "#414a51",
+        owned ? "#254d43" : "#222831",
+      );
+      if (owned) {
+        rect(x + 4, y + 6, 5, 5, C.gold);
+        line(x + 5, y + 8, x + 6, y + 10, C.deep);
+        line(x + 6, y + 10, x + 9, y + 6, C.deep);
+      } else {
+        rect(x + 4, y + 7, 5, 5, next ? "#99b9ad" : "#69737b");
+        line(x + 5, y + 7, x + 5, y + 4, next ? C.jade : C.dim);
+        line(x + 5, y + 4, x + 8, y + 4, next ? C.jade : C.dim);
+        line(x + 8, y + 4, x + 8, y + 7, next ? C.jade : C.dim);
+      }
+    }
     text(
       String(label).slice(0, Math.max(1, Math.floor((w - 10) / 6.5))),
       x + w / 2,
       y + (h - 7) / 2,
-      r.disabled ? C.dim : opt.active ? C.gold : opt.color || C.cream,
+      opt.talentState
+        ? opt.talentState === "learned"
+          ? C.gold
+          : opt.talentState === "available"
+            ? "#a0b9ae"
+            : "#6d7880"
+        : r.disabled
+          ? C.dim
+          : opt.active
+            ? C.gold
+            : opt.color || C.cream,
       1,
       "center",
     );
@@ -291,7 +338,14 @@
     live.textContent = message;
   }
   function bg(name, shade = 0) {
-    if (images[name]) ctx.drawImage(images[name], 0, 0, W, H);
+    if (images[name])
+      ctx.drawImage(
+        images[name],
+        0,
+        sceneArt.regions[name]?.draw_y || 0,
+        W,
+        sceneArt.regions[name]?.draw_height || H,
+      );
     else rect(0, 0, W, H, C.ink);
     if (shade) {
       ctx.fillStyle = `rgba(7,14,21,${shade})`;
@@ -833,6 +887,7 @@
       skillDetails(h, libraryTab, 134, 150, 350);
       return;
     }
+    text("GOLD learned / JADE next / GREY locked", 193, 86, C.muted, 0.7);
     const progress = talentProgress(h.id);
     for (const [i, branch] of ["A", "B"].entries()) {
       const x = 132 + i * 181;
@@ -863,7 +918,13 @@
             active:
               selectedNode.branch === branch && selectedNode.rank === node.rank,
             color: node.kind === "special" ? C.gold : C.cream,
-            disabled: !!progress.branch && progress.branch !== branch,
+            talentState: owned
+              ? "learned"
+              : unlocked(h) &&
+                  (!progress.branch || progress.branch === branch) &&
+                  node.rank === progress.rank + 1
+                ? "available"
+                : "locked",
           },
         );
       }
@@ -1242,6 +1303,7 @@
     drawDefenses(s);
     drawMapEffects(s);
     drawAmbient(s.region || "wharf");
+    window.VanDaoBattleArt.effects(ctx, s, abilityBursts, B, text, "floor");
     const units = [
       ...(s.heroes || []).map((x) => ({ ...x, friendly: true })),
       ...(s.enemies || []).map((x) => ({ ...x, friendly: false })),
@@ -1250,7 +1312,11 @@
       let x = renderedX(u),
         y = unitY(u),
         size = u.friendly
-          ? 32
+          ? u.action === "ultimate"
+            ? 42
+            : u.action === "skill"
+              ? 36
+              : 32
           : enemies[u.type]?.boss ||
               String(u.type).includes("lord") ||
               String(u.type).includes("emperor")
@@ -1302,7 +1368,7 @@
         rect(x + 8, y - 15, 2, 4, "#ed8d4c");
         rect(x + 9, y - 17, 2, 4, C.gold);
       }
-      if (u.rank && u.rank !== "normal")
+      if (["elite", "captain"].includes(u.rank))
         text(
           u.rank === "captain" ? "CAPT" : "ELITE",
           x,
@@ -1333,15 +1399,23 @@
       icon("qi", x - 4, y - 3, C.gold);
     }
     drawEffects(s);
+    window.VanDaoBattleArt.effects(ctx, s, abilityBursts, B, text, "front");
     drawHUD(s);
     drawCards(s);
     const unit = (s.heroes || []).find((h) => h.id === inspectUnit);
     if (unit && !selectedHero) drawInspect(unit);
     if (s.paused && !overlay) {
-      panel(119, 82, 146, 61, C.gold);
-      text("BATTLE PAUSED", 192, 94, C.gold, 1, "center");
-      button("resume", "RESUME", 132, 111, 120, 20, () =>
+      panel(142, 61, 222, 29, C.gold);
+      text("PAUSED", 151, 70, C.gold, 0.9);
+      button("resume", "RESUME", 205, 66, 73, 19, () =>
         command({ action: "pause", paused: false }),
+      );
+      button("pause-skills", "SKILLS", 283, 66, 73, 19, () =>
+        showSkills(
+          inspectUnit
+            ? state.heroes.find((u) => u.id === inspectUnit)?.type
+            : "sword",
+        ),
       );
     }
     if (!isPlaying(s)) drawResults();
@@ -1437,23 +1511,18 @@
         line(B.x + 23, y - 5, B.x + 9, y + 5, C.dim);
         continue;
       }
-      const color = ward.status === "sweeping" ? C.cream : C.gold,
-        g = guardianAtlas[s.region];
-      if (g && images.guardians) {
-        const frame =
-          Math.floor((s.paused ? s.time : now / 1000) * 6) % g.frames;
-        ctx.drawImage(
-          images.guardians,
-          g.x + frame * g.w,
-          g.y,
-          g.w,
-          g.h,
-          x - 18,
-          y - 19,
-          36,
-          36,
-        );
-      }
+      const g = guardianAtlas[s.region];
+      window.VanDaoBattleArt.artifact(
+        ctx,
+        images.guardians,
+        g,
+        x,
+        y,
+        41,
+        s.region,
+        s.time,
+        ward.status === "sweeping",
+      );
       if (ward.status === "sweeping") {
         for (let i = 1; i < 5; i++) rect(x - i * 7, y - 7 + i * 3, 5, 2, C.ice);
       }
@@ -1493,13 +1562,15 @@
         value: values[(values.indexOf(s.speed || 1) + 1) % values.length],
       });
     });
-    button("battle-settings", "Menu", 378, 4, 48, 19, () => {
+    button("battle-settings", "Menu", 430, 4, 39, 19, () => {
       command({ action: "pause", paused: true });
       overlay = "battleMenu";
     });
-    button("help", "Guide", 430, 4, 72, 19, () => {
+    button("help", "?", 473, 4, 29, 19, () => {
       command({ action: "pause", paused: true });
-      overlay = "controls";
+      tutorialPage = 0;
+      tutorialReturn = "battleMenu";
+      overlay = "map-intro";
     });
     text(
       { setup: "SETUP", pressure: "PRESSURE", onslaught: "ONSLAUGHT" }[
@@ -1511,6 +1582,33 @@
       0.8,
       "right",
     );
+    button(
+      "auto-ultimate",
+      s.auto_ultimate ? "A:ON" : "A:OFF",
+      378,
+      4,
+      48,
+      19,
+      () => toggleAutoUltimate(),
+      { active: s.auto_ultimate },
+    );
+    if (pointer.x >= 378 && pointer.x <= 426 && pointer.y < 27) {
+      panel(145, 58, 358, 29, C.jade);
+      text(
+        "AUTO ULT: ultimate range, useful heals/buffs.",
+        152,
+        62,
+        C.jade,
+        0.85,
+      );
+      text(
+        "Uses normal mana, Qi, Dao and cooldowns. Key A.",
+        152,
+        74,
+        C.muted,
+        0.8,
+      );
+    }
     rect(0, 28, W, 25, "#10202ae8");
     text(stages[s.stage]?.name || s.stage, 8, 32, C.jade);
     text(
@@ -1521,6 +1619,25 @@
       1,
       "right",
     );
+    if (s.final_assault?.incoming <= 15 && !s.final_assault?.active) {
+      text(
+        "ALL 5 LANES: " + Math.ceil(s.final_assault.incoming) + "s",
+        252,
+        32,
+        C.red,
+        0.8,
+        "center",
+      );
+    } else if (s.final_assault?.active) {
+      text(
+        "FINAL ASSAULT / " + s.music.crowd + " alive",
+        252,
+        32,
+        C.red,
+        0.8,
+        "center",
+      );
+    }
     button(
       "range-mode",
       "Range: " + rangeMode,
@@ -1814,11 +1931,86 @@
     if (!overlay) return;
     ctx.fillStyle = "rgba(6,12,19,.8)";
     ctx.fillRect(-(W - 384) / 2, -(H - 216) / 2, W, H);
+    if (overlay === "map-intro") {
+      const region = state?.region || "wharf",
+        pages = window.VanDaoBattleArt.briefings[region],
+        page = pages[tutorialPage];
+      panel(-55, -23, 494, 266, regionColor[region]);
+      text(regionNames[region], -42, -10, regionColor[region], 1.1);
+      text(
+        "FIELD BRIEFING  " + (tutorialPage + 1) + " / 3",
+        424,
+        -7,
+        C.gold,
+        0.85,
+        "right",
+      );
+      text(
+        stages[state?.stage]?.name || "Study the terrain",
+        -42,
+        12,
+        C.muted,
+        0.9,
+      );
+      window.VanDaoBattleArt.diagram(
+        ctx,
+        state,
+        region,
+        tutorialPage,
+        -43,
+        40,
+        249,
+        153,
+        images,
+        guardianAtlas,
+        text,
+      );
+      text(page[0], 217, 39, C.gold, 0.95);
+      wrapped(page[1], 217, 62, 207, C.cream, 13, 11);
+      button(
+        "intro-prev",
+        "PREV",
+        -42,
+        211,
+        72,
+        22,
+        () => (tutorialPage = Math.max(0, tutorialPage - 1)),
+        { disabled: tutorialPage === 0 },
+      );
+      button(
+        "intro-next",
+        "NEXT",
+        36,
+        211,
+        72,
+        22,
+        () => (tutorialPage = Math.min(2, tutorialPage + 1)),
+        { disabled: tutorialPage === 2 },
+      );
+      text("You can reopen this guide during battle.", 116, 217, C.muted, 0.7);
+      button(
+        "intro-start",
+        tutorialReturn ? "BACK" : "ENTER BATTLE",
+        307,
+        211,
+        116,
+        22,
+        () => {
+          if (tutorialReturn) overlay = tutorialReturn;
+          else {
+            overlay = null;
+            pointer = { x: -1, y: -1 };
+            command({ action: "pause", paused: false });
+          }
+        },
+      );
+      return;
+    }
     if (overlay === "ranks") {
       panel(-45, -17, 474, 252, C.gold);
       text("MONSTER RANKS & ESCALATION", -31, -3, C.gold, 1.2);
       const notes = [
-        "Base HP rises 5% multiplicatively after every campaign encounter. The archive lists unscaled base stats; live enemy health bars use the scaled value.",
+        "Swarm troops: 80% HP and 85% attack damage; elite/captain troops retain their stronger rank stats. Base HP rises 5% multiplicatively after every campaign encounter. The archive lists unscaled base stats; live enemy health bars use the scaled value.",
         "ELITE: 25% more HP, +2 armor, 10% more attack damage. Elite Lantern Demons grant 35 shield instead of 25 in the same radius-1.5 circle.",
         "CAPTAIN: 50% more HP, +3 armor, 15% more attack damage. Other enemies within radius 1.5 gain 10% movement speed. Appears in the final wave of non-boss encounters.",
         "Setup waves use ordinary enemies. Pressure adds one elite per pack; Onslaught makes about half each pack elite. Bosses keep their mandatory HP phases and visible warning lanes.",
@@ -2057,15 +2249,11 @@
               : "sword",
           ),
       );
-      button(
-        "region-guide",
-        "REGION MECHANICS",
-        95,
-        104,
-        194,
-        22,
-        () => (overlay = "region-guide"),
-      );
+      button("region-guide", "REGION MECHANICS", 95, 104, 194, 22, () => {
+        tutorialPage = 0;
+        tutorialReturn = "battleMenu";
+        overlay = "map-intro";
+      });
       button(
         "settings",
         "SOUND / VOICES",
@@ -2272,6 +2460,7 @@
     return col >= 1 && col <= 9 && lane >= 0 && lane < 5 ? { col, lane } : null;
   }
   function leaveBattle() {
+    abilityBursts = [];
     audio.stopVoices();
     battleEpoch++;
     const old = battleId;
@@ -2315,6 +2504,7 @@
   }
   async function startBattle(id) {
     audio.stopVoices();
+    abilityBursts = [];
     const epoch = ++battleEpoch;
     const old = battleId;
     battleId = null;
@@ -2335,6 +2525,7 @@
       const seed = (Date.now() ^ ((slot + 1) * 10739)) >>> 0;
       const out = await api("/api/battle", {
         stage: id,
+        paused: true,
         seed,
         upgrades: profile.upgrades,
         realm: realm(),
@@ -2349,7 +2540,12 @@
       sessionStorage.setItem("vanDao.battle", battleId);
       acceptState(out.state);
       audio.play("start");
-      if (!profile.completed.length && id === "wharf-1")
+      tutorialPage = 0;
+      tutorialReturn = null;
+      overlay = "map-intro";
+      if (profile.settings.autoUltimate)
+        await command({ action: "auto_ultimate", enabled: true });
+      if (!profile.completed.length && id === "wharf-1" && !overlay)
         notify(
           "SELECT YUN, THEN TAP A TILE. KEYS 1-8 SELECT HEROES.",
           C.jade,
@@ -2363,6 +2559,21 @@
       if (epoch !== battleEpoch) return;
       scene = "campaign";
       notify(e.message, C.red, 7);
+    }
+  }
+  async function toggleAutoUltimate() {
+    if (!state) return;
+    const enabled = !state.auto_ultimate;
+    const out = await command({ action: "auto_ultimate", enabled });
+    if (state?.auto_ultimate === enabled) {
+      profile.settings.autoUltimate = enabled;
+      saveProfile();
+      notify(
+        "Auto ultimate " +
+          (enabled ? "ON: targets in range; useful buffs and heals." : "OFF."),
+        enabled ? C.jade : C.muted,
+        3,
+      );
     }
   }
   async function command(data) {
@@ -2423,6 +2634,19 @@
   function acceptState(s) {
     if (s?.state) s = s.state;
     if (!s) return;
+    // A command response and polling can arrive out of order. Never rewind casts,
+    // preferences or the simulation clock with a stale HTTP snapshot.
+    if (
+      state &&
+      state.stage === s.stage &&
+      state.seed === s.seed &&
+      (s.tick < state.tick ||
+        (s.tick === state.tick && (s.revision || 0) < (state.revision || 0)))
+    )
+      return;
+    abilityBursts = abilityBursts.filter(
+      (b) => s.time >= b.start && s.time - b.start < b.duration,
+    );
     previousState = state;
     state = s;
     stateReceived = performance.now();
@@ -2448,6 +2672,69 @@
       if (Number(e.seq || 0) <= lastEvent) continue;
       lastEvent = Math.max(lastEvent, Number(e.seq || 0));
       const kind = e.kind || "";
+      if (
+        e.actor &&
+        ["hero_skill", "ultimate"].includes(kind) &&
+        s.time - e.time < 0.5
+      ) {
+        const ult = kind === "ultimate",
+          friendly = s.heroes.find(
+            (u) =>
+              u.type === e.actor &&
+              u.lane === e.lane &&
+              Math.abs(u.x - e.x) < 0.1,
+          );
+        const targets = s.enemies
+          .filter((u) => u.lane === e.lane)
+          .sort((a, b) => a.x - b.x)
+          .slice(0, 5)
+          .map((u) => ({ id: u.id, x: u.x, lane: u.lane }));
+        const radius =
+          e.actor === "formation"
+            ? ult
+              ? 2
+              : 2.5
+            : e.actor === "frost"
+              ? 2
+              : 3;
+        let allies = s.heroes.filter(
+          (u) =>
+            ((ult && e.actor === "herbalist") ||
+              Math.hypot(u.x - e.x, u.lane - e.lane) <= radius) &&
+            !(e.actor === "formation" && !ult && u.id === friendly?.id),
+        );
+        allies.sort(
+          e.actor === "formation" && !ult
+            ? (a, b) =>
+                b.resonance - a.resonance || a.hp / a.max_hp - b.hp / b.max_hp
+            : (a, b) => a.hp / a.max_hp - b.hp / b.max_hp,
+        );
+        if (!ult)
+          allies = allies.slice(
+            0,
+            e.actor === "formation"
+              ? 3
+              : e.actor === "frost"
+                ? friendly?.stats?.shield_targets || 1
+                : 1,
+          );
+        allies = allies.map((u) => ({ id: u.id, x: u.x, lane: u.lane }));
+        abilityBursts.push({
+          hero: e.actor,
+          kind: ult ? "ultimate" : "skill",
+          start: e.time,
+          duration: ult
+            ? ["gatherer", "formation"].includes(e.actor)
+              ? 6
+              : 2.1
+            : 1.1,
+          x: e.x,
+          lane: e.lane,
+          targets,
+          allies,
+        });
+        if (abilityBursts.length > 70) abilityBursts.shift();
+      }
       if (e.actor) {
         audio.hero(e.actor, kind);
         if (
@@ -2627,7 +2914,8 @@
       );
       this.musicGain.gain.setTargetAtTime(
         profile.settings.music *
-          (this.voiceBusy ? 0.24 : 1) *
+          (this.voiceBusy ? 0.45 : 1) *
+          (this.musicPhase === "onslaught" ? 1.12 : 1) *
           (scene === "battle" && state?.paused ? 0 : 1),
         t,
         0.18,
@@ -2814,12 +3102,27 @@
       if (!this.context || !this.voiceManifest) return;
       const line = this.voiceManifest.characters[hero]?.[action];
       if (!line) return;
-      const item = { hero, action, line, epoch: this.voiceEpoch };
+      const item = {
+        hero,
+        action,
+        line,
+        epoch: this.voiceEpoch,
+        expires: performance.now() + (action === "ultimate" ? 4000 : 6000),
+      };
+      this.voiceQueue = this.voiceQueue.filter(
+        (q) =>
+          q.expires > performance.now() &&
+          !(q.hero === hero && q.action === action),
+      );
       if (action === "ultimate") this.voiceQueue.unshift(item);
       else if (this.voiceQueue.length < 3) this.voiceQueue.push(item);
+      this.voiceQueue = this.voiceQueue.slice(0, 5);
       this.pumpVoice();
     },
     async pumpVoice() {
+      this.voiceQueue = this.voiceQueue.filter(
+        (q) => q.expires > performance.now(),
+      );
       if (this.voiceBusy || !this.voiceQueue.length) return;
       this.voiceBusy = true;
       this.update();
@@ -2860,8 +3163,10 @@
       if (!this.context || !this.musicManifest) return;
       this.update();
       const battle = scene === "battle" && isPlaying(state),
-        region = battle ? state.region : "lobby",
-        phase = battle ? state.encounter?.id || "setup" : "setup";
+        region = battle
+          ? state.music?.theme || state.stage.replaceAll("-", "_")
+          : "lobby",
+        phase = battle ? state.music?.intensity || "setup" : "setup";
       this.theme = region;
       this.musicPhase = phase;
       const key = region + "_" + phase;
@@ -2875,7 +3180,10 @@
       const epoch = ++this.musicEpoch;
       this.loadingMusic = key;
       const track = this.musicManifest.tracks[key];
-      if (!track) return;
+      if (!track) {
+        this.loadingMusic = "";
+        return;
+      }
       const probe = document.createElement("audio"),
         file = probe.canPlayType('audio/ogg; codecs="vorbis"')
           ? track.ogg
@@ -3002,7 +3310,9 @@
       return;
     }
     if (scene !== "battle" || overlay || !state || !isPlaying(state)) return;
-    if (e.code === "Space") command({ action: "pause", paused: !state.paused });
+    if (e.code === "KeyA") toggleAutoUltimate();
+    else if (e.code === "Space")
+      command({ action: "pause", paused: !state.paused });
     else if (/^[1-8]$/.test(e.key)) selectCard(heroOrder[Number(e.key) - 1]);
     else if (e.code === "KeyQ" && inspectUnit !== null)
       command({ action: "ultimate", unit: inspectUnit });
@@ -3038,7 +3348,7 @@
       await document.fonts.load("13px VT323");
       await document.fonts.ready;
       catalog = await api("/api/catalog");
-      if (catalog.version !== "1.2.0")
+      if (catalog.version !== "1.3.0")
         throw Error("Stop the old Python server and run the updated run.py.");
       for (const key of ["heroes", "enemies", "stages", "relics"])
         if (!Array.isArray(catalog[key]))
@@ -3066,6 +3376,7 @@
       } catch {}
       cultivators = await (await fetch("/assets/cultivators.json")).json();
       guardianAtlas = await (await fetch("/assets/guardians.json")).json();
+      sceneArt = await (await fetch("/assets/scenes.json")).json();
       audio.voiceManifest = await (
         await fetch("/assets/audio/voices/voices.json")
       ).json();
@@ -3113,13 +3424,14 @@
       return catalog;
     },
     get buttons() {
-      return buttons.map(({ id, x, y, w, h, disabled }) => ({
+      return buttons.map(({ id, x, y, w, h, disabled, talentState }) => ({
         id,
         x,
         y,
         w,
         h,
         disabled,
+        talentState,
       }));
     },
     get previews() {
@@ -3141,6 +3453,12 @@
     },
     get musicTracks() {
       return { ...audio.playedThemes };
+    },
+    get castingEffects() {
+      return abilityBursts.map((b) => ({ ...b }));
+    },
+    get briefingPage() {
+      return overlay === "map-intro" ? tutorialPage : null;
     },
     get musicPhase() {
       return audio.musicPhase;

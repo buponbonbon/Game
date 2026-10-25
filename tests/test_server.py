@@ -133,6 +133,21 @@ class LocalServerTests(unittest.TestCase):
                 )
                 self.assertEqual(status, 400)
 
+    def test_new_encounter_can_start_paused_for_illustrated_briefing(self):
+        status, _, body = self.request(
+            "POST", "/api/battle", {"stage": "wharf-1", "paused": True}
+        )
+        self.assertEqual(status, 201)
+        created = json.loads(body)
+        self.assertTrue(created["state"]["paused"])
+        time.sleep(0.08)
+        status, _, body = self.request("GET", "/api/battle/" + created["battle_id"])
+        self.assertEqual(json.loads(body)["time"], 0)
+        status, _, _ = self.request(
+            "POST", "/api/battle", {"stage": "wharf-1", "paused": "yes"}
+        )
+        self.assertEqual(status, 400)
+
     def test_head_returns_length_without_body(self):
         status, headers, body = self.request("HEAD", "/api/health")
         self.assertEqual(status, 200)

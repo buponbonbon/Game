@@ -1,79 +1,74 @@
-# Build status — version 1.2
+# Build status — version 1.3
 
 Download/extract the repository and run `python run.py`. Python 3.10+ and a modern
-browser are the runtime requirements. No pip/npm installation, account, remote
-API or runtime asset download is required. Windows also has `play.bat`.
+browser are the only runtime requirements. No pip/npm installation, account,
+remote API or online asset download is required. Windows also has `play.bat`.
 
-The supplied production document is a design reference. The user chose a Python
-localhost browser game; the authoritative 60 Hz combat/server uses Python's
-standard library and the client uses canvas and browser audio APIs.
+## Changes for this release
 
-## Implemented in this update
-
-- Eight heroes and nine encounters retained; 12–21 waves per encounter, five lanes,
-  twelve columns, deployment in 1–9 and a reserved one-use guardian column.
-- Per-unit mana and regeneration, automatic-skill costs/toggle, and atomic ultimate
-  checks for mana, Qi, 100 Dao and a personal cooldown. Shared Qi cap 320, maximum
-  three Yuns with diminishing orb yields and a finite economy ultimate.
-- Shared effective-stat data for combat and previews. The field manual lists
-  scaling, current power, costs, cooldowns, target counts and precise geometry.
-  Hover overlays cycle basic/skill/ultimate ranges; pause-menu access covers all
-  eight cultivators and twelve monster types.
-- Two exclusive five-node talent paths per hero, two special milestones per path,
-  real stat/effect changes and smaller repeat-clear rewards. Legacy A/B upgrades
-  remain usable as rank-3 paths. Talents apply when a new battle starts.
-- Three encounter phases, increasing elite presence, small captains and enemy HP
-  scaling by 5% multiplicatively per campaign stage. Boss phase gates use matching
-  integer thresholds, fixing a rounding softlock exposed by scaled HP.
-- Region-specific tide penalties, corruptible/purifiable ley nodes, wind, grave
-  mist, curses and resurrection altars. Each region has a 35-Qi/30s ritual and a
-  different emergency artifact with its own effects. The region guide states
-  timings, radii, buffs and counterplay.
-- Native 64×64 hero action sheets with separate idle/attack/skill/ultimate frames;
-  denser 1024×576 region backgrounds, distinct defended architecture and 48×48
-  region-specific rescue devices. Water/wind/mist and the lobby animate.
-- Sixteen bundled English synthetic voice clips, captions, a Voice volume slider,
-  music ducking and battle-transition cancellation. Eight character SFX palettes.
-- Ten original Chinese-inspired instrumental loops: lobby and three increasingly
-  intense arrangements per region, with guqin/guzheng/pipa/dizi/percussion timbres.
-- Existing local VT323, save slots, IndexedDB mirror, import/export, pause, speed,
-  keyboard, mouse and touch controls remain supported.
+- All nine encounters now have different melodies and three tension arrangements;
+  28 local instrumental scores including the lobby. Actual crowd/elite/boss pressure
+  can intensify music independently of the authored wave phase.
+- Final assaults reach all five lanes with 35–51 authored spawns. Lighter swarm
+  troops mix with elites/captains/bosses. A 15s HUD warning prepares the player.
+- Global smart Auto Ultimate beside Speed (key A): normal resource/cooldown rules,
+  actual ultimate ranges, useful target selection, healing and formation/economy
+  conditions. The setting persists and can change while paused.
+- Sixteen newly directed English synthetic performances with phrase-level pacing,
+  pauses and changing energy; a bounded voice queue and a revised music/voice mix.
+- Learned talents have green/gold styling and a tick; unlearned nodes are grey,
+  with a jade border on the next available node. Locked nodes remain readable.
+- Individual skill/ultimate choreography for all eight cultivators. Casting poses
+  survive incoming hits; monotonic tick/command revisions prevent late HTTP
+  responses erasing new effects, settings or simulation progress.
+- Three illustrated briefing pages on each entry, including actual marked cells,
+  mechanic diagrams and rescue artifacts. The server starts the battle paused at
+  tick zero. Enter Battle resumes; ? and the pause menu reopen the briefing.
+- Three new high-resolution 16-bit RPG style scenes with distinct architecture:
+  river timber residence, floating jade observatory and subterranean bronze tomb.
+  Detailed dragon-boat, sword-armillary and bell-arch artifacts have separate
+  cutouts, silhouettes and runtime motion.
+- Existing eight-hero/nine-stage roster, exact skill manual, mana, capped Qi,
+  talent branches, local VT323, browser saves and import/export remain supported.
 
 ## Verification
 
-- All **79** standard-library tests passed: rules, geometry, mana transaction
-  failures, Qi cap, diminishing economy, talent milestones, old saves, scaled
-  boss phases, nodes/rituals, HTTP previews/validation and reproducible assets.
-- The legal seeded campaign policy cleared **9/9** encounters using only earned
-  stone rewards and legal costs/cooldowns; no failed commands. Durations were
-  189.517, 224.650, 333.783, 287.500, 258.250, 368.233, 316.600, 413.983, 525.467
-  simulation seconds. All nine stages retained three gate seals. Reproduce with `python tools/simulate_campaign.py --output report.json`.
-  This is one playability policy, not a statistical balance study.
-- Chromium exercised lobby, talents, the hero/enemy manual, range controls,
-  mana inspection, pause, region guide and settings without JavaScript errors or
-  external requests. All eight English summon voices played; a legally charged
-  Yun ultimate played its English line. Actual wave progression changed wharf
-  music through setup/pressure/onslaught. All 36 bundled audio files decoded.
-- A fresh source ZIP launched with `python -S` from a path containing spaces
-  and a different working directory. Canvas input placed Yun/Shen, spent exactly
-  125 Qi, defeated an enemy and paused combat without external requests or errors.
-- Landscape touch checks confirmed paid talent purchase, exclusive branches,
-  effective preview matching deployed HP, reload persistence, the Voice slider
-  and a frozen battle clock while browsing skills.
-- See `docs/ART_AUDIO.md` for asset sizes, authoring dependencies and attribution;
-  none of the optional audio-authoring tools is required to launch the game.
+- **94 standard-library tests passed.** Coverage includes coordinated five-lane
+  spawn timing/counts, Auto costs/range/usefulness/pause/shared-Qi limits, crowd
+  music hysteresis, emotional take metadata, unique musical families, cast-pose
+  preservation, snapshot revisions, paused creation, RGB/RGBA art validation and
+  the earlier combat/content/server/talent rules.
+- A legal seeded campaign policy cleared **9/9** using earned stone rewards,
+  normal costs/cooldowns and the actual Auto command. No invalid commands. First
+  eight encounters retained three seals; the last retained two. Peak concurrent
+  enemy counts ranged from 24 to 57. Durations in simulation seconds:
+  197.117, 231.000, 341.117, 283.583, 261.350, 363.600, 306.233, 308.350, 517.767.
+  Evidence: `docs/validation/CAMPAIGN_1_3.json`; reproduce with
+  `python tools/simulate_campaign.py --output report.json`.
+  This is one reproducible policy, not statistical balance validation.
+- Chromium rendered all eight actual Auto Ultimate events in isolated combat
+  fixtures. It sampled different learned/locked talent pixels and checked paid
+  purchase/branch rules. All **72 audio encodings** decoded successfully.
+- Actual client starts loaded all nine encounter music families, all three briefing
+  pages, tick-zero pause and landscape touch. Auto persisted across reloads.
+  A crowded fixture escalated music during setup. A deliberately delayed old
+  snapshot did not erase the new Auto setting or casting effects. These browser
+  checks had no JavaScript errors or external requests.
+- Fresh-release launcher smoke passed with `python -S`, an extracted path
+  containing spaces and a different working directory. Real canvas input opened
+  the briefing at tick zero, deployed units for exactly 125 Qi, enabled Auto,
+  defeated an enemy and froze on pause without JavaScript errors or external requests.
 
 ## Practical limits
 
-This is a compact adaptation, not full parity with the production brief. It has
-no narrative cutscene campaign, New Game+ system or tracked mastery achievement
-system. Current talent trees implement two five-node paths, not an unlimited hero
-rank system. Voice dialogue is synthetic; music uses synthesized timbres rather
-than acoustic recordings. Enemies retain four-frame sprites; the expanded action
-sheets in this update focus on cultivators.
+This is a compact adaptation of the supplied production reference. There is no
+full cutscene campaign or New Game+ system. Voices remain synthetic; emotional
+quality and musical taste require listening feedback. Music uses synthesized
+Chinese-inspired timbres, not recorded acoustic performers. Scene/artifact
+paintings are retained image-generated inputs; the Python art command reproduces
+procedural actors and preserves those inputs rather than recreating paintings.
 
-Browser storage holds campaign progress/settings. Restarting Python does not
-retain active battle sessions; export a save to transfer campaign progress.
-Keep the same browser and localhost port to retain its save origin. Linux
-Chromium was exercised here; native Windows/macOS launchers and other browser
-engines were not executed in this environment.
+Browser storage retains campaign/settings. Restarting Python starts new battle
+sessions. Keep the same browser/localhost port or export/import a save to transfer
+progress. Linux Chromium and landscape touch were exercised here; native
+Windows/macOS launchers and other browser engines were not run on those systems.

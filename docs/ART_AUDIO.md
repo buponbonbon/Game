@@ -1,90 +1,83 @@
 # Art and audio — version 1.2
 
-## Raster art
+## Scenes and artifacts
 
-The included assets are original integer-grid artwork. Regenerate them with
-`python tools/generate_assets.py`, using Python's standard library only.
-`tools/generate_cultivators.py` authors the higher-resolution hero action sheets,
-region-specific rescue devices and map detail. This is optional authoring work;
-all game-ready images are already committed.
+The three region scenes are newly image-generated 16-bit RPG style authoring
+inputs, retained as committed PNGs. They have distinct composition, materials,
+landscape and architecture: a lantern-lit timber river residence; a pale jade
+observatory on floating peaks; and an angular bronze necropolis beneath rock.
+`web/assets/scenes.json` records native dimensions, SHA-256 and courtyard alignment.
+Wharf and Terrace are 1672×941; Tomb is 1672×940. These replace the former 1024×576
+procedural recolor family. No image is fetched or generated at runtime.
 
-| Asset | Native pixels | Contents |
-| --- | --- | --- |
-| title.png | 384 × 216 | Mountain-gate backdrop for the animated lobby |
-| wharf.png | 1024 × 576 | Lantern palace, timber river deck, red lanterns and water detail |
-| terrace.png | 1024 × 576 | Jade sky pavilion, pale stone, floating roofs and cloud terraces |
-| tomb.png | 1024 × 576 | Bronze ancestral crypt, dark stone, funerary ornament and braziers |
-| cultivators.png | 768 × 2048 | Eight native 64×64 heroes, four separate action states |
-| guardians.png | 288 × 144 | Three native 48×48 devices, six frames each |
-| sprites.png | 128 × 672 | Legacy portraits and four-frame enemies, bosses and altar |
-| icons.png | 128 × 32 | Resource/action/status icons |
+The transparent 2172×724 artifact sheet contains an ornate dragon skiff, a
+nine-sword armillary altar and a bronze bell in a beast-headed ritual arch.
+`guardians.json` stores separate bounds. Runtime water trails, levitation and
+energy particles animate the cutouts. Their battle behavior remains one rescue
+per lane; the illustrated briefing displays their designs and effects.
 
-Each hero has idle (6), basic-attack (8), skill (10) and ultimate (12) authored
-frames. `cultivators.json` maps state rows, frame counts and FPS. The runtime
-chooses a state from actual simulation actions, anchored to its simulation start
-time; pausing freezes the pose. Economy/healing/aura heroes use their support
-activity rather than dealing a cosmetic basic attack. The generic attack sheet
-is retained for each hero, including support poses.
+`python tools/generate_assets.py` regenerates deterministic 64×64 cultivator
+state sheets, enemy sprites, icons and the title backdrop, and **preserves/copies**
+the authored scene and artifact PNGs. It does not recreate image-generated art
+from a random seed. Tests decode RGB/RGBA PNGs, check scene checksums and atlas
+bounds/transparency, reproduce procedural assets, and preserve retained art inputs.
+VT323 remains bundled under SIL OFL.
 
-`guardians.json` maps the Jade River Ark, Heaven Sword Array and Soul-Sealing
-Bell. They have visibly different boat, flying-blade and bronze-bell designs.
-Each sweeps its lane once. Region art puts a distinct defended building behind
-the heroes. Water, wind, ley-node corruption and grave mist add runtime motion.
+## Cast choreography
 
-The logical board is 512×288 with five 32-pixel lanes, twelve columns and a 3×
-backing canvas. Nearest-neighbor rendering retains raster edges. VT323 is bundled
-under SIL OFL in `web/assets/fonts`; neither fonts nor images use a CDN.
-Asset tests decode PNG chunks, check atlas coverage/transparency/action diversity,
-and reproduce every generated file byte-for-byte with no external packages.
+`web/battle_visuals.js` renders actor-specific skill/ultimate choreography from
+actual server events and simulation time. Examples include ten sword trails,
+three fire-lotus impacts, a full-lane ice eruption, a mountain/shield shockwave,
+lightning strikes, healing-leaf spirals and an eight-direction formation circuit.
+The client uses effective support target counts/radii and keeps the animations
+frozen while paused. Units enlarge while casting. The server preserves the cast
+pose when hit, and tick/command revisions reject late HTTP snapshots that would
+otherwise erase a freshly received effect. Visuals do not apply damage.
 
-## Music
+## Encounter music
 
-Ten original looped scores are bundled as OGG and MP3 for local decoding:
-one lobby score, plus setup/pressure/onslaught arrangements for each region.
-They use pentatonic melodies, damped and slightly inharmonic string partials,
-pitch bends, transient plucks, breath/vibrato and percussion. The intended timbres
-are guqin, guzheng, pipa, dizi, Chinese drums and gong. These are synthesized
-instrumental arrangements, not recordings of acoustic instruments or performers.
-No commercial song or recording was sampled.
+Twenty-eight original looped scores are bundled in OGG and MP3: a lobby score
+and three arrangements for each of nine individual encounters. The nine melodies,
+titles, roots and harmonic routes are distinct. Setup is sparse; pressure adds
+pipa/drums; onslaught adds rapid figures and gong accents. The style uses
+pentatonic melodies and physically inspired guqin/guzheng/pipa/dizi timbres.
+These are synthesized instruments, not acoustic performance recordings.
 
-Each region has its own melody, root, tempo and color. Setup is sparse; pressure
-adds pipa and drums; onslaught adds rapid figures and gong accents. The encounter
-phase comes from actual wave progression. Local buffers crossfade over 1.1s.
-Music pauses with battle pause and a hidden document. Victory/defeat cues use
-short pentatonic, plucked partials rather than the previous major-scale fanfares.
+Python selects intensity from wave phase plus actual battlefield pressure:
+five enemies/two elites raise pressure; ten enemies/four elites or a close boss
+trigger onslaught. Six seconds of release prevents rapid oscillation. The browser
+loads the **encounter** family, crossfades locally over 1.1 seconds, raises the
+climax mix, and ducks moderately under speech. Default new-profile music volume
+is 38%; existing player volume choices are retained. The buffer cache holds at
+most three decoded music tracks. Pause/hidden-document controls remain in effect.
 
-`tools/generate_music.py` optionally regenerates scores with NumPy, soundfile and
-ffmpeg. Its generation dependencies are not game runtime dependencies. The
-`music.json` manifest records filenames, tempos, durations and instruments.
+Optional regeneration uses `tools/generate_music.py` with NumPy, soundfile and
+ffmpeg. These are authoring dependencies, not game startup requirements.
 
-## English character dialogue
+## Directed English dialogue
 
-Sixteen original English lines are bundled in `audio/voices`: one summon line
-and one short ultimate line per cultivator. Each character uses a distinct
-synthetic voice. Playback follows authoritative deployment/ultimate events, is
-queued with ultimate priority and captions, ducks music, and stops obsolete
-queued dialogue when changing battles. No voice service or synthesis runs while
-playing. Master, Music, SFX and Voice have separate volume controls.
+`game/performances.py` defines sixteen takes, two per hero, with phrase-level
+pace, energy, pauses and delivery direction: nervous hope, quiet resolve,
+playful confidence, icy authority, protective warmth, eager bravado, urgent
+compassion and a rallying command. The optional Kokoro-82M authoring tool blends
+voice timbres, synthesizes phrases separately, builds their energy, and adds
+light ultimate ambience. These are synthetic voices, not human actor performances.
 
-The optional authoring script `tools/generate_voices.py` uses Kokoro-82M v1.0
-(Apache-2.0 model) with kokoro-onnx 0.6.1 (MIT), soundfile 0.13.1, ONNX Runtime
-and ffmpeg. Model files are explicit local inputs and verified by SHA-256; model
-weights are not distributed in this game. Attribution is in each audio folder's
-NOTICE. These are fictional character lines, not actor performances or a claim
-of real-person imitation.
+All MP3s, subtitles and direction metadata are included in `audio/voices`.
+A bounded, expiring queue prevents obsolete lines from accumulating during Auto;
+ultimate lines take priority. Voice gain and music ducking are independent.
+The model is Apache-2.0; kokoro-onnx is MIT. Notices remain in the audio folders.
+No model weights, remote TTS call or synthesis dependency is part of runtime.
+`--heroes fire` can regenerate a selected performance while retaining other takes.
 
-## Effects and verification
+## Verification scope
 
-Eight distinct SFX palettes remain tied to actual attacks/skills: jade chimes,
-bamboo slash, flame, frost glass, stone/staff, lightning, healing and formation.
-An output compressor and per-character throttling limit stacking. Audio starts
-after the first user interaction, following browser autoplay rules.
+Chromium decoded all **72** audio encodings (56 music + 16 voices), loaded nine
+actual encounter families and escalated music during setup in a crowded fixture.
+Controlled combat fixtures rendered all eight actual automatic ultimate events;
+a delayed HTTP snapshot test preserved the cast and Auto setting. Paid talent
+purchases and sampled canvas pixels distinguished learned/available/locked nodes.
+Nine illustrated region pages and landscape touch were exercised.
 
-Chromium decoded all 16 voice files and all 20 music encodings, played all eight
-summon voices and a legally charged Yun ultimate, and crossed the actual setup,
-pressure and onslaught phases. These checks verify local decoding and event
-routing; the perceived mix still depends on speakers/headphones and preference.
-
-The artwork and musical patterns are original repository assets. This remains a
-compact procedural-art game; the higher resolution and generated dialogue are
-not a claim of a full premium illustration, animation or voice-acting pipeline.
+Those checks establish assets, routing and behavior. Musical taste, emotional
+voice quality and the mix on individual speakers remain subjective.

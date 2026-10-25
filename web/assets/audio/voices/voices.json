@@ -5,112 +5,364 @@
     "gatherer": {
       "summon": {
         "file": "gatherer_summon.mp3",
-        "text": "A little breath, a mountain of hope.",
-        "duration": 1.825,
+        "text": "Oh! You called me? All right... I won't let you down!",
+        "direction": "nervous hope / determined release",
+        "phrases": [
+          {
+            "text": "Oh! You called me?",
+            "pace": 1.13,
+            "energy": 0.85,
+            "pause": 0.13
+          },
+          {
+            "text": "All right...",
+            "pace": 0.92,
+            "energy": 0.72,
+            "pause": 0.2
+          },
+          {
+            "text": "I won't let you down!",
+            "pace": 1.04,
+            "energy": 1.15,
+            "pause": 0.05
+          }
+        ],
+        "duration": 3.687,
         "voice": "am_puck"
       },
       "ultimate": {
         "file": "gatherer_ultimate.mp3",
-        "text": "Spirit well, awaken!",
-        "duration": 1.387,
+        "text": "Come on! Spirit well... awaken!",
+        "direction": "nervous hope / determined release",
+        "phrases": [
+          {
+            "text": "Come on!",
+            "pace": 1.16,
+            "energy": 1.1,
+            "pause": 0.1
+          },
+          {
+            "text": "Spirit well... awaken!",
+            "pace": 0.95,
+            "energy": 1.35,
+            "pause": 0.03
+          }
+        ],
+        "duration": 2.409,
         "voice": "am_puck"
       }
     },
     "sword": {
       "summon": {
         "file": "sword_summon.mp3",
-        "text": "My bamboo blade guards this gate.",
-        "duration": 2.455,
+        "text": "Stay behind me. I swear this gate will stand.",
+        "direction": "quiet resolve / defiant command",
+        "phrases": [
+          {
+            "text": "Stay behind me.",
+            "pace": 0.93,
+            "energy": 0.85,
+            "pause": 0.18
+          },
+          {
+            "text": "I swear this gate will stand.",
+            "pace": 1.02,
+            "energy": 1.14,
+            "pause": 0.02
+          }
+        ],
+        "duration": 3.602,
         "voice": "bm_daniel"
       },
       "ultimate": {
         "file": "sword_ultimate.mp3",
-        "text": "Ten thousand blades!",
-        "duration": 1.751,
+        "text": "No further! Ten thousand blades!",
+        "direction": "quiet resolve / defiant command",
+        "phrases": [
+          {
+            "text": "No further!",
+            "pace": 1.12,
+            "energy": 1.22,
+            "pause": 0.1
+          },
+          {
+            "text": "Ten thousand blades!",
+            "pace": 1.04,
+            "energy": 1.4,
+            "pause": 0.02
+          }
+        ],
+        "duration": 2.784,
         "voice": "bm_daniel"
       }
     },
     "fire": {
       "summon": {
         "file": "fire_summon.mp3",
-        "text": "Let the lotus burn away the darkness.",
-        "duration": 2.225,
+        "text": "Ha! Now this is a battle worth burning for!",
+        "direction": "playful confidence / fierce delight",
+        "phrases": [
+          {
+            "text": "Ha!",
+            "pace": 1.18,
+            "energy": 1.15,
+            "pause": 0.08
+          },
+          {
+            "text": "Now this is a battle worth burning for!",
+            "pace": 1.1,
+            "energy": 1.22,
+            "pause": 0.03
+          }
+        ],
+        "duration": 2.67,
         "voice": "af_bella"
       },
       "ultimate": {
         "file": "fire_ultimate.mp3",
-        "text": "Crimson lotus, bloom!",
-        "duration": 1.569,
+        "text": "Burn bright! Crimson lotus, bloom!",
+        "direction": "playful confidence / fierce delight",
+        "phrases": [
+          {
+            "text": "Burn bright!",
+            "pace": 1.15,
+            "energy": 1.1,
+            "pause": 0.08
+          },
+          {
+            "text": "Crimson lotus, bloom!",
+            "pace": 1.03,
+            "energy": 1.4,
+            "pause": 0.02
+          }
+        ],
+        "duration": 2.383,
         "voice": "af_bella"
       }
     },
     "frost": {
       "summon": {
         "file": "frost_summon.mp3",
-        "text": "Be still. Winter stands beside you.",
-        "duration": 2.603,
+        "text": "Hush... You're safe with me now.",
+        "direction": "gentle reassurance / icy authority",
+        "phrases": [
+          {
+            "text": "Hush...",
+            "pace": 0.87,
+            "energy": 0.72,
+            "pause": 0.2
+          },
+          {
+            "text": "You're safe with me now.",
+            "pace": 0.96,
+            "energy": 0.92,
+            "pause": 0.04
+          }
+        ],
+        "duration": 3.189,
         "voice": "bf_lily"
       },
       "ultimate": {
         "file": "frost_ultimate.mp3",
-        "text": "Thousand year frost!",
-        "duration": 1.975,
+        "text": "Be still! Thousand-year frost!",
+        "direction": "gentle reassurance / icy authority",
+        "phrases": [
+          {
+            "text": "Be still!",
+            "pace": 1.05,
+            "energy": 1.2,
+            "pause": 0.15
+          },
+          {
+            "text": "Thousand-year frost!",
+            "pace": 0.94,
+            "energy": 1.32,
+            "pause": 0.03
+          }
+        ],
+        "duration": 3.215,
         "voice": "bf_lily"
       }
     },
     "monk": {
       "summon": {
         "file": "monk_summon.mp3",
-        "text": "Behind me, the mountain will not fall.",
-        "duration": 2.123,
+        "text": "Easy now. Nobody falls while I'm standing!",
+        "direction": "warm protection / steadfast roar",
+        "phrases": [
+          {
+            "text": "Easy now.",
+            "pace": 0.88,
+            "energy": 0.86,
+            "pause": 0.2
+          },
+          {
+            "text": "Nobody falls while I'm standing!",
+            "pace": 1.02,
+            "energy": 1.24,
+            "pause": 0.03
+          }
+        ],
+        "duration": 2.837,
         "voice": "am_fenrir"
       },
       "ultimate": {
         "file": "monk_ultimate.mp3",
-        "text": "Mountain holds the sky!",
-        "duration": 1.439,
+        "text": "Stand... firm! Mountain holds the sky!",
+        "direction": "warm protection / steadfast roar",
+        "phrases": [
+          {
+            "text": "Stand... firm!",
+            "pace": 0.91,
+            "energy": 1.2,
+            "pause": 0.13
+          },
+          {
+            "text": "Mountain holds the sky!",
+            "pace": 1.01,
+            "energy": 1.42,
+            "pause": 0.02
+          }
+        ],
+        "duration": 2.662,
         "voice": "am_fenrir"
       }
     },
     "lightning": {
       "summon": {
         "file": "lightning_summon.mp3",
-        "text": "The storm has found its path.",
-        "duration": 2.006,
+        "text": "Hear that? The heavens are calling for a fight!",
+        "direction": "eager bravado / explosive strike",
+        "phrases": [
+          {
+            "text": "Hear that?",
+            "pace": 1.06,
+            "energy": 0.9,
+            "pause": 0.14
+          },
+          {
+            "text": "The heavens are calling for a fight!",
+            "pace": 1.13,
+            "energy": 1.23,
+            "pause": 0.03
+          }
+        ],
+        "duration": 3.002,
         "voice": "am_liam"
       },
       "ultimate": {
         "file": "lightning_ultimate.mp3",
-        "text": "Nine heavens, thunderfall!",
-        "duration": 1.898,
+        "text": "Nine heavens... Thunderfall!",
+        "direction": "eager bravado / explosive strike",
+        "phrases": [
+          {
+            "text": "Nine heavens...",
+            "pace": 0.9,
+            "energy": 1.1,
+            "pause": 0.12
+          },
+          {
+            "text": "Thunderfall!",
+            "pace": 1.1,
+            "energy": 1.45,
+            "pause": 0.02
+          }
+        ],
+        "duration": 2.531,
         "voice": "am_liam"
       }
     },
     "herbalist": {
       "summon": {
         "file": "herbalist_summon.mp3",
-        "text": "Where life remains, hope will grow.",
-        "duration": 2.133,
+        "text": "You're hurt! Stay with me. We can still win this!",
+        "direction": "urgent compassion / hopeful plea",
+        "phrases": [
+          {
+            "text": "You're hurt!",
+            "pace": 1.11,
+            "energy": 1.12,
+            "pause": 0.1
+          },
+          {
+            "text": "Stay with me.",
+            "pace": 0.94,
+            "energy": 0.88,
+            "pause": 0.16
+          },
+          {
+            "text": "We can still win this!",
+            "pace": 1.04,
+            "energy": 1.12,
+            "pause": 0.02
+          }
+        ],
+        "duration": 4.077,
         "voice": "bf_emma"
       },
       "ultimate": {
         "file": "herbalist_ultimate.mp3",
-        "text": "Rain of green heaven!",
-        "duration": 1.551,
+        "text": "Life, return! Rain of green heaven!",
+        "direction": "urgent compassion / hopeful plea",
+        "phrases": [
+          {
+            "text": "Life, return!",
+            "pace": 1.0,
+            "energy": 1.15,
+            "pause": 0.1
+          },
+          {
+            "text": "Rain of green heaven!",
+            "pace": 0.98,
+            "energy": 1.3,
+            "pause": 0.02
+          }
+        ],
+        "duration": 3.064,
         "voice": "bf_emma"
       }
     },
     "formation": {
       "summon": {
         "file": "formation_summon.mp3",
-        "text": "One thread, one formation, one unbroken gate.",
-        "duration": 3.807,
+        "text": "Hold your ground! Every soul here is part of my formation.",
+        "direction": "commanding focus / rallying call",
+        "phrases": [
+          {
+            "text": "Hold your ground!",
+            "pace": 1.03,
+            "energy": 1.17,
+            "pause": 0.16
+          },
+          {
+            "text": "Every soul here is part of my formation.",
+            "pace": 0.98,
+            "energy": 1.0,
+            "pause": 0.02
+          }
+        ],
+        "duration": 4.601,
         "voice": "bm_george"
       },
       "ultimate": {
         "file": "formation_ultimate.mp3",
-        "text": "Grand array, unite!",
-        "duration": 1.857,
+        "text": "Together! Grand array, unite!",
+        "direction": "commanding focus / rallying call",
+        "phrases": [
+          {
+            "text": "Together!",
+            "pace": 1.1,
+            "energy": 1.25,
+            "pause": 0.1
+          },
+          {
+            "text": "Grand array, unite!",
+            "pace": 0.97,
+            "energy": 1.4,
+            "pause": 0.02
+          }
+        ],
+        "duration": 2.889,
         "voice": "bm_george"
       }
     }

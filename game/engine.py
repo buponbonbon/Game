@@ -46,8 +46,13 @@ class Battle:
         self.upgrades = upgrades if isinstance(upgrades, dict) else {}
         self.status = "playing"
         self.tick = 0
+        self.command_revision = 0
         self.paused = False
         self.speed = 1.0
+        self.auto_ultimate = False
+        self._next_auto_ultimate = 0
+        self._music_level = 0
+        self._music_fall_at = 0
         self._accumulator = 0.0
         self.qi = 175 if self.realm >= 1 else 150
         self.gate = int(self.stage.get("gate", 3))
@@ -104,7 +109,9 @@ class Battle:
                     self._spawn_queue.append(
                         (
                             ticks(
-                                at + n * spawn.get("gap", spawn.get("interval", 0.6))
+                                at
+                                + spawn.get("delay", 0)
+                                + n * spawn.get("gap", spawn.get("interval", 0.6))
                             ),
                             wave_index,
                             spawn["type"],
@@ -115,7 +122,7 @@ class Battle:
                                 else (
                                     "elite"
                                     if n < spawn.get("elite_count", 0)
-                                    else "normal"
+                                    else "swarm" if spawn.get("swarm") else "normal"
                                 )
                             ),
                         )
@@ -177,6 +184,110 @@ class Battle:
     def _hero_data(self, hero_id):
         return hero_data(hero_id, self.upgrades.get(hero_id))
 
+    def _auto_ultimate_tick(self):
+        if not self.auto_ultimate or self.tick < self._next_auto_ultimate:
+            return
+        for h in sorted(
+            self.heroes.values(),
+            key=lambda h: (
+                {"herbalist": 0, "formation": 2, "gatherer": 3}.get(h["type"], 1),
+                h["id"],
+            ),
+        ):
+            u = h["data"]["ultimate"]
+            if (
+                h["resonance"] < 100
+                or h["mana"] < u["mana_cost"]
+                or self.qi < u["qi_cost"]
+                or h["ultimate_ready"] > self.tick
+                or h["disabled_until"] > self.tick
+            ):
+                continue
+            kind = h["type"]
+            if kind == "gatherer":
+                benefits = self.qi <= self._qi_cap() - 48
+            elif kind == "herbalist":
+                benefits = any(
+                    a["hp"] < a["max_hp"] * 0.85
+                    or a.get("curse", 0)
+                    or a.get("curse_until", 0) > self.tick
+                    for a in self.heroes.values()
+                )
+            elif kind == "formation":
+                allies = [
+                    a
+                    for a in self.heroes.values()
+                    if a["id"] != h["id"] and self._near(a, h, 2)
+                ]
+                benefits = (
+                    bool(allies)
+                    and any(
+                        e["type"] != "altar" and e["x"] < 10
+                        for e in self.enemies.values()
+                    )
+                    and not any(
+                        a["type"] == "formation"
+                        and a["array_until"] > self.tick
+                        and self._near(a, h, 2)
+                        for a in self.heroes.values()
+                    )
+                )
+            else:
+                scope = u["geometry"]
+                shape = scope["shape"]
+                radius = scope["radius"]
+                eligible = [
+                    e
+                    for e in self.enemies.values()
+                    if (
+                        (shape == "lane" and e["lane"] == h["lane"])
+                        or shape == "field"
+                        or (shape == "circle" and self._near(e, h, radius))
+                        or (
+                            shape == "line"
+                            and e["lane"] == h["lane"]
+                            and -0.3 <= e["x"] - h["x"] <= radius
+                        )
+                    )
+                ]
+                # Save expensive arts for a pack, a durable target or immediate danger.
+                power = u.get("power", 0) * (
+                    10
+                    if kind == "sword"
+                    else 2 if kind == "fire" else 3 if kind == "lightning" else 1
+                )
+                benefits = bool(eligible) and (
+                    len(eligible) >= 2
+                    or any(
+                        e["data"].get("boss") or e["x"] <= h["x"] + 1.5
+                        for e in eligible
+                    )
+                    or sum(e["hp"] + e["shield"] for e in eligible) >= power * 0.8
+                )
+            if benefits and self.command(dict(action="ultimate", unit=h["id"]))["ok"]:
+                self._next_auto_ultimate = self.tick + ticks(0.22)
+                return
+
+    def _music_tick(self):
+        phases = {"setup": 0, "pressure": 1, "onslaught": 2}
+        base = phases[self._encounter()["id"]]
+        living = [e for e in self.enemies.values() if e["type"] != "altar"]
+        self.metrics["peak_enemies"] = max(
+            self.metrics.get("peak_enemies", 0), len(living)
+        )
+        elites = sum(e.get("rank") in ("elite", "captain") for e in living)
+        peak = (
+            len(living) >= 10
+            or elites >= 4
+            or any(e["data"].get("boss") and e["x"] < 9 for e in living)
+        )
+        desired = max(base, 2 if peak else 1 if len(living) >= 5 or elites >= 2 else 0)
+        if desired >= self._music_level:
+            self._music_level = desired
+            self._music_fall_at = self.tick + ticks(6)
+        elif self.tick >= self._music_fall_at:
+            self._music_level = desired
+
     def _qi_cap(self):
         return 320 + max(
             (h["data"].get("treasury_cap", 0) for h in self.heroes.values()), default=0
@@ -202,6 +313,7 @@ class Battle:
         return {"ok": ok, "message": message}
 
     def command(self, command):
+        self.command_revision += 1
         if not isinstance(command, dict):
             return self._response(False, "Invalid command.")
         action = command.get("action")
@@ -221,6 +333,18 @@ class Battle:
                 return self._response(False, "Choose 1x, 1.5x or 2x.")
             self.speed = speed
             return self._response(True, f"Battle speed {speed:g}x.")
+        if action == "auto_ultimate":
+            enabled = command.get("enabled", not self.auto_ultimate)
+            if not isinstance(enabled, bool):
+                return self._response(False, "Auto ultimate must be on or off.")
+            self.auto_ultimate = enabled
+            self._event(
+                "auto_ultimate",
+                "Auto ultimates " + ("enabled." if enabled else "disabled."),
+            )
+            return self._response(
+                True, "Auto ultimates " + ("enabled." if enabled else "disabled.")
+            )
         if action == "ritual":
             if self.paused:
                 return self._response(
@@ -503,6 +627,7 @@ class Battle:
             tell for tell in self.telegraphs if tell["until"] > self.tick
         ]
         self._update_zones()
+        self._auto_ultimate_tick()
         for hero in list(self.heroes.values()):
             self._hero_tick(hero)
         for enemy in list(self.enemies.values()):
@@ -519,6 +644,7 @@ class Battle:
                     "col"
                 ] in (3, 4):
                     self._hurt_hero(hero, 15, "Water")
+        self._music_tick()
         if self.gate <= 0:
             self.status = "defeat"
             self._event(
@@ -568,10 +694,14 @@ class Battle:
             }
         )
         scale = self.stage.get("hp_multiplier", 1) * (
-            1.5 if rank == "captain" else 1.25 if rank == "elite" else 1
+            1.5
+            if rank == "captain"
+            else 1.25 if rank == "elite" else 0.8 if rank == "swarm" else 1
         )
         data["hp"] = round(data["hp"] * scale)
-        if rank != "normal":
+        if rank == "swarm":
+            data["damage"] = round(data.get("damage", 0) * 0.85)
+        if rank in ("elite", "captain"):
             data["armor"] += 3 if rank == "captain" else 2
             data["damage"] = round(
                 data.get("damage", 0) * (1.15 if rank == "captain" else 1.10)
@@ -1199,8 +1329,12 @@ class Battle:
         hero["hp"] -= amount - absorbed
         hero["hurt_hits"] += 1
         self._resonance(hero, 4)
-        hero["action"] = "hurt"
-        hero["action_until"] = self.tick + ticks(0.2)
+        if (
+            hero["action"] not in ("ultimate", "skill")
+            or hero["action_until"] <= self.tick
+        ):
+            hero["action"] = "hurt"
+            hero["action_until"] = self.tick + ticks(0.2)
         self._effect("hurt", hero["x"], hero["lane"], str(amount), 0.4)
         if hero["type"] == "monk" and hero["hurt_hits"] % 4 == 0:
             self._shield(hero, 35, 3)
@@ -2180,6 +2314,18 @@ class Battle:
             "paused": self.paused,
             "speed": self.speed,
             "qi": round(self.qi, 2),
+            "revision": self.command_revision,
+            "auto_ultimate": self.auto_ultimate,
+            "music": {
+                "theme": self.stage["music_theme"],
+                "intensity": ("setup", "pressure", "onslaught")[self._music_level],
+                "crowd": sum(e["type"] != "altar" for e in self.enemies.values()),
+            },
+            "final_assault": {
+                "count": self.stage["final_assault_count"],
+                "incoming": max(0, round(self._waves[-1]["at"] - self.time, 1)),
+                "active": self._wave_index == len(self._waves),
+            },
             "qi_cap": self._qi_cap(),
             "ritual_cd": round(max(0, self.ritual_until - self.tick) / HZ, 2),
             "encounter": self._encounter(),

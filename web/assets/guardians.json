@@ -2,22 +2,25 @@
   "wharf": {
     "x": 0,
     "y": 0,
-    "w": 48,
-    "h": 48,
-    "frames": 6
+    "w": 814,
+    "h": 724,
+    "frames": 1,
+    "name": "Jade River Ark"
   },
   "terrace": {
-    "x": 0,
-    "y": 48,
-    "w": 48,
-    "h": 48,
-    "frames": 6
+    "x": 814,
+    "y": 0,
+    "w": 636,
+    "h": 724,
+    "frames": 1,
+    "name": "Heaven Sword Array"
   },
   "tomb": {
-    "x": 0,
-    "y": 96,
-    "w": 48,
-    "h": 48,
-    "frames": 6
+    "x": 1450,
+    "y": 0,
+    "w": 722,
+    "h": 724,
+    "frames": 1,
+    "name": "Soul-Sealing Bell"
   }
 }

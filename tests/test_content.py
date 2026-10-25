@@ -1,4 +1,5 @@
 """Validate authored campaign relationships before a player can encounter them."""
+
 import unittest
 
 from game.content import ENEMIES, HEROES, REGIONS, RELICS, STAGES, catalog
@@ -18,9 +19,14 @@ class ContentTests(unittest.TestCase):
 
     def test_regions_have_three_stages_and_a_final_boss(self):
         for region in REGIONS:
-            stages = sorted((stage for stage in STAGES.values() if stage["region"] == region["id"]), key=lambda stage: stage["index"])
+            stages = sorted(
+                (stage for stage in STAGES.values() if stage["region"] == region["id"]),
+                key=lambda stage: stage["index"],
+            )
             self.assertEqual([stage["number"] for stage in stages], [1, 2, 3])
-            self.assertTrue(all(stage["chapter"] == region["chapter"] for stage in stages))
+            self.assertTrue(
+                all(stage["chapter"] == region["chapter"] for stage in stages)
+            )
             self.assertIsNone(stages[0]["boss"])
             self.assertIsNone(stages[1]["boss"])
             self.assertTrue(ENEMIES[stages[2]["boss"]]["boss"])
@@ -73,15 +79,28 @@ class ContentTests(unittest.TestCase):
         income = 150 - gatherer["cost"]
         known_lanes = set()
         spent = 0
-        for wave in stage["waves"]:
-            available = income + int(wave["at"] // gatherer["orb_interval"]) * gatherer["orb_value"] + int(wave["at"] // 12) * catalog()["rules"]["passive_qi"] - int(wave["at"] // 24)
+        for wave in stage["waves"][:-1]:
+            available = (
+                income
+                + int(wave["at"] // gatherer["orb_interval"]) * gatherer["orb_value"]
+                + int(wave["at"] // 12) * catalog()["rules"]["passive_qi"]
+                - int(wave["at"] // 24)
+            )
             for spawn in wave["spawns"]:
                 lane = spawn["lane"]
                 if lane not in known_lanes:
                     known_lanes.add(lane)
                     spent += sword["cost"]
-                    self.assertGreaterEqual(available, spent, f"Cannot finance lane {lane + 1} by {wave['at']}s")
-        self.assertLessEqual(len(known_lanes), 3, "Tutorial introduces too many lanes before economy is learned")
+                    self.assertGreaterEqual(
+                        available,
+                        spent,
+                        f"Cannot finance lane {lane + 1} by {wave['at']}s",
+                    )
+        self.assertLessEqual(
+            len(known_lanes),
+            3,
+            "Tutorial introduces too many lanes before its final assault",
+        )
 
     def test_hero_branches_and_defenses_are_well_formed(self):
         self.assertEqual(len(HEROES), 8)
@@ -98,8 +117,8 @@ class ContentTests(unittest.TestCase):
             self.assertGreater(enemy["speed"], 0)
             self.assertGreaterEqual(enemy["armor"], 0)
             for resistance in enemy["resistances"].values():
-                self.assertGreaterEqual(resistance, -.5)
-                self.assertLessEqual(resistance, .8)
+                self.assertGreaterEqual(resistance, -0.5)
+                self.assertLessEqual(resistance, 0.8)
 
     def test_catalog_returns_detached_data(self):
         first = catalog()

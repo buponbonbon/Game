@@ -16,7 +16,7 @@ from typing import Any
 from urllib.parse import unquote, urlsplit
 
 
-VERSION = "1.2.0"
+VERSION = "1.3.0"
 MAX_BODY_BYTES = 65_536
 LOGGER = logging.getLogger(__name__)
 
@@ -90,6 +90,9 @@ class BattleStore:
         realm = options.get("realm", 0)
         if isinstance(realm, bool) or not isinstance(realm, int) or not 0 <= realm <= 3:
             raise ValueError("Realm must be an integer from 0 to 3.")
+        paused = options.get("paused", False)
+        if not isinstance(paused, bool):
+            raise ValueError("Paused must be true or false.")
         upgrades = options.get("upgrades", {})
         if not isinstance(upgrades, dict) or len(upgrades) > 8:
             raise ValueError("Upgrades must map hero IDs to branch A or B.")
@@ -114,6 +117,8 @@ class BattleStore:
                 )
             factory = self.battle_factory or load_battle_type()
             battle = factory(stage, seed=seed, upgrades=dict(upgrades), realm=realm)
+            if paused:
+                battle.command({"action": "pause", "paused": True})
             record = BattleRecord(battle)
             battle_id = uuid.uuid4().hex
             self.records[battle_id] = record
