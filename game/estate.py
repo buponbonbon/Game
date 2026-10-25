@@ -6,6 +6,7 @@ from .content import HEROES, ENEMIES, STAGES, TRIALS
 from .estate_content import CROPS, RECIPES, DECORATIONS, CONTRACTS, ACHIEVEMENTS
 from .rules import validate_upgrades
 from .estate_content import FERTILIZER_PRICE
+from .sanctuary import new_hub, normalize_hub, FACILITY_IDS, AVATARS
 
 
 class EconomyError(ValueError):
@@ -59,6 +60,7 @@ def new_estate():
             "pills": {},
             "fertilizer": 3,
         },
+        hub=new_hub(),
         trial_medals={},
         trial_wins={},
         journal=[],
@@ -258,9 +260,17 @@ def normalize_profile(raw):
                         ),
                     )
                 )
+    e["hub"] = normalize_hub(
+        old.get("hub") if isinstance(old, dict) else None, realm(p)
+    )
     p["estate"] = e
     if len(e["contracts"]["entries"]) != 3:
         _rotate(p, initial=True)
+    if e["hub"]["tracked_cycle"] != e["contracts"]["cycle"] or not any(
+        c["id"] == e["hub"]["tracked"] and not c["claimed"]
+        for c in e["contracts"]["entries"]
+    ):
+        e["hub"]["tracked"] = None
     return p
 
 
@@ -271,6 +281,7 @@ def _rotate(p, initial=False):
         if not all(c["claimed"] for c in con["entries"]):
             raise EconomyError("Claim all three commissions before taking a new set.")
         con["cycle"] += 1
+        e["hub"]["tracked"] = None
     available = [c for c in CONTRACTS if c["min_realm"] <= realm(p)]
     offset = con["cycle"] * 3 % len(available)
     ordered = available[offset:] + available[:offset]
@@ -407,6 +418,30 @@ def act(raw, action, **data):
     notice = ""
     if action == "inspect":
         pass
+    elif action == "hub_visit":
+        id = data.get("facility")
+        if not isinstance(id, str) or id not in FACILITY_IDS:
+            raise EconomyError("Choose a sanctuary destination.")
+        if id not in e["hub"]["visited"]:
+            e["hub"]["visited"].append(id)
+            notice = "Sanctuary destination discovered: " + id + "."
+    elif action == "hub_avatar":
+        id = data.get("avatar")
+        definition = next((a for a in AVATARS if a["id"] == id), None)
+        if not definition or definition["realm"] > realm(p):
+            raise EconomyError(
+                "Clear the required chapter to use this sanctuary appearance."
+            )
+        e["hub"]["avatar"] = id
+        notice = "Sanctuary appearance changed. Battle stats are unchanged."
+    elif action == "hub_track":
+        id = data.get("id")
+        if id is not None and not any(
+            c["id"] == id and not c["claimed"] for c in e["contracts"]["entries"]
+        ):
+            raise EconomyError("Choose an active commission to follow.")
+        e["hub"].update(tracked=id, tracked_cycle=e["contracts"]["cycle"])
+        notice = "Commission added to your journal." if id else "Commission unpinned."
     elif action == "plant":
         plot = _plot(p, data.get("plot"))
         crop = data.get("crop")
@@ -589,6 +624,8 @@ def act(raw, action, **data):
         if not entry or entry["claimed"] or entry["progress"] < definition["target"]:
             raise EconomyError("This commission is not ready to claim.")
         entry["claimed"] = True
+        if e["hub"]["tracked"] == key:
+            e["hub"]["tracked"] = None
         _give(p, definition["reward"])
         notice = "Commission reward claimed."
     elif action == "contracts_rotate":
@@ -675,7 +712,7 @@ def act(raw, action, **data):
         notice = "Talent awakened."
     else:
         raise EconomyError("Unknown estate action.")
-    if action != "inspect":
+    if action != "inspect" and notice:
         _journal(
             p,
             action,

@@ -65,6 +65,31 @@ adaptation, rather than a claim that every detail of the production document is
 implemented. See [build status](docs/BUILD_STATUS.md) for verified coverage and
 limitations and [balance reference](docs/BALANCE_REFERENCE.md) for content data.
 
+## Version 1.6: Celestial Sanctuary
+
+The main screen is now an interactive HD-2D sect courtyard: a native
+1672×941 painted environment, detailed character cutouts, four-direction walking,
+water reflections, drifting petals and warm light. The hub uses smooth rendering
+and system fonts; combat keeps its existing pixel presentation. “32/64-bit” is
+not used as a visual quality claim.
+
+- Walk with WASD/arrows, hold Shift to run, click the ground or an NPC, and press
+  E/Enter to speak. MAP or Tab/M lists eight destinations with automatic routes.
+  Collision keeps the player away from buildings, planted beds, cliffs and water.
+- NPCs link to Campaign, Talents, Bestiary, Alchemy, Garden, Merchant, Commissions
+  and Trials. The bottom bar also opens these systems immediately.
+- Commissions show objectives/progress/rewards and can be pinned. Progress still
+  counts automatically; following a commission adds no new grind or reward source.
+- Avatar selects Shen Zhu or Yun; Mu Qing becomes available after Wharf III.
+  Appearance is cosmetic. Position, appearance and followed commission persist in
+  the existing save slots/export. Ambient motion can be disabled in Avatar, and
+  defaults to the browser's reduced-motion preference for new saves.
+- Owned lantern canopy, jade chimes and ward banner appear in the courtyard.
+  Existing saves migrate without losing currency, inventory or learned talents.
+
+Runtime is still Python's standard library and a browser. All hub images are
+bundled; no new account or runtime dependency is needed.
+
 ## Version 1.5: animated combat and regional trials
 
 - **336 authored animation frames:** all eight cultivators and thirteen enemy/altar

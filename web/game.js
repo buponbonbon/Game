@@ -70,6 +70,7 @@
     motionAtlas = {},
     actorArt = {},
     botany = {},
+    sanctuary = null,
     estateData = null,
     economyBusy = false,
     claimPromise = null,
@@ -132,6 +133,7 @@
       sfx: 0.65,
       voice: 0.8,
       shake: true,
+      hubMotion: !matchMedia("(prefers-reduced-motion: reduce)").matches,
       integer: false,
       autoUltimate: false,
       clarity: true,
@@ -181,6 +183,7 @@
     }
     for (const k of [
       "shake",
+      "hubMotion",
       "integer",
       "autoUltimate",
       "clarity",
@@ -385,7 +388,11 @@
   }
   async function estateAction(action, data = {}, quiet = false) {
     if (economyBusy) return null;
-    if (battleId && isPlaying(state) && !["inspect"].includes(action)) {
+    if (
+      battleId &&
+      isPlaying(state) &&
+      !["inspect", "hub_visit", "hub_avatar", "hub_track"].includes(action)
+    ) {
       notify("Finish or leave the battle before changing the estate.", C.gold);
       return null;
     }
@@ -962,6 +969,19 @@
     text("SLOT " + (slot + 1), W - 8, 9, C.muted, 1, "right");
   }
   function drawTitle() {
+    if (sanctuary) {
+      sanctuary.draw(ctx, {
+        profile,
+        data: estateData,
+        pointer,
+        now,
+        active: !overlay,
+        realm: realm(),
+        busy: economyBusy,
+        resume: !!battleId && isPlaying(state),
+      });
+      return;
+    }
     bg("title");
     const t = now / 1000;
     for (let i = 0; i < 6; i++) {
@@ -1304,7 +1324,7 @@
 
   function drawRoster() {
     bg("title", 0.75);
-    header("CULTIVATION HALL", () => (scene = "campaign"));
+    header("CULTIVATION HALL");
     const h = previews[rosterHero] || heroes[rosterHero] || catalog.heroes[0];
     heroOrder.forEach((id, i) => {
       button(
@@ -1459,7 +1479,7 @@
   }
   function drawArchive() {
     bg("tomb", 0.75);
-    header("MONSTER ARCHIVE", () => (scene = "campaign"));
+    header("MONSTER ARCHIVE");
     button("bestiary-research", "RESEARCH", 345, 4, 81, 18, () => {
       window.VanDaoEstate.openResearch();
       openEstate();
@@ -3040,6 +3060,7 @@
             if (economyBusy || battleId)
               return notify("Finish the current battle or save first.");
             estateEpoch++;
+            sanctuary?.reset();
             slot = i;
             profile = loadProfile(i);
             estateData = null;
@@ -3074,6 +3095,7 @@
         if (economyBusy || battleId)
           return notify("Finish the current battle or save first.");
         estateEpoch++;
+        sanctuary?.reset();
         profile = freshProfile();
         estateData = null;
         estateAction("inspect", {}, true);
@@ -3140,6 +3162,7 @@
         : scene === "battle" && state && !isPlaying(state)
           ? "results"
           : scene;
+    canvas.dataset.hub = scene === "title" ? "true" : "false";
     canvas.dataset.battleId = battleId || "";
     canvas.style.cursor = buttons.some((b) => inside(pointer, b) && !b.disabled)
       ? "pointer"
@@ -3563,6 +3586,7 @@
           "Leave the current battle and finish saving before importing.",
         );
       estateEpoch++;
+      sanctuary?.reset();
       profile = normalizeProfile(data);
       saveProfile();
       await estateAction("inspect", {}, true);
@@ -3970,6 +3994,10 @@
       return;
     }
     if (overlay) return;
+    if (scene === "title" && sanctuary) {
+      sanctuary.point(pointer);
+      return;
+    }
     if (scene !== "battle" || !state || !isPlaying(state)) return;
     const tile = tileAt(pointer);
     if (selectedHero && tile && !state.paused) {
@@ -4018,6 +4046,10 @@
     )
       e.preventDefault();
     audio.init();
+    if (scene === "title" && !overlay && sanctuary?.key(e.code, true)) {
+      e.preventDefault();
+      return;
+    }
     if (e.code === "Escape") {
       if (overlay) overlay = null;
       else if (selectedHero || inspectUnit !== null) {
@@ -4036,6 +4068,13 @@
     else if (/^[1-8]$/.test(e.key)) selectCard(heroOrder[Number(e.key) - 1]);
     else if (e.code === "KeyQ" && inspectUnit !== null)
       command({ action: "ultimate", unit: inspectUnit });
+  });
+  addEventListener("keyup", (e) => sanctuary?.key(e.code, false));
+  addEventListener("blur", () => {
+    if (sanctuary) {
+      sanctuary.stop();
+      sanctuary.persist();
+    }
   });
   function resize() {
     const w = innerWidth,
@@ -4068,7 +4107,7 @@
       await document.fonts.load("13px VT323");
       await document.fonts.ready;
       catalog = await api("/api/catalog");
-      if (catalog.version !== "1.5.0")
+      if (catalog.version !== "1.6.0")
         throw Error("Stop the old Python server and run the updated run.py.");
       for (const key of ["heroes", "enemies", "stages", "relics"])
         if (!Array.isArray(catalog[key]))
@@ -4117,6 +4156,59 @@
       actorArt = await (await fetch("/assets/actors.json")).json();
       botany = await (await fetch("/assets/crops.json")).json();
       await estateAction("inspect", {}, true);
+      const hubNames = [
+        "scene",
+        "npcs",
+        "sword",
+        "gatherer",
+        "herbalist",
+        "decor",
+      ];
+      const hubImages = await Promise.all(
+        hubNames.map((n) => loadImage("/assets/hub/" + n + ".png")),
+      );
+      hubNames.forEach((n, i) => (images["hub_" + n] = hubImages[i]));
+      if (hubImages.some((im) => !im))
+        throw Error("Sanctuary artwork could not load. Reload the page.");
+      const hubAtlas = await (await fetch("/assets/hub/atlas.json")).json();
+      sanctuary = new window.VanDaoSanctuary(catalog.hub, images, hubAtlas, {
+        register: (b) => buttons.push(b),
+        clearButtons: () => (buttons = []),
+        position: (pos) => {
+          if (profile.estate?.hub) {
+            Object.assign(profile.estate.hub, pos);
+            profile.estate.hub.help_seen = true;
+            saveProfile();
+          }
+        },
+        visit: (id) => estateAction("hub_visit", { facility: id }, true),
+        chime: () => audio.play("select"),
+        notice: (msg) => notify(msg),
+        avatar: (id) => estateAction("hub_avatar", { avatar: id }, true),
+        track: (id) => estateAction("hub_track", { id }, true),
+        claim: (id) => estateAction("contract_claim", { id }),
+        motion: () => {
+          profile.settings.hubMotion = !profile.settings.hubMotion;
+          saveProfile();
+        },
+        open: (action) => {
+          sanctuary.stop();
+          sanctuary.dialog = null;
+          sanctuary.persist();
+          if (["campaign", "roster", "archive", "trials"].includes(action))
+            scene = action;
+          else if (["settings", "saves"].includes(action)) overlay = action;
+          else if (action === "missions")
+            sanctuary.dialog = { kind: "commissions" };
+          else if (action === "resume") {
+            scene = "battle";
+            command({ action: "pause", paused: false });
+          } else {
+            window.VanDaoEstate.open(action);
+            openEstate();
+          }
+        },
+      });
       sceneArt = await (await fetch("/assets/scenes.json")).json();
       audio.voiceManifest = await (
         await fetch("/assets/audio/voices/voices.json")
@@ -4155,6 +4247,9 @@
     command,
     openEstate,
     estateAction,
+    get hub() {
+      return sanctuary?.snapshot || null;
+    },
     get estate() {
       return {
         catalogue: estateData,

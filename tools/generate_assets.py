@@ -853,6 +853,8 @@ def main():
         if source.resolve()!=target.resolve():shutil.copyfile(source,target)
     if (retained/'motion').is_dir() and (OUT/'motion').resolve()!=(retained/'motion').resolve():
         shutil.copytree(retained/'motion',OUT/'motion',dirs_exist_ok=True)
+    if (retained/'hub').is_dir() and (OUT/'hub').resolve()!=(retained/'hub').resolve():
+        shutil.copytree(retained/'hub',OUT/'hub',dirs_exist_ok=True)
     title().save(OUT/'title.png')
     hero_ids = [
         "gatherer",

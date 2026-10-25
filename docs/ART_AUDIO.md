@@ -1,4 +1,19 @@
-# Art and audio — version 1.5
+# Art and audio — version 1.6
+
+## Sanctuary (1.6)
+
+`web/assets/hub` bundles six new image-generated source PNGs: painted sect scene,
+eight standing NPC portraits, three four-direction avatar sheets (16 source
+frames each), and three decorative props. Native source pixels are copied
+unchanged. `atlas.json` stores source checksums and crop/registration metadata;
+`tools/register_sanctuary.py` is optional authoring tooling using Pillow.
+Gameplay/startup does not require Pillow or a generation service.
+
+The HD-2D hub renders to the existing 1536×864 canvas with smoothing, system-ui
+body text and Georgia headers. Combat preserves VT323 and its existing render
+path. Three wandering NPCs, water rings, light pools and petals provide motion;
+this is a fixed painted environment, not a 3D world. Ambient motion can be disabled
+under Avatar. Existing purchased cosmetics have distinct hub cutouts.
 
 ## Frame animation (1.5)
 

@@ -6,7 +6,7 @@ All data is JSON serializable and shared by the Python simulation and canvas UI.
 """
 from copy import deepcopy
 
-VERSION = "1.5.0"
+VERSION = "1.6.0"
 
 REGIONS = [
     {"id": "wharf", "name": "Glass Lantern Wharf", "subtitle": "The river remembers", "chapter": 1, "color": "#58c8bd", "description": "Protect a lantern-lit town as the corrupted river rises.", "mechanic": "Tide Cycle", "intro": "Keeper, the lanterns are going dark. Gather Spirit Qi and hold the river gate.", "outro": "The River Lord was bound to a broken seal. Its last breath points toward the Azure Terraces."},
@@ -215,4 +215,5 @@ TRIALS = build_trials(STAGES)
 def catalog():
     """Return detached public content data; callers cannot mutate the rules."""
     from .nursery import NURSERY
-    return deepcopy({"trials": list(TRIALS.values()), "squad_roles": SQUAD_ROLES, "side_modes": [NURSERY], "version": VERSION, "regions": REGIONS, "heroes": list(HEROES.values()), "enemies": list(ENEMIES.values()), "stages": list(STAGES.values()), "relics": list(RELICS.values()), "title": "VAN DAO: IMMORTAL WAR", "tagline": "Guard the last immortal gate.", "rules": {"lanes": 5, "columns": 12, "deployment_columns": list(range(1, 10)), "lane_wards": 1, "starting_qi": 150, "passive_qi": 30, "passive_interval": 12, "qi_cap": 320, "gate": 3, "simulation_hz": 60}})
+    from .sanctuary import SANCTUARY
+    return deepcopy({"hub": SANCTUARY, "trials": list(TRIALS.values()), "squad_roles": SQUAD_ROLES, "side_modes": [NURSERY], "version": VERSION, "regions": REGIONS, "heroes": list(HEROES.values()), "enemies": list(ENEMIES.values()), "stages": list(STAGES.values()), "relics": list(RELICS.values()), "title": "VAN DAO: IMMORTAL WAR", "tagline": "Guard the last immortal gate.", "rules": {"lanes": 5, "columns": 12, "deployment_columns": list(range(1, 10)), "lane_wards": 1, "starting_qi": 150, "passive_qi": 30, "passive_interval": 12, "qi_cap": 320, "gate": 3, "simulation_hz": 60}})

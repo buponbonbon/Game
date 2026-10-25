@@ -38,6 +38,28 @@ nhận ra bản lưu.
 Đây là bản game chơi được, chuyển thể gọn từ tài liệu thiết kế bạn gửi; xem
 [tình trạng triển khai](docs/BUILD_STATUS.md) để biết phần đã kiểm thử và giới hạn.
 
+## Bản 1.6: Thiên Cung môn phái
+
+Sảnh chính được làm lại theo hướng **HD-2D**: tiên cung giữa núi mây, sân đá,
+hồ sen, lò luyện đan, vườn linh dược, chợ đèn lồng và cổng thử thách. Cảnh nền gốc
+1672×941, nhân vật chi tiết hơn, có hoạt ảnh đi bốn hướng. Chất lượng hình ảnh
+được nâng qua độ phân giải và thiết kế; không gọi số bit là thước đo độ đẹp.
+
+- **WASD/phím mũi tên** để đi, giữ **Shift** để chạy, hoặc nhấp vào đất/NPC.
+  **E/Enter** nói chuyện; **MAP, Tab hoặc M** mở danh sách 8 điểm đến và tự tìm đường.
+- NPC mở chiến dịch, thiên phú, quái vật chí, luyện đan, trồng trọt, cửa hàng,
+  nhiệm vụ và thử thách. Thanh dưới cho phép mở nhanh các chức năng.
+- Nhiệm vụ ghi mục tiêu, tiến độ và thưởng; có thể ghim theo dõi ở góc sảnh.
+  Tiến độ vẫn tự tính như trước, không bắt buộc nhận lại nhiệm vụ để được tính.
+- **Avatar** đổi ngoại hình thành Shen Zhu hoặc Yun; Mu Qing mở sau Wharf III.
+  Ngoại hình không đổi chỉ số chiến đấu. Vị trí, ngoại hình và nhiệm vụ đang
+  theo dõi được lưu cùng bản lưu. Có nút tắt chuyển động trang trí trong Avatar.
+- Đèn lồng, chuông ngọc và cờ đã sở hữu xuất hiện trong sảnh mới. Có hiệu ứng
+  ánh sáng, gợn nước và cánh hoa. Giao diện sảnh dùng chữ rõ, làm mượt hình ảnh.
+
+Vẫn chỉ cần Python và trình duyệt. Tất cả ảnh đã nằm trong bản tải, bản lưu cũ
+vẫn dùng được. Giữ nguyên 8 nhân vật chiến đấu và 9 ải chiến dịch.
+
 ## Bản 1.5
 
 - **Animation mới:** 336 khung hình riêng cho 8 cultivator và 13 loại quái/pháp đàn.
@@ -63,7 +85,7 @@ Giữ nguyên 8 nhân vật và 9 ải chiến dịch. Bản lưu cũ vẫn dùn
 
 ## Bản 1.4: Linh Điền và kinh tế môn phái
 
-Tại sảnh, chọn **Sect Estate / Linh Dien**:
+Tại sảnh, chọn **Estate**, hoặc tới NPC trông vườn:
 
 - **Garden:** bắt đầu với 3 ô, mở rộng lên 6 rồi 9 ô. Có Tụ Khí Thảo, Hà Liên,
   Thanh Phong Trúc và Dẫn Hồn Chi; cây chín sau 1–3 trận hoàn tất. Tưới/bón phân

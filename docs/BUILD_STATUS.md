@@ -1,9 +1,46 @@
-# Build status — version 1.5
+# Build status — version 1.6
 
 Run `python run.py` or Windows `play.bat`. Python 3.10+ and a modern browser are
 still the only runtime requirements; art, font and audio are bundled offline.
 
-## Changes
+## 1.6 changes
+
+- Interactive HD-2D Celestial Sanctuary replaces the old main lobby: native
+  painted scene, eight NPC destinations, separate buildings, detailed cutouts,
+  three four-direction avatar sheets, animated water/light/petals and owned props.
+- WASD/arrows/Shift, ground/NPC clicks, E/Enter dialogue and Tab/M directory.
+  Collision-safe routes and immediate bottom-bar access to existing systems.
+- NPC commission page shows objectives, progress and rewards; one commission can
+  be pinned. Following does not gate automatic progress or introduce extra income.
+- Cosmetic appearances, validated position, discoveries and followed commission
+  persist inside existing V2 saves. Mu Qing appearance unlocks after Wharf III.
+  Currency, inventory and talents migrate intact; avatar choice changes no stats.
+- Smooth hub rendering, readable system fonts, optional ambient motion respecting
+  reduced-motion preference for new saves. Runtime remains Python stdlib/browser.
+
+## 1.6 verification
+
+- **142 stdlib tests passed** with `python3 -S -m unittest discover -s tests -q`.
+  Includes six sanctuary checks for migration, atomic cosmetic actions, locked
+  avatars, invalid imports, commission rewards/tracking, connected approaches and
+  source-frame integrity; previous engine/server/economy/assets checks also pass.
+- Chromium exercised all eight NPC routes and system links using actual canvas
+  input; 64 facility pairs additionally reached their target by deterministic
+  stepping. Keyboard movement, Enter dialogue, commission claim/pin, position and
+  appearance persistence, reduced motion, legacy settings/garden, campaign
+  briefing/deployment/Auto/pause and landscape touch passed. No JS errors or
+  external requests. Fixture begins with a cleared campaign/one ready commission.
+  Evidence: `validation/SANCTUARY_BROWSER_1_6.json`.
+- Fresh portable ZIP extracted to a path with spaces, launched with `python -S`
+  from another cwd: hub load, garden planting, tick-zero campaign briefing,
+  deployment for 125 Qi, Auto and pause passed without external calls.
+  Evidence: `validation/RELEASE_SMOKE_1_6.json`.
+
+Combat parameters are unchanged in 1.6. The following 1.5 policy results remain
+historical baseline evidence; the full balance simulations were not rerun for
+this hub-only update.
+
+## 1.5 combat and estate changes
 
 - 336 authored animation frames across eight cultivators and thirteen enemy/altar
   identities. Separate windup/strike/recovery, skill/ultimate, recoil and death
@@ -27,7 +64,7 @@ still the only runtime requirements; art, font and audio are bundled offline.
   transactions/outcomes; ready crops appear in the lobby. V1/V2 saves migrate
   without regranting supplies or losing the existing wallet/talents/settings.
 
-## Verification
+## 1.5 baseline verification
 
 - **136 standard-library tests passed**, including source-frame integrity,
   regeneration/preservation, squad caps/interrupts, objective fairness, pause,

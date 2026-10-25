@@ -707,6 +707,12 @@ window.VanDaoEstate = (() => {
   return {
     draw,
     reward,
+    open(next) {
+      if (tabs.includes(next)) {
+        tab = next;
+        page = 0;
+      }
+    },
     openResearch() {
       tab = "Research";
       page = 0;
