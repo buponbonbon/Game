@@ -16,7 +16,7 @@ from typing import Any
 from urllib.parse import unquote, urlsplit
 
 
-VERSION = "1.3.0"
+VERSION = "1.4.0"
 MAX_BODY_BYTES = 65_536
 LOGGER = logging.getLogger(__name__)
 
@@ -43,6 +43,7 @@ class BattleRecord:
     last_access: float = field(default_factory=time.monotonic)
     lock: threading.RLock = field(default_factory=threading.RLock)
     failed: bool = False
+    claimed_profiles: dict = field(default_factory=dict)
 
 
 class BattleStore:
@@ -117,6 +118,8 @@ class BattleStore:
                 )
             factory = self.battle_factory or load_battle_type()
             battle = factory(stage, seed=seed, upgrades=dict(upgrades), realm=realm)
+            if options.get("consumable"):
+                battle.apply_preparation(options["consumable"])
             if paused:
                 battle.command({"action": "pause", "paused": True})
             record = BattleRecord(battle)
@@ -377,9 +380,65 @@ class GameRequestHandler(BaseHTTPRequestHandler):
                     HTTPStatus.OK,
                     {"heroes": [hero_data(id, upgrades.get(id)) for id in HEROES]},
                 )
+            elif path == "/api/estate":
+                from . import estate
+
+                action = body.get("action", "inspect")
+                if action == "claim_battle":
+                    battle_id = body.get("battle_id")
+                    if not isinstance(battle_id, str):
+                        raise ValueError("Choose a battle to record.")
+                    record = self.server.store.get(battle_id)
+                    with record.lock:
+                        profile = estate.normalize_profile(body.get("profile"))
+                        if profile["save_id"] in record.claimed_profiles:
+                            if battle_id in profile["estate"]["ledger"]:
+                                result = dict(
+                                    ok=True,
+                                    profile=profile,
+                                    catalogue=estate.view(profile),
+                                    duplicate=True,
+                                    notice="Battle already recorded.",
+                                    outcome=record.claimed_profiles[
+                                        profile["save_id"]
+                                    ].get("outcome"),
+                                )
+                            else:
+                                # A lost HTTP response must not lose the reward. The receipt
+                                # is replayed only until the client's save contains this ID.
+                                result = record.claimed_profiles[profile["save_id"]]
+                        else:
+                            result = estate.settle(
+                                profile, battle_id, record.battle.snapshot()
+                            )
+                            record.claimed_profiles[profile["save_id"]] = result
+                else:
+                    result = estate.act(
+                        body.get("profile"),
+                        action,
+                        **{
+                            k: v
+                            for k, v in body.items()
+                            if k not in ("profile", "action")
+                        },
+                    )
+                self._json(HTTPStatus.OK, result)
             elif path == "/api/battle":
+                profile = None
+                if "profile" in body:
+                    from . import estate
+
+                    profile, item = estate.prepare(body["profile"])
+                    body.update(
+                        upgrades=profile["upgrades"],
+                        realm=estate.realm(profile),
+                        consumable=item,
+                    )
                 battle_id, state = self.server.store.create(body)
-                self._json(HTTPStatus.CREATED, {"battle_id": battle_id, "state": state})
+                result = {"battle_id": battle_id, "state": state}
+                if profile is not None:
+                    result["profile"] = profile
+                self._json(HTTPStatus.CREATED, result)
             elif (
                 path.startswith("/api/battle/")
                 and path.endswith("/command")

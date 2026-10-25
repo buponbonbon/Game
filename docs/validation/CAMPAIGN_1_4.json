@@ -1,0 +1,1968 @@
+{
+  "policy": "Earn and spend real campaign rewards; adapt the formation to armored and spectral encounters",
+  "scope": "One seeded legal-play smoke run; not statistical balance validation.",
+  "seed": 4701,
+  "passed": true,
+  "completed": [
+    "wharf-1",
+    "wharf-2",
+    "wharf-3",
+    "terrace-1",
+    "terrace-2",
+    "terrace-3",
+    "tomb-1",
+    "tomb-2",
+    "tomb-3"
+  ],
+  "stones_remaining": 155,
+  "stages": [
+    {
+      "stage": "wharf-1",
+      "seed": 4701,
+      "realm": 0,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {},
+      "status": "victory",
+      "duration": 197.117,
+      "gate": 3,
+      "kills": 62,
+      "qi_remaining": 11,
+      "metrics": {
+        "damage": {
+          "sword": 3073,
+          "fire": 2822
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 0,
+        "qi": {
+          "starting": 150,
+          "gatherer": 668,
+          "passive": 480,
+          "ultimate": 168
+        },
+        "spent": 1455,
+        "deaths": 0,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 57,
+          "lantern": 5
+        },
+        "roles_used": [
+          "economy",
+          "damage"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "peak_enemies": 24
+      },
+      "rewards": {
+        "stones": 45,
+        "insight": 1,
+        "stage": "wharf-1",
+        "kills": 62,
+        "replay_stones": 11
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 12.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 24.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 2
+        },
+        {
+          "time": 36.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 60.0,
+          "hero": "fire",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 81.2,
+          "hero": "fire",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 105.2,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 111.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 136.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 145.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 152.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 5
+        },
+        {
+          "time": 161.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 2
+        },
+        {
+          "time": 196.6,
+          "hero": "sword",
+          "lane": 4,
+          "col": 2
+        }
+      ],
+      "stones_before": 0,
+      "branches_purchased": [
+        {
+          "hero": "gatherer",
+          "branch": "A",
+          "rank": 1,
+          "cost": 20
+        }
+      ],
+      "stones_after": 25
+    },
+    {
+      "stage": "wharf-2",
+      "seed": 4701,
+      "realm": 0,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 1
+        }
+      },
+      "status": "victory",
+      "duration": 231.0,
+      "gate": 3,
+      "kills": 77,
+      "qi_remaining": 59,
+      "metrics": {
+        "damage": {
+          "sword": 6001,
+          "fire": 5298
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 0,
+        "qi": {
+          "starting": 150,
+          "gatherer": 776,
+          "passive": 570,
+          "enemy_drop": 210,
+          "ultimate": 192
+        },
+        "spent": 1839,
+        "deaths": 0,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 48,
+          "lantern": 14,
+          "drowned": 15
+        },
+        "roles_used": [
+          "economy",
+          "damage"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "peak_enemies": 40
+      },
+      "rewards": {
+        "stones": 55,
+        "insight": 1,
+        "stage": "wharf-2",
+        "kills": 77,
+        "replay_stones": 13
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 12.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 24.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 2
+        },
+        {
+          "time": 36.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 48.0,
+          "hero": "sword",
+          "lane": 0,
+          "col": 2
+        },
+        {
+          "time": 60.0,
+          "hero": "sword",
+          "lane": 4,
+          "col": 2
+        },
+        {
+          "time": 84.0,
+          "hero": "fire",
+          "lane": 1,
+          "col": 5
+        },
+        {
+          "time": 101.2,
+          "hero": "fire",
+          "lane": 0,
+          "col": 3
+        },
+        {
+          "time": 113.2,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 136.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 144.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 161.2,
+          "hero": "fire",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 183.4,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 191.8,
+          "hero": "sword",
+          "lane": 2,
+          "col": 5
+        },
+        {
+          "time": 204.0,
+          "hero": "fire",
+          "lane": 4,
+          "col": 3
+        }
+      ],
+      "stones_before": 25,
+      "branches_purchased": [
+        {
+          "hero": "gatherer",
+          "branch": "A",
+          "rank": 2,
+          "cost": 30
+        },
+        {
+          "hero": "gatherer",
+          "branch": "A",
+          "rank": 3,
+          "cost": 45
+        }
+      ],
+      "stones_after": 5
+    },
+    {
+      "stage": "wharf-3",
+      "seed": 4701,
+      "realm": 0,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        }
+      },
+      "status": "victory",
+      "duration": 341.117,
+      "gate": 3,
+      "kills": 106,
+      "qi_remaining": 32,
+      "metrics": {
+        "damage": {
+          "sword": 11933,
+          "fire": 4894
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 0,
+        "qi": {
+          "starting": 150,
+          "gatherer": 1348,
+          "passive": 840,
+          "enemy_drop": 405,
+          "ultimate": 336
+        },
+        "spent": 3047,
+        "deaths": 15,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 67,
+          "drowned": 11,
+          "lantern": 27,
+          "riverlord": 1
+        },
+        "roles_used": [
+          "economy",
+          "damage"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "peak_enemies": 32
+      },
+      "rewards": {
+        "stones": 90,
+        "insight": 2,
+        "relic": "tide_pearl",
+        "material": "Tide Jade",
+        "unlocks": [
+          "frost",
+          "herbalist"
+        ],
+        "stage": "wharf-3",
+        "kills": 106,
+        "replay_stones": 22
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 12.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 24.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 2
+        },
+        {
+          "time": 36.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 49.2,
+          "hero": "fire",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 67.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 76.6,
+          "hero": "sword",
+          "lane": 4,
+          "col": 2
+        },
+        {
+          "time": 89.2,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 97.2,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 119.6,
+          "hero": "fire",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 125.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 2
+        },
+        {
+          "time": 132.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 147.2,
+          "hero": "sword",
+          "lane": 2,
+          "col": 5
+        },
+        {
+          "time": 172.0,
+          "hero": "fire",
+          "lane": 4,
+          "col": 3
+        },
+        {
+          "time": 172.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 4
+        },
+        {
+          "time": 179.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 5
+        },
+        {
+          "time": 190.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 217.0,
+          "hero": "fire",
+          "lane": 0,
+          "col": 3
+        },
+        {
+          "time": 217.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 225.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 5
+        },
+        {
+          "time": 277.8,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 284.8,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 285.0,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 291.8,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 304.6,
+          "hero": "sword",
+          "lane": 2,
+          "col": 5
+        },
+        {
+          "time": 317.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 333.2,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        }
+      ],
+      "stones_before": 5,
+      "branches_purchased": [
+        {
+          "hero": "sword",
+          "branch": "A",
+          "rank": 1,
+          "cost": 20
+        },
+        {
+          "hero": "sword",
+          "branch": "A",
+          "rank": 2,
+          "cost": 30
+        },
+        {
+          "hero": "sword",
+          "branch": "A",
+          "rank": 3,
+          "cost": 45
+        }
+      ],
+      "stones_after": 0
+    },
+    {
+      "stage": "terrace-1",
+      "seed": 4701,
+      "realm": 1,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        },
+        "sword": {
+          "branch": "A",
+          "rank": 3
+        }
+      },
+      "status": "victory",
+      "duration": 283.583,
+      "gate": 3,
+      "kills": 81,
+      "qi_remaining": 63,
+      "metrics": {
+        "damage": {
+          "sword": 16438,
+          "fire": 5459,
+          "monk": 1408
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 13,
+        "qi": {
+          "starting": 175,
+          "gatherer": 956,
+          "passive": 690,
+          "enemy_drop": 400,
+          "ultimate": 192
+        },
+        "spent": 2320,
+        "deaths": 8,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 42,
+          "hound": 13,
+          "rottenwood": 7,
+          "yaksha": 12,
+          "drainer": 7
+        },
+        "roles_used": [
+          "economy",
+          "damage",
+          "tank"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire",
+          "monk"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "peak_enemies": 37
+      },
+      "rewards": {
+        "stones": 65,
+        "insight": 1,
+        "stage": "terrace-1",
+        "kills": 81,
+        "replay_stones": 16
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 4,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 8.0,
+          "hero": "gatherer",
+          "lane": 0,
+          "col": 1
+        },
+        {
+          "time": 17.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 25.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 41.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 4
+        },
+        {
+          "time": 57.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 64.2,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 79.6,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 89.2,
+          "hero": "fire",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 97.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 118.6,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 125.6,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 132.8,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 147.2,
+          "hero": "fire",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 169.2,
+          "hero": "fire",
+          "lane": 0,
+          "col": 3
+        },
+        {
+          "time": 195.2,
+          "hero": "monk",
+          "lane": 0,
+          "col": 6
+        },
+        {
+          "time": 216.0,
+          "hero": "monk",
+          "lane": 1,
+          "col": 6
+        },
+        {
+          "time": 223.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 5
+        },
+        {
+          "time": 276.0,
+          "hero": "monk",
+          "lane": 0,
+          "col": 6
+        }
+      ],
+      "stones_before": 0,
+      "branches_purchased": [
+        {
+          "hero": "fire",
+          "branch": "B",
+          "rank": 1,
+          "cost": 20
+        },
+        {
+          "hero": "fire",
+          "branch": "B",
+          "rank": 2,
+          "cost": 30
+        }
+      ],
+      "stones_after": 15
+    },
+    {
+      "stage": "terrace-2",
+      "seed": 4701,
+      "realm": 1,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        },
+        "sword": {
+          "branch": "A",
+          "rank": 3
+        },
+        "fire": {
+          "branch": "B",
+          "rank": 2
+        }
+      },
+      "status": "victory",
+      "duration": 261.35,
+      "gate": 3,
+      "kills": 84,
+      "qi_remaining": 54,
+      "metrics": {
+        "damage": {
+          "sword": 17866,
+          "fire": 6504
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 10,
+        "qi": {
+          "starting": 175,
+          "gatherer": 1136,
+          "passive": 630,
+          "enemy_drop": 400,
+          "ultimate": 288
+        },
+        "spent": 2557,
+        "deaths": 6,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 45,
+          "yaksha": 13,
+          "drainer": 10,
+          "hound": 10,
+          "rottenwood": 6
+        },
+        "roles_used": [
+          "economy",
+          "damage"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "peak_enemies": 36
+      },
+      "rewards": {
+        "stones": 75,
+        "insight": 1,
+        "stage": "terrace-2",
+        "kills": 84,
+        "replay_stones": 18
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 8.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 17.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 25.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 41.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 48.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 4
+        },
+        {
+          "time": 72.0,
+          "hero": "fire",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 81.6,
+          "hero": "sword",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 88.6,
+          "hero": "sword",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 96.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 113.2,
+          "hero": "fire",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 121.4,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 132.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 150.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 5
+        },
+        {
+          "time": 157.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 2
+        },
+        {
+          "time": 178.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 5
+        },
+        {
+          "time": 192.0,
+          "hero": "fire",
+          "lane": 0,
+          "col": 3
+        },
+        {
+          "time": 204.0,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 248.8,
+          "hero": "sword",
+          "lane": 1,
+          "col": 5
+        },
+        {
+          "time": 257.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 5
+        }
+      ],
+      "stones_before": 15,
+      "branches_purchased": [
+        {
+          "hero": "fire",
+          "branch": "B",
+          "rank": 3,
+          "cost": 45
+        }
+      ],
+      "stones_after": 45
+    },
+    {
+      "stage": "terrace-3",
+      "seed": 4701,
+      "realm": 1,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        },
+        "sword": {
+          "branch": "A",
+          "rank": 3
+        },
+        "fire": {
+          "branch": "B",
+          "rank": 3
+        }
+      },
+      "status": "victory",
+      "duration": 363.6,
+      "gate": 3,
+      "kills": 99,
+      "qi_remaining": 25,
+      "metrics": {
+        "damage": {
+          "sword": 22768,
+          "fire": 7230,
+          "monk": 1592
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 14,
+        "qi": {
+          "starting": 175,
+          "gatherer": 1884,
+          "passive": 900,
+          "enemy_drop": 380,
+          "ultimate": 528
+        },
+        "spent": 3752,
+        "deaths": 18,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 51,
+          "yaksha": 23,
+          "hound": 11,
+          "drainer": 8,
+          "rottenwood": 5,
+          "mountainlord": 1
+        },
+        "roles_used": [
+          "economy",
+          "damage",
+          "tank"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire",
+          "monk"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "peak_enemies": 45
+      },
+      "rewards": {
+        "stones": 110,
+        "insight": 2,
+        "relic": "wind_compass",
+        "material": "Azure Ley Shard",
+        "unlocks": [
+          "lightning",
+          "formation"
+        ],
+        "stage": "terrace-3",
+        "kills": 99,
+        "replay_stones": 27
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 0,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 8.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 17.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 25.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 49.2,
+          "hero": "fire",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 60.2,
+          "hero": "gatherer",
+          "lane": 3,
+          "col": 1
+        },
+        {
+          "time": 69.4,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 83.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 4
+        },
+        {
+          "time": 90.0,
+          "hero": "fire",
+          "lane": 0,
+          "col": 3
+        },
+        {
+          "time": 105.2,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 120.0,
+          "hero": "monk",
+          "lane": 2,
+          "col": 6
+        },
+        {
+          "time": 137.2,
+          "hero": "monk",
+          "lane": 1,
+          "col": 6
+        },
+        {
+          "time": 148.6,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 156.6,
+          "hero": "sword",
+          "lane": 1,
+          "col": 5
+        },
+        {
+          "time": 165.0,
+          "hero": "monk",
+          "lane": 0,
+          "col": 6
+        },
+        {
+          "time": 173.4,
+          "hero": "sword",
+          "lane": 0,
+          "col": 5
+        },
+        {
+          "time": 185.2,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 193.2,
+          "hero": "sword",
+          "lane": 2,
+          "col": 5
+        },
+        {
+          "time": 204.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 2
+        },
+        {
+          "time": 225.0,
+          "hero": "fire",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 225.2,
+          "hero": "monk",
+          "lane": 3,
+          "col": 6
+        },
+        {
+          "time": 228.6,
+          "hero": "sword",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 237.4,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 284.4,
+          "hero": "monk",
+          "lane": 2,
+          "col": 6
+        },
+        {
+          "time": 307.8,
+          "hero": "sword",
+          "lane": 4,
+          "col": 4
+        },
+        {
+          "time": 308.0,
+          "hero": "fire",
+          "lane": 4,
+          "col": 3
+        },
+        {
+          "time": 342.2,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 360.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        }
+      ],
+      "stones_before": 45,
+      "branches_purchased": [
+        {
+          "hero": "fire",
+          "branch": "B",
+          "rank": 4,
+          "cost": 60
+        },
+        {
+          "hero": "fire",
+          "branch": "B",
+          "rank": 5,
+          "cost": 90
+        }
+      ],
+      "stones_after": 5
+    },
+    {
+      "stage": "tomb-1",
+      "seed": 4701,
+      "realm": 2,
+      "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        },
+        "sword": {
+          "branch": "A",
+          "rank": 3
+        },
+        "fire": {
+          "branch": "B",
+          "rank": 5
+        }
+      },
+      "status": "victory",
+      "duration": 306.233,
+      "gate": 3,
+      "kills": 91,
+      "qi_remaining": 30,
+      "metrics": {
+        "damage": {
+          "sword": 24925,
+          "fire": 14272
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 0,
+        "qi": {
+          "starting": 175,
+          "gatherer": 1352,
+          "passive": 800,
+          "ultimate": 336,
+          "enemy_drop": 240
+        },
+        "spent": 2813,
+        "deaths": 2,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "tide": 1,
+          "soul": 51,
+          "swordcorpse": 13,
+          "rottenwood": 14,
+          "drainer": 12
+        },
+        "roles_used": [
+          "economy",
+          "damage"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "peak_enemies": 40
+      },
+      "rewards": {
+        "stones": 85,
+        "insight": 1,
+        "stage": "tomb-1",
+        "kills": 91,
+        "replay_stones": 21
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 8.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 17.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 25.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 41.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 49.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 4
+        },
+        {
+          "time": 73.2,
+          "hero": "fire",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 81.6,
+          "hero": "sword",
+          "lane": 1,
+          "col": 5
+        },
+        {
+          "time": 96.0,
+          "hero": "sword",
+          "lane": 1,
+          "col": 2
+        },
+        {
+          "time": 113.2,
+          "hero": "fire",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 132.0,
+          "hero": "fire",
+          "lane": 4,
+          "col": 3
+        },
+        {
+          "time": 145.6,
+          "hero": "sword",
+          "lane": 4,
+          "col": 5
+        },
+        {
+          "time": 180.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 193.2,
+          "hero": "fire",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 204.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 234.4,
+          "hero": "sword",
+          "lane": 4,
+          "col": 2
+        },
+        {
+          "time": 241.4,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 258.2,
+          "hero": "fire",
+          "lane": 0,
+          "col": 3
+        },
+        {
+          "time": 266.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 5
+        }
+      ],
+      "stones_before": 5,
+      "branches_purchased": [
+        {
+          "hero": "monk",
+          "branch": "A",
+          "rank": 1,
+          "cost": 20
+        },
+        {
+          "hero": "monk",
+          "branch": "A",
+          "rank": 2,
+          "cost": 30
+        }
+      ],
+      "stones_after": 40
+    },
+    {
+      "stage": "tomb-2",
+      "seed": 4701,
+      "realm": 2,
+      "policy": "Three Yun, fire/staff/lightning defense, a late formation circuit, automatic arts and timed relics",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        },
+        "sword": {
+          "branch": "A",
+          "rank": 3
+        },
+        "fire": {
+          "branch": "B",
+          "rank": 5
+        },
+        "monk": {
+          "branch": "A",
+          "rank": 2
+        }
+      },
+      "status": "victory",
+      "duration": 308.35,
+      "gate": 3,
+      "kills": 92,
+      "qi_remaining": 53,
+      "metrics": {
+        "damage": {
+          "sword": 20524,
+          "monk": 12205,
+          "fire": 6143
+        },
+        "healing": 0,
+        "altars_destroyed": 0,
+        "plates_broken": 0,
+        "qi": {
+          "starting": 175,
+          "gatherer": 1432,
+          "passive": 800,
+          "ultimate": 432,
+          "enemy_drop": 180
+        },
+        "spent": 2632,
+        "deaths": 8,
+        "breaches": 0,
+        "invalid": 0,
+        "kills_by_type": {
+          "soul": 54,
+          "rottenwood": 13,
+          "swordcorpse": 16,
+          "drainer": 9
+        },
+        "roles_used": [
+          "economy",
+          "damage",
+          "tank"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "monk",
+          "fire"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "peak_enemies": 46
+      },
+      "rewards": {
+        "stones": 95,
+        "insight": 1,
+        "stage": "tomb-2",
+        "kills": 92,
+        "replay_stones": 23
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 8.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 16.0,
+          "hero": "gatherer",
+          "lane": 3,
+          "col": 1
+        },
+        {
+          "time": 25.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 33.2,
+          "hero": "sword",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 41.2,
+          "hero": "sword",
+          "lane": 0,
+          "col": 3
+        },
+        {
+          "time": 49.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 3
+        },
+        {
+          "time": 65.2,
+          "hero": "monk",
+          "lane": 3,
+          "col": 6
+        },
+        {
+          "time": 73.6,
+          "hero": "sword",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 87.6,
+          "hero": "monk",
+          "lane": 1,
+          "col": 6
+        },
+        {
+          "time": 98.6,
+          "hero": "monk",
+          "lane": 2,
+          "col": 6
+        },
+        {
+          "time": 121.2,
+          "hero": "fire",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 145.2,
+          "hero": "monk",
+          "lane": 0,
+          "col": 6
+        },
+        {
+          "time": 192.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 5
+        },
+        {
+          "time": 228.0,
+          "hero": "monk",
+          "lane": 4,
+          "col": 6
+        },
+        {
+          "time": 282.8,
+          "hero": "sword",
+          "lane": 3,
+          "col": 2
+        },
+        {
+          "time": 300.0,
+          "hero": "sword",
+          "lane": 0,
+          "col": 3
+        }
+      ],
+      "stones_before": 40,
+      "branches_purchased": [
+        {
+          "hero": "monk",
+          "branch": "A",
+          "rank": 3,
+          "cost": 45
+        },
+        {
+          "hero": "herbalist",
+          "branch": "A",
+          "rank": 1,
+          "cost": 20
+        },
+        {
+          "hero": "herbalist",
+          "branch": "A",
+          "rank": 2,
+          "cost": 30
+        }
+      ],
+      "stones_after": 40
+    },
+    {
+      "stage": "tomb-3",
+      "seed": 4701,
+      "realm": 2,
+      "policy": "Three Yun, fire/staff/lightning defense, a late formation circuit, automatic arts and timed relics",
+      "upgrades_at_start": {
+        "gatherer": {
+          "branch": "A",
+          "rank": 3
+        },
+        "sword": {
+          "branch": "A",
+          "rank": 3
+        },
+        "fire": {
+          "branch": "B",
+          "rank": 5
+        },
+        "monk": {
+          "branch": "A",
+          "rank": 3
+        },
+        "herbalist": {
+          "branch": "A",
+          "rank": 2
+        }
+      },
+      "status": "victory",
+      "duration": 517.767,
+      "gate": 2,
+      "kills": 123,
+      "qi_remaining": 64,
+      "metrics": {
+        "damage": {
+          "sword": 15304,
+          "fire": 36027,
+          "monk": 5023,
+          "lightning": 1028
+        },
+        "healing": 0,
+        "altars_destroyed": 3,
+        "plates_broken": 0,
+        "qi": {
+          "starting": 175,
+          "gatherer": 2268,
+          "passive": 1376,
+          "ultimate": 720,
+          "enemy_drop": 300
+        },
+        "spent": 4213,
+        "deaths": 23,
+        "breaches": 1,
+        "invalid": 0,
+        "kills_by_type": {
+          "soul": 73,
+          "rottenwood": 14,
+          "swordcorpse": 17,
+          "drainer": 15,
+          "boneemperor": 1
+        },
+        "roles_used": [
+          "economy",
+          "damage",
+          "tank"
+        ],
+        "hero_types_used": [
+          "gatherer",
+          "sword",
+          "fire",
+          "monk",
+          "lightning"
+        ],
+        "rituals_used": 0,
+        "nodes_purified": 0,
+        "peak_enemies": 57
+      },
+      "rewards": {
+        "stones": 160,
+        "insight": 3,
+        "relic": "soul_bell",
+        "material": "Mausoleum Seal Fragment",
+        "campaign_complete": true,
+        "stage": "tomb-3",
+        "kills": 123,
+        "replay_stones": 40
+      },
+      "placements": [
+        {
+          "time": 0.0,
+          "hero": "gatherer",
+          "lane": 2,
+          "col": 1
+        },
+        {
+          "time": 0.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 8.0,
+          "hero": "gatherer",
+          "lane": 1,
+          "col": 1
+        },
+        {
+          "time": 16.0,
+          "hero": "gatherer",
+          "lane": 3,
+          "col": 1
+        },
+        {
+          "time": 25.2,
+          "hero": "sword",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 36.0,
+          "hero": "sword",
+          "lane": 3,
+          "col": 3
+        },
+        {
+          "time": 49.2,
+          "hero": "fire",
+          "lane": 3,
+          "col": 4
+        },
+        {
+          "time": 65.2,
+          "hero": "monk",
+          "lane": 3,
+          "col": 6
+        },
+        {
+          "time": 73.6,
+          "hero": "sword",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 85.4,
+          "hero": "sword",
+          "lane": 1,
+          "col": 3
+        },
+        {
+          "time": 92.4,
+          "hero": "sword",
+          "lane": 0,
+          "col": 3
+        },
+        {
+          "time": 108.0,
+          "hero": "fire",
+          "lane": 0,
+          "col": 4
+        },
+        {
+          "time": 121.2,
+          "hero": "sword",
+          "lane": 4,
+          "col": 3
+        },
+        {
+          "time": 137.2,
+          "hero": "monk",
+          "lane": 0,
+          "col": 6
+        },
+        {
+          "time": 151.2,
+          "hero": "fire",
+          "lane": 4,
+          "col": 4
+        },
+        {
+          "time": 163.2,
+          "hero": "fire",
+          "lane": 1,
+          "col": 4
+        },
+        {
+          "time": 169.2,
+          "hero": "monk",
+          "lane": 1,
+          "col": 6
+        },
+        {
+          "time": 209.2,
+          "hero": "monk",
+          "lane": 4,
+          "col": 6
+        },
+        {
+          "time": 219.0,
+          "hero": "fire",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 298.4,
+          "hero": "monk",
+          "lane": 2,
+          "col": 6
+        },
+        {
+          "time": 355.8,
+          "hero": "fire",
+          "lane": 2,
+          "col": 4
+        },
+        {
+          "time": 370.4,
+          "hero": "lightning",
+          "lane": 2,
+          "col": 5
+        },
+        {
+          "time": 378.4,
+          "hero": "sword",
+          "lane": 2,
+          "col": 2
+        },
+        {
+          "time": 420.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 3
+        },
+        {
+          "time": 468.0,
+          "hero": "sword",
+          "lane": 4,
+          "col": 3
+        },
+        {
+          "time": 492.0,
+          "hero": "sword",
+          "lane": 2,
+          "col": 3
+        }
+      ],
+      "stones_before": 40,
+      "branches_purchased": [
+        {
+          "hero": "herbalist",
+          "branch": "A",
+          "rank": 3,
+          "cost": 45
+        }
+      ],
+      "stones_after": 155
+    }
+  ]
+}

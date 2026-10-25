@@ -1,0 +1,51 @@
+{
+  "version": "1.4.0",
+  "provenance": "Original image-generated 16-bit RPG style art. Source PNGs retained unchanged; JSON crops and runtime animation.",
+  "assets": {
+    "garden": {
+      "width": 1672,
+      "height": 941,
+      "sha256": "5ede08d4edd293628ad6e734bc4159e2e95a7fff77b8c9d77e4e2e3eb38c36d5"
+    },
+    "crops": {
+      "width": 1330,
+      "height": 1182,
+      "sha256": "7757ba4d9b2b144a16f5c18709623670fd321e26a791d7a1b741b14011b6f451"
+    },
+    "heroes_idle": {
+      "width": 1536,
+      "height": 1024,
+      "sha256": "dc4c574381bbe4285d322ac4dacd8f580d84385041c747d57080abf73e27771a"
+    },
+    "heroes_attack": {
+      "width": 1536,
+      "height": 1024,
+      "sha256": "cea017550ad3617a2b041a8ede98adb76ab461728cebf0ad8fa13542f752e71c"
+    },
+    "heroes_skill": {
+      "width": 1536,
+      "height": 1024,
+      "sha256": "f54cdaeef79a96ba41c0f35dfba86718d5afa24ba6b0d410cf8adc994501a54b"
+    },
+    "heroes_ultimate": {
+      "width": 1536,
+      "height": 1024,
+      "sha256": "6e531b296e3e5e939ea1d5ce0ca74ee12e0fdcc828e3c80e2149eefb1ae6df63"
+    },
+    "enemies_idle": {
+      "width": 1506,
+      "height": 1044,
+      "sha256": "2a8c9f39b5431f7103127952ab0a7060059547023b58569cfd2c0de37df7e1ab"
+    },
+    "enemies_attack": {
+      "width": 1506,
+      "height": 1044,
+      "sha256": "6fd2b732d810135f07a49c0533fef612b5495398e7911fcca004ec2fa0c55373"
+    },
+    "enemies_skill": {
+      "width": 1506,
+      "height": 1044,
+      "sha256": "8d4a3178a958d9f43101dea7192d705c6bc3227cebcca0bdac204240f5b67eec"
+    }
+  }
+}

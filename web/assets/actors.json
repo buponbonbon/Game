@@ -1,0 +1,541 @@
+{
+  "gatherer": {
+    "idle": {
+      "image": "heroes_idle",
+      "x": 29,
+      "y": 100,
+      "w": 355,
+      "h": 412
+    },
+    "attack": {
+      "image": "heroes_attack",
+      "x": 7,
+      "y": 195,
+      "w": 377,
+      "h": 312
+    },
+    "skill": {
+      "image": "heroes_skill",
+      "x": 14,
+      "y": 85,
+      "w": 370,
+      "h": 427
+    },
+    "ultimate": {
+      "image": "heroes_ultimate",
+      "x": 9,
+      "y": 8,
+      "w": 375,
+      "h": 504
+    }
+  },
+  "sword": {
+    "idle": {
+      "image": "heroes_idle",
+      "x": 384,
+      "y": 35,
+      "w": 362,
+      "h": 457
+    },
+    "attack": {
+      "image": "heroes_attack",
+      "x": 384,
+      "y": 144,
+      "w": 384,
+      "h": 364
+    },
+    "skill": {
+      "image": "heroes_skill",
+      "x": 384,
+      "y": 45,
+      "w": 384,
+      "h": 467
+    },
+    "ultimate": {
+      "image": "heroes_ultimate",
+      "x": 384,
+      "y": 0,
+      "w": 384,
+      "h": 512
+    }
+  },
+  "fire": {
+    "idle": {
+      "image": "heroes_idle",
+      "x": 768,
+      "y": 38,
+      "w": 384,
+      "h": 454
+    },
+    "attack": {
+      "image": "heroes_attack",
+      "x": 768,
+      "y": 164,
+      "w": 384,
+      "h": 342
+    },
+    "skill": {
+      "image": "heroes_skill",
+      "x": 768,
+      "y": 49,
+      "w": 384,
+      "h": 433
+    },
+    "ultimate": {
+      "image": "heroes_ultimate",
+      "x": 768,
+      "y": 5,
+      "w": 384,
+      "h": 507
+    }
+  },
+  "frost": {
+    "idle": {
+      "image": "heroes_idle",
+      "x": 1152,
+      "y": 21,
+      "w": 363,
+      "h": 471
+    },
+    "attack": {
+      "image": "heroes_attack",
+      "x": 1152,
+      "y": 153,
+      "w": 384,
+      "h": 352
+    },
+    "skill": {
+      "image": "heroes_skill",
+      "x": 1152,
+      "y": 27,
+      "w": 376,
+      "h": 485
+    },
+    "ultimate": {
+      "image": "heroes_ultimate",
+      "x": 1152,
+      "y": 6,
+      "w": 380,
+      "h": 506
+    }
+  },
+  "monk": {
+    "idle": {
+      "image": "heroes_idle",
+      "x": 9,
+      "y": 512,
+      "w": 375,
+      "h": 477
+    },
+    "attack": {
+      "image": "heroes_attack",
+      "x": 0,
+      "y": 580,
+      "w": 384,
+      "h": 378
+    },
+    "skill": {
+      "image": "heroes_skill",
+      "x": 3,
+      "y": 512,
+      "w": 381,
+      "h": 463
+    },
+    "ultimate": {
+      "image": "heroes_ultimate",
+      "x": 3,
+      "y": 512,
+      "w": 381,
+      "h": 479
+    }
+  },
+  "lightning": {
+    "idle": {
+      "image": "heroes_idle",
+      "x": 384,
+      "y": 512,
+      "w": 384,
+      "h": 478
+    },
+    "attack": {
+      "image": "heroes_attack",
+      "x": 384,
+      "y": 579,
+      "w": 384,
+      "h": 381
+    },
+    "skill": {
+      "image": "heroes_skill",
+      "x": 384,
+      "y": 512,
+      "w": 384,
+      "h": 468
+    },
+    "ultimate": {
+      "image": "heroes_ultimate",
+      "x": 384,
+      "y": 512,
+      "w": 384,
+      "h": 479
+    }
+  },
+  "herbalist": {
+    "idle": {
+      "image": "heroes_idle",
+      "x": 768,
+      "y": 579,
+      "w": 384,
+      "h": 411
+    },
+    "attack": {
+      "image": "heroes_attack",
+      "x": 768,
+      "y": 583,
+      "w": 384,
+      "h": 374
+    },
+    "skill": {
+      "image": "heroes_skill",
+      "x": 768,
+      "y": 532,
+      "w": 384,
+      "h": 443
+    },
+    "ultimate": {
+      "image": "heroes_ultimate",
+      "x": 768,
+      "y": 512,
+      "w": 384,
+      "h": 477
+    }
+  },
+  "formation": {
+    "idle": {
+      "image": "heroes_idle",
+      "x": 1152,
+      "y": 525,
+      "w": 380,
+      "h": 465
+    },
+    "attack": {
+      "image": "heroes_attack",
+      "x": 1152,
+      "y": 574,
+      "w": 382,
+      "h": 387
+    },
+    "skill": {
+      "image": "heroes_skill",
+      "x": 1152,
+      "y": 512,
+      "w": 379,
+      "h": 464
+    },
+    "ultimate": {
+      "image": "heroes_ultimate",
+      "x": 1152,
+      "y": 512,
+      "w": 380,
+      "h": 481
+    }
+  },
+  "tide": {
+    "attack": {
+      "image": "enemies_attack",
+      "x": 13,
+      "y": 59,
+      "w": 358,
+      "h": 211
+    },
+    "skill": {
+      "image": "enemies_skill",
+      "x": 15,
+      "y": 16,
+      "w": 361,
+      "h": 246
+    },
+    "idle": {
+      "image": "enemies_idle",
+      "x": 32,
+      "y": 11,
+      "w": 308,
+      "h": 254
+    }
+  },
+  "lantern": {
+    "attack": {
+      "image": "enemies_attack",
+      "x": 383,
+      "y": 18,
+      "w": 370,
+      "h": 250
+    },
+    "skill": {
+      "image": "enemies_skill",
+      "x": 376,
+      "y": 12,
+      "w": 377,
+      "h": 251
+    },
+    "idle": {
+      "image": "enemies_idle",
+      "x": 389,
+      "y": 6,
+      "w": 364,
+      "h": 260
+    }
+  },
+  "drowned": {
+    "attack": {
+      "image": "enemies_attack",
+      "x": 753,
+      "y": 35,
+      "w": 377,
+      "h": 231
+    },
+    "skill": {
+      "image": "enemies_skill",
+      "x": 753,
+      "y": 14,
+      "w": 377,
+      "h": 252
+    },
+    "idle": {
+      "image": "enemies_idle",
+      "x": 753,
+      "y": 7,
+      "w": 377,
+      "h": 262
+    }
+  },
+  "hound": {
+    "attack": {
+      "image": "enemies_attack",
+      "x": 1130,
+      "y": 22,
+      "w": 368,
+      "h": 253
+    },
+    "skill": {
+      "image": "enemies_skill",
+      "x": 1130,
+      "y": 10,
+      "w": 365,
+      "h": 261
+    },
+    "idle": {
+      "image": "enemies_idle",
+      "x": 1130,
+      "y": 10,
+      "w": 358,
+      "h": 260
+    }
+  },
+  "yaksha": {
+    "attack": {
+      "image": "enemies_attack",
+      "x": 14,
+      "y": 271,
+      "w": 362,
+      "h": 251
+    },
+    "skill": {
+      "image": "enemies_skill",
+      "x": 13,
+      "y": 265,
+      "w": 363,
+      "h": 264
+    },
+    "idle": {
+      "image": "enemies_idle",
+      "x": 9,
+      "y": 267,
+      "w": 342,
+      "h": 265
+    }
+  },
+  "drainer": {
+    "attack": {
+      "image": "enemies_attack",
+      "x": 376,
+      "y": 292,
+      "w": 375,
+      "h": 223
+    },
+    "skill": {
+      "image": "enemies_skill",
+      "x": 376,
+      "y": 275,
+      "w": 377,
+      "h": 256
+    },
+    "idle": {
+      "image": "enemies_idle",
+      "x": 393,
+      "y": 271,
+      "w": 332,
+      "h": 261
+    }
+  },
+  "soul": {
+    "attack": {
+      "image": "enemies_attack",
+      "x": 756,
+      "y": 286,
+      "w": 373,
+      "h": 228
+    },
+    "skill": {
+      "image": "enemies_skill",
+      "x": 753,
+      "y": 266,
+      "w": 377,
+      "h": 258
+    },
+    "idle": {
+      "image": "enemies_idle",
+      "x": 756,
+      "y": 277,
+      "w": 374,
+      "h": 252
+    }
+  },
+  "rottenwood": {
+    "attack": {
+      "image": "enemies_attack",
+      "x": 1143,
+      "y": 296,
+      "w": 360,
+      "h": 223
+    },
+    "skill": {
+      "image": "enemies_skill",
+      "x": 1130,
+      "y": 271,
+      "w": 366,
+      "h": 257
+    },
+    "idle": {
+      "image": "enemies_idle",
+      "x": 1130,
+      "y": 271,
+      "w": 353,
+      "h": 260
+    }
+  },
+  "swordcorpse": {
+    "attack": {
+      "image": "enemies_attack",
+      "x": 10,
+      "y": 532,
+      "w": 366,
+      "h": 266
+    },
+    "skill": {
+      "image": "enemies_skill",
+      "x": 13,
+      "y": 529,
+      "w": 363,
+      "h": 283
+    },
+    "idle": {
+      "image": "enemies_idle",
+      "x": 40,
+      "y": 537,
+      "w": 336,
+      "h": 283
+    }
+  },
+  "riverlord": {
+    "attack": {
+      "image": "enemies_attack",
+      "x": 376,
+      "y": 524,
+      "w": 376,
+      "h": 495
+    },
+    "skill": {
+      "image": "enemies_skill",
+      "x": 376,
+      "y": 531,
+      "w": 377,
+      "h": 467
+    },
+    "idle": {
+      "image": "enemies_idle",
+      "x": 376,
+      "y": 538,
+      "w": 377,
+      "h": 295
+    }
+  },
+  "mountainlord": {
+    "attack": {
+      "image": "enemies_attack",
+      "x": 754,
+      "y": 525,
+      "w": 376,
+      "h": 286
+    },
+    "skill": {
+      "image": "enemies_skill",
+      "x": 753,
+      "y": 524,
+      "w": 377,
+      "h": 300
+    },
+    "idle": {
+      "image": "enemies_idle",
+      "x": 753,
+      "y": 538,
+      "w": 377,
+      "h": 300
+    }
+  },
+  "boneemperor": {
+    "attack": {
+      "image": "enemies_attack",
+      "x": 1130,
+      "y": 524,
+      "w": 371,
+      "h": 284
+    },
+    "skill": {
+      "image": "enemies_skill",
+      "x": 1130,
+      "y": 528,
+      "w": 368,
+      "h": 304
+    },
+    "idle": {
+      "image": "enemies_idle",
+      "x": 1130,
+      "y": 531,
+      "w": 366,
+      "h": 310
+    }
+  },
+  "altar": {
+    "attack": {
+      "image": "enemies_attack",
+      "x": 20,
+      "y": 817,
+      "w": 356,
+      "h": 211
+    },
+    "skill": {
+      "image": "enemies_skill",
+      "x": 12,
+      "y": 812,
+      "w": 364,
+      "h": 227
+    },
+    "idle": {
+      "image": "enemies_idle",
+      "x": 52,
+      "y": 820,
+      "w": 324,
+      "h": 214
+    }
+  }
+}

@@ -65,6 +65,43 @@ adaptation, rather than a claim that every detail of the production document is
 implemented. See [build status](docs/BUILD_STATUS.md) for verified coverage and
 limitations and [balance reference](docs/BALANCE_REFERENCE.md) for content data.
 
+## Version 1.4: the Sect Estate
+
+Open **Sect Estate / Linh Dien** from the lobby. Spirit Stones remain the main
+persistent currency; Insight unlocks herbal research/formulas. Battle Qi remains
+separate and cannot be converted to permanent currency.
+
+- **Garden:** three starting plots, expandable to six/nine; four illustrated crops
+  grow after 1–3 completed battles. Water/fertilizer improve yield. Two research
+  levels per crop improve yield, then shorten growth and return a seed. Nothing
+  withers while away. Victory grows crops once; a defeat qualifies after half the
+  waves **and** 60 seconds. Quitting does not grow crops.
+- **Alchemy:** Spirit Tea, Five-Element Dew and Soul-Ward Elixir. Brew harvested
+  ingredients for a small stone fee, then equip **one preparation per battle**.
+  One dose is spent on successful battle entry; its effect activates automatically.
+  Formula panels state costs, triggers, duration and exact affected cells.
+- **Merchant:** buy seeds/fertilizer, sell spare produce, purchase and toggle three
+  cosmetic decorations for the lobby, garden and stronghold.
+- **Missions / Goals / Research:** three rotating commissions (no daily timer),
+  eight achievements and three bestiary milestones per enemy. Claim rewards here;
+  the Monster Archive links directly to research. All inventory is in the save.
+- **Nursery Defense:** a separate six-wave, three-lane seed run. Each bed has two
+  health; damage stays in its own lane. More surviving beds give more seed types.
+  Three illustrated briefing pages explain the mode. Garden Shelter grants every
+  living cultivator a 35-point shield for 6s (35 Qi, 30s cooldown).
+- **Talent reset:** reset a cultivator in the Cultivation Hall and recover the
+  stones actually paid. First reset is free; later resets deduct a 10-stone fee.
+  Legacy branch purchases keep their original 35-stone basis.
+- **New actor art:** redesigned detailed RPG-style cutouts for all eight
+  cultivators and twelve enemies plus the altar. Four hero poses and three enemy
+  poses combine with runtime breathing/lunging/casting and existing skill effects.
+  New garden scenery and sixteen botany stages are bundled offline.
+
+Version-1 saves migrate automatically to version 2 without losing progression,
+wallet, settings or talents. Starter seeds/fertilizer are granted once. Completed
+battle receipts prevent duplicate rewards; a lost HTTP response can be retried.
+Keep the same browser/localhost port or use Chronicles export/import.
+
 ## Version 1.3 improvements
 
 - Nine individual encounter themes, each with setup/pressure/onslaught music:

@@ -1,4 +1,4 @@
-# VAN DAO 1.3 balance reference
+# VAN DAO 1.4 balance reference
 
 Python is authoritative. Base content is in `game/content.py`, version-1.2
 contracts in `game/design.py`, and talent-adjusted previews in `game/rules.py`.
@@ -140,3 +140,52 @@ remain separately unlocked, once-per-battle items.
 legal costs/cooldowns and buys talent nodes only from preceding victory rewards.
 This is one reproducible policy, not statistical balance validation or a claim
 that all formations work equally well.
+
+## Sect economy (1.4)
+
+`game/estate_content.py` defines crops, prices, formulas, commissions and goals;
+`game/estate.py` normalizes v1/v2 saves and applies transactions to detached copies.
+The API settles outcomes from the actual terminal battle, not a client-supplied
+result. A 512-ID save ledger and per-live-battle receipts protect normal retries.
+This remains a portable, editable local save, not an online anti-cheat economy.
+
+| Crop | Battles | Base yield | Seed price | Sell per ingredient |
+| --- | ---: | ---: | ---: | ---: |
+| Qi Grass | 1 | 2 | 2 | 1 |
+| River Lotus | 2 | 3 | 4 | 1 |
+| Azure Bamboo | 2 | 2 | 5 | 2 |
+| Soul Lingzhi | 3 | 2 | 7 | 3 |
+
+Water adds 1 yield (2 at irrigation II). Fertilizer costs 5 stones and adds 1.
+Research I costs 1 Insight and adds 1 yield; research II costs 2 Insight, cuts
+one growth battle (minimum one) and returns a seed when harvested. Plots expand
+3→6 for 60 stones and 6→9 for 120. Irrigation costs 40 then 90; I waters on a
+growth event, II waters immediately and improves the water bonus. No real timer,
+withering or seed-to-currency shortcut exists.
+
+Tea costs 3 Qi Grass + 2 stones: +10 starting MP (clamped) for the first three
+successful summons. Dew costs 2 Lotus + 2 Bamboo + 3 stones (1 Insight formula):
+8s first-tide calm, or purify one corrupted node and +15 MP on its orthogonal
+radius-one cross, or 6s immunity to the first grave-mist mana penalty. Soul Ward
+costs 2 Lingzhi + 1 Qi Grass + 4 stones (2 Insight formula): at the first active
+three-stack curse, cleanse all allied curses and reveal spirits for 5s. Equip
+only one; one dose is spent on successful entry even if abandoned or never triggered.
+
+First/replay campaign stone rewards retain prior values. Each campaign victory
+adds one regional seed; every third recorded victory when in campaign adds one
+fertilizer. Three commissions rotate only after all are claimed. Normal bestiary
+thresholds are 3/10/25 kills for 5/10/15 stones (+1 Insight at the last); bosses
+1/3/5 kills for 10/15/25 stones (+1 Insight at the last two). Claims are one-time.
+Eight achievement definitions and their rewards are visible in the estate.
+
+Nursery Defense is outside STAGES: six waves, 45 enemies, lanes 1/2/3 only,
+15 final-wave spawns (including one elite per lane). Each bed has two health;
+a ruined bed cannot damage other beds. Each active lane retains a one-use rescue.
+One surviving bed grants one Qi seed; two grant two Qi seeds + one Lotus + one
+fertilizer; three grant three Qi seeds + Lotus + Bamboo + Lingzhi + fertilizer.
+No campaign stones/Insight or campaign clear is awarded by this mode itself;
+commissions/achievements/research may still grant their listed rewards.
+
+A talent reset refunds the recorded amount paid: the first is free, later fees
+are 10 stones deducted from the refund. Legacy rank-3-equivalent strings count
+as the original 35-stone purchase, including when subsequently advanced.

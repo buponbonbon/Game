@@ -391,6 +391,20 @@ window.VanDaoBattleArt = (() => {
     c.restore();
   }
   const briefings = {
+    nursery: [
+      [
+        "Three living beds",
+        "Only the three middle lanes are active. Each herb bed has 2 health. An enemy breach hurts its own bed; a ruined bed does not transfer damage to another. Lose all three beds and the run ends.",
+      ],
+      [
+        "A short seed expedition",
+        "Six waves build from a small raiding party to a simultaneous assault on all three beds. Place your defenders during the quiet opening. Your guardians rescue each active lane once. Garden Shelter costs 35 Qi: every living cultivator gains a 35-point shield for 6 seconds; cooldown 30 seconds.",
+      ],
+      [
+        "Bring the harvest home",
+        "Win with one bed for Qi Grass seeds; two beds also give Lotus and fertilizer; all three add Bamboo and Lingzhi seeds. A victory grows your planted crops once. A loss counts after half the waves and 60 seconds. Leaving early gives no growth.",
+      ],
+    ],
     wharf: [
       [
         "Read the river",
@@ -438,7 +452,13 @@ window.VanDaoBattleArt = (() => {
     c.save();
     c.translate(x, y);
     c.scale(w / 384, h / 190);
-    c.drawImage(images[region], 0, 0, 384, 190);
+    c.drawImage(
+      images[region === "nursery" ? "garden" : region],
+      0,
+      0,
+      384,
+      190,
+    );
     c.fillStyle = "#07182555";
     c.fillRect(0, 0, 384, 190);
     const bx = 72,
@@ -456,6 +476,40 @@ window.VanDaoBattleArt = (() => {
       c.fillStyle = color;
       c.fillRect(bx + col * cw + 1, by + lane * ch + 1, 22, 22);
     };
+    if (region === "nursery") {
+      for (let lane = 0; lane < 5; lane++)
+        for (let col = 0; col < 12; col++)
+          cell(lane, col, [1, 2, 3].includes(lane) ? "#84b67455" : "#0c172bd9");
+      for (const lane of [1, 2, 3]) {
+        c.fillStyle = "#8edbb4";
+        c.fillRect(43, by + lane * ch + 3, 22, 18);
+        text(
+          page === 2 ? "SEED" : "2 HP",
+          54,
+          by + lane * ch + 8,
+          "#132a24",
+          0.65,
+          "center",
+        );
+        if (page === 1) {
+          c.fillStyle = "#eb9d78";
+          for (let i = 0; i < 5; i++)
+            c.fillRect(274 + i * 15, by + lane * ch + 8, 8, 9);
+        }
+      }
+      text(
+        page === 2
+          ? "1 / 2 / 3 living beds = better seed rewards"
+          : "Protect the three middle lanes",
+        192,
+        165,
+        "#c9efcf",
+        0.9,
+        "center",
+      );
+      c.restore();
+      return;
+    }
     if (region === "wharf") {
       for (const lane of s?.hazard?.tiles
         ?.filter((t) => t.type === "water")
