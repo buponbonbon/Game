@@ -47,11 +47,17 @@
     formation: "ZHEN",
   };
   const regionNames = {
+    nursery: "SECT HERBAL NURSERY",
     wharf: "GLASS LANTERN WHARF",
     terrace: "AZURE SPIRIT TERRACES",
     tomb: "BONE MAUSOLEUM",
   };
-  const regionColor = { wharf: C.jade, terrace: C.ice, tomb: C.violet };
+  const regionColor = {
+    nursery: C.jade,
+    wharf: C.jade,
+    terrace: C.ice,
+    tomb: C.violet,
+  };
   let catalog = { heroes: [], enemies: [], stages: [], relics: [] },
     heroes = {},
     enemies = {},
@@ -60,6 +66,12 @@
     atlas = {},
     cultivators = {},
     guardianAtlas = {},
+    actorArt = {},
+    botany = {},
+    estateData = null,
+    economyBusy = false,
+    claimPromise = null,
+    estateEpoch = 0,
     previews = {},
     previewSignature = "",
     previewEpoch = 0;
@@ -96,6 +108,7 @@
     lastEvent = 0,
     commandBusy = false,
     resultApplied = false,
+    resultReceipt = null,
     battleStarted = 0;
   let now = 0,
     particles = [],
@@ -105,7 +118,7 @@
     serverError = false,
     profileSaved = true;
   const freshProfile = () => ({
-    version: 1,
+    version: 2,
     completed: [],
     stones: 0,
     insight: 0,
@@ -134,7 +147,9 @@
   }
   function normalizeProfile(v) {
     const d = freshProfile();
-    if (!v || v.version !== 1) return d;
+    if (!v || ![1, 2].includes(v.version)) return d;
+    if (v.estate && typeof v.estate === "object") d.estate = v.estate;
+    if (typeof v.save_id === "string") d.save_id = v.save_id;
     d.completed = Array.isArray(v.completed)
       ? v.completed.filter((x) => typeof x === "string").slice(0, 100)
       : [];
@@ -352,6 +367,91 @@
       ctx.fillRect(0, 0, W, H);
     }
   }
+  async function estateAction(action, data = {}, quiet = false) {
+    if (economyBusy) return null;
+    if (battleId && isPlaying(state) && !["inspect"].includes(action)) {
+      notify("Finish or leave the battle before changing the estate.", C.gold);
+      return null;
+    }
+    economyBusy = true;
+    const epoch = estateEpoch,
+      currentSlot = slot;
+    try {
+      const out = await api("/api/estate", { profile, action, ...data });
+      if (epoch !== estateEpoch || currentSlot !== slot) return null;
+      const settings = profile.settings;
+      profile = normalizeProfile(out.profile);
+      profile.settings = settings;
+      estateData = out.catalogue;
+      if (action === "claim_battle") toast = null;
+      saveProfile();
+      if (!quiet && out.notice) notify(out.notice, C.jade, 5);
+      return out;
+    } catch (e) {
+      notify(e.message, C.red, 6);
+      return null;
+    } finally {
+      economyBusy = false;
+    }
+  }
+  function openEstate() {
+    scene = "estate";
+    overlay = null;
+    if (!estateData) estateAction("inspect", {}, true);
+  }
+  function drawEstate() {
+    window.VanDaoEstate.draw({
+      ctx,
+      C,
+      rect,
+      text,
+      wrapped,
+      panel,
+      button,
+      bg,
+      images,
+      profile,
+      data: estateData,
+      act: estateAction,
+      busy: economyBusy,
+      header,
+      start: startBattle,
+      back: () => (scene = "title"),
+      botany,
+      now,
+      enemies,
+      sprite,
+    });
+  }
+  function drawDecorations(place) {
+    const owned = profile.estate?.cosmetics?.active || [];
+    if (place === "lobby" && owned.includes("lantern_canopy")) {
+      for (let i = 0; i < 5; i++) {
+        const x = 263 + i * 51,
+          y = 10 + Math.sin(now / 900 + i) * 2;
+        rect(x + 6, 0, 1, y, C.gold);
+        rect(x, y, 13, 18, "#ab423c");
+        rect(x + 5, y, 3, 18, C.gold);
+        rect(x + 2, y + 3, 9, 12, "#e18454");
+        rect(x + 5, y + 18, 2, 7, C.gold);
+      }
+    }
+    if (place === "stronghold" && owned.includes("ward_banner")) {
+      rect(73, 106, 2, 74, C.gold);
+      rect(51, 110, 22, 32, "#6b333d");
+      text("DAO", 62, 119, C.gold, 0.7, "center");
+    }
+  }
+  function drawNurseryBeds(s) {
+    for (const bed of s.nursery_beds) {
+      const y = B.y + bed.lane * B.ch;
+      panel(46, y + 4, 41, 24, bed.hp ? C.jade : C.red, "#24362be8");
+      text("BED", 66, y + 7, C.cream, 0.7, "center");
+      text(bed.hp + "/2", 66, y + 17, bed.hp ? C.jade : C.red, 0.7, "center");
+    }
+    for (const lane of [0, 4])
+      rect(B.x, B.y + lane * B.ch, 384, 32, "#14251cba");
+  }
   function sprite(
     id,
     x,
@@ -362,6 +462,59 @@
     action = "idle",
     started = 0,
   ) {
+    const authored = actorArt[id];
+    if (authored) {
+      const poseKey =
+        action === "ultimate"
+          ? "ultimate"
+          : ["skill", "deploy", "ability", "channel", "phase"].includes(action)
+            ? "skill"
+            : action === "attack"
+              ? "attack"
+              : "idle";
+      const pose = authored[poseKey] || authored.idle,
+        img = images[pose.image];
+      if (img) {
+        const clock = scene === "battle" ? state?.time || 0 : now / 1000;
+        const progress = clamp(
+          (clock - started) / (poseKey === "ultimate" ? 1.2 : 0.65),
+          0,
+          1,
+        );
+        const sway = Math.sin(clock * 3 + id.length) * 0.5;
+        const active = poseKey !== "idle" && scene === "battle";
+        const punch = active ? Math.sin(progress * Math.PI) : 0;
+        const w = 32 * scale,
+          h = 32 * scale,
+          ratio = pose.w / pose.h;
+        const dw = Math.min(w * 1.3, h * ratio),
+          dh = dw / ratio;
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        const direction = heroes[id] ? 1 : -1;
+        ctx.translate(
+          x + w / 2 + direction * punch * 3 * scale,
+          y + h + sway * scale,
+        );
+        ctx.rotate(
+          active ? direction * punch * 0.05 : Math.sin(clock * 2) * 0.012,
+        );
+        ctx.scale(1 + punch * 0.08, 1 + punch * 0.04);
+        ctx.drawImage(
+          img,
+          pose.x,
+          pose.y,
+          pose.w,
+          pose.h,
+          -dw / 2,
+          -dh,
+          dw,
+          dh,
+        );
+        ctx.restore();
+        return;
+      }
+    }
     const hero = cultivators[id];
     if (hero && images.cultivators) {
       const pose =
@@ -566,20 +719,9 @@
         i % 2 ? C.jade : C.gold,
       );
     }
-    const names = ["LANTERN WHARF", "AZURE TERRACES", "BONE MAUSOLEUM"];
-    names.forEach((name, i) => {
-      const x = 278 + i * 68;
-      panel(x, 227, 64, 28, [C.jade, C.ice, C.violet][i]);
-      text(
-        ["RIVER", "SKY", "TOMB"][i],
-        x + 32,
-        236,
-        [C.jade, C.ice, C.violet][i],
-        0.95,
-        "center",
-      );
-    });
-    text("Guqin / Guzheng / Dizi", 379, 264, C.muted, 0.95, "center");
+    button("estate", "SECT ESTATE / LINH DIEN", 278, 227, 202, 29, openEstate);
+    text("Garden / Alchemy / Commissions", 379, 264, C.jade, 0.9, "center");
+    drawDecorations("lobby");
     if (battleId && state && isPlaying(state))
       button("resume", "RESUME BATTLE", 281, 103, 196, 24, () => {
         scene = "battle";
@@ -813,12 +955,9 @@
         `Need ${node.cost - profile.stones} more Spirit Stones.`,
         C.red,
       );
-    profile.stones -= node.cost;
-    profile.upgrades[id] = { branch, rank };
-    saveProfile();
-    audio.play("upgrade");
-    notify(node.name + " awakened.", C.jade);
+    estateAction("buy_talent", { hero: id, branch, rank });
   }
+
   function drawRoster() {
     bg("title", 0.75);
     header("CULTIVATION HALL", () => (scene = "campaign"));
@@ -889,6 +1028,32 @@
     }
     text("GOLD learned / JADE next / GREY locked", 193, 86, C.muted, 0.7);
     const progress = talentProgress(h.id);
+    button(
+      "respec",
+      "RESET TALENTS",
+      393,
+      70,
+      99,
+      18,
+      () => {
+        const upgrade = profile.upgrades[h.id];
+        const spent =
+          profile.estate?.talent_paid?.[h.id] ??
+          (typeof upgrade === "string"
+            ? 35
+            : h.talents[upgrade?.branch || "A"]
+                .slice(0, upgrade?.rank || 0)
+                .reduce((n, t) => n + t.cost, 0));
+        const fee = estateData?.respec_fee || 0;
+        if (
+          window.confirm(
+            `Reset ${h.name}'s talents? Return ${Math.max(0, spent - fee)} stones (fee ${fee}).`,
+          )
+        )
+          estateAction("respec", { hero: h.id });
+      },
+      { disabled: !profile.upgrades[h.id] || economyBusy || !!battleId },
+    );
     for (const [i, branch] of ["A", "B"].entries()) {
       const x = 132 + i * 181;
       text(
@@ -951,6 +1116,10 @@
   function drawArchive() {
     bg("tomb", 0.75);
     header("MONSTER ARCHIVE", () => (scene = "campaign"));
+    button("bestiary-research", "RESEARCH", 345, 4, 81, 18, () => {
+      window.VanDaoEstate.openResearch();
+      openEstate();
+    });
     button("archive-ranks", "RANKS", 204, 4, 65, 19, () => (overlay = "ranks"));
     const list = catalog.enemies,
       visible = list.slice(archivePage * 6, archivePage * 6 + 6);
@@ -1036,20 +1205,6 @@
       12,
       2,
     );
-  }
-  function buyBranch(id, branch, cost) {
-    if (profile.upgrades[id])
-      return notify("THIS CULTIVATOR HAS ALREADY CHOSEN A PATH.");
-    if (profile.stones < cost)
-      return notify(
-        "NEED " + (cost - profile.stones) + " MORE SPIRIT STONES.",
-        C.red,
-      );
-    profile.stones -= cost;
-    profile.upgrades[id] = branch;
-    saveProfile();
-    audio.play("upgrade");
-    notify("CULTIVATION COMPLETE. PATH " + branch + " AWAKENED.", C.jade);
   }
   function isPlaying(s) {
     return s && ["playing", "running", "active"].includes(s.status);
@@ -1195,7 +1350,9 @@
       text("AWAKENING THE FORMATION...", 192, 105, C.jade, 1, "center");
       return;
     }
-    bg(s.region || "wharf");
+    bg(s.mode === "nursery" ? "garden" : s.region || "wharf");
+    drawDecorations("stronghold");
+    if (s.mode === "nursery") drawNurseryBeds(s);
     drawRanges(s);
     // Tile and range indicators sit behind the sprites, never over attack feedback.
     for (let lane = 0; lane < 5; lane++)
@@ -1342,19 +1499,25 @@
         u.action_started || 0,
       );
       const hp = clamp(Number(u.hp || 0) / Number(u.max_hp || u.hp || 1), 0, 1);
-      rect(x - 11, y - 29, 22, 3, C.deep);
-      rect(x - 11, y - 29, 22 * hp, 2, u.friendly ? C.jade : C.red);
+      rect(x - 11, y - size - 7, 22, 3, C.deep);
+      rect(x - 11, y - size - 7, 22 * hp, 2, u.friendly ? C.jade : C.red);
       if (u.shield > 0)
         rect(
           x - 11,
-          y - 26,
+          y - size - 5,
           clamp(u.shield / (u.max_hp || 100), 0, 1) * 22,
           1,
           C.ice,
         );
       if (u.friendly) {
-        rect(x - 11, y - 23, 22, 2, C.deep);
-        rect(x - 11, y - 23, 22 * clamp(u.mana / u.mana_max, 0, 1), 2, C.ice);
+        rect(x - 11, y - size - 3, 22, 2, C.deep);
+        rect(
+          x - 11,
+          y - size - 3,
+          22 * clamp(u.mana / u.mana_max, 0, 1),
+          2,
+          C.ice,
+        );
         rect(x - 10, y + 2, 20, 2, "#13222b");
         rect(
           x - 10,
@@ -1544,6 +1707,28 @@
     }
   }
   function drawHUD(s) {
+    if (s.preparation) {
+      const p = s.preparation,
+        label = { spirit_tea: "TEA", purifying_dew: "DEW", soul_ward: "WARD" }[
+          p.id
+        ];
+      panel(7, 190, 78, 28, C.edge, "#10232be8");
+      text("PREPARATION", 46, 193, C.gold, 0.65, "center");
+      text(
+        label +
+          " / " +
+          (p.used
+            ? "USED"
+            : p.id === "spirit_tea"
+              ? p.remaining + " LEFT"
+              : "READY"),
+        46,
+        204,
+        p.used ? C.muted : C.jade,
+        0.8,
+        "center",
+      );
+    }
     rect(0, 0, W, 27, "#10202a");
     rect(0, 26, W, 1, C.edge);
     icon("qi", 8, 8, C.gold);
@@ -1621,7 +1806,9 @@
     );
     if (s.final_assault?.incoming <= 15 && !s.final_assault?.active) {
       text(
-        "ALL 5 LANES: " + Math.ceil(s.final_assault.incoming) + "s",
+        (s.mode === "nursery" ? "ALL 3 BEDS: " : "ALL 5 LANES: ") +
+          Math.ceil(s.final_assault.incoming) +
+          "s",
         252,
         32,
         C.red,
@@ -1650,9 +1837,10 @@
           (["basic", "skill", "ultimate"].indexOf(rangeMode) + 1) % 3
         ]),
     );
-    const ritualLabel = { wharf: "Calm", terrace: "Purify", tomb: "Mirror" }[
-      s.region
-    ];
+    const ritualLabel =
+      s.mode === "nursery"
+        ? "Shelter"
+        : { wharf: "Calm", terrace: "Purify", tomb: "Mirror" }[s.region];
     button(
       "ritual",
       ritualLabel +
@@ -1884,47 +2072,88 @@
   }
   function drawResults() {
     const s = state,
-      won = ["victory", "won"].includes(s.status);
-    panel(72, 57, 240, 107, won ? C.gold : C.red, "#12212b");
+      won = s.status === "victory",
+      r = resultReceipt;
+    panel(80, 48, 352, 185, won ? C.gold : C.red, "#12212bf8");
     text(
-      won ? "THE GATE ENDURES" : "THE GATE HAS FALLEN",
-      192,
-      70,
+      s.mode === "nursery"
+        ? won
+          ? "THE NURSERY ENDURES"
+          : "THE GARDEN HAS FALLEN"
+        : won
+          ? "THE GATE ENDURES"
+          : "THE GATE HAS FALLEN",
+      256,
+      60,
       won ? C.gold : C.red,
-      1,
+      1.15,
       "center",
     );
-    text(stages[s.stage]?.name || s.stage, 192, 85, C.cream, 1, "center");
+    text(stages[s.stage]?.name || s.stage, 256, 81, C.cream, 1, "center");
     text(
-      "TIME " + formatTime(s.time) + "  ENEMIES " + (s.kills || 0),
-      192,
+      "TIME " + formatTime(s.time) + " / ENEMIES " + (s.kills || 0),
+      256,
       98,
       C.muted,
-      1,
+      0.9,
       "center",
     );
     text(
-      won
-        ? resultApplied
-          ? "PROGRESS SAVED"
-          : "SAVING YOUR VICTORY..."
-        : "REFORM YOUR LINE. TRY ANOTHER TACTIC.",
-      192,
-      111,
-      won ? C.jade : C.muted,
-      1,
+      resultApplied ? "OUTCOME SAVED" : "RECORDING BATTLE & GARDEN...",
+      256,
+      115,
+      resultApplied ? C.jade : C.gold,
+      0.9,
       "center",
     );
-    button("retry", won ? "NEXT STAGE" : "TRY AGAIN", 87, 132, 98, 20, () => {
-      const next = catalog.stages.find(
-        (x) => x.index === (stages[s.stage]?.index ?? 0) + 1,
+    if (r) {
+      const lines = [];
+      if (r.stones || r.insight)
+        lines.push(
+          "+" + r.stones + " Spirit Stones / +" + r.insight + " Insight",
+        );
+      const seeds = Object.entries(r.seeds || {}).map(
+        ([k, n]) =>
+          n + " " + (estateData?.crops.find((c) => c.id === k)?.name || k),
       );
-      if (won && next) startBattle(next.id);
-      else if (won) leaveBattle();
-      else startBattle(s.stage);
-    });
-    button("results-campaign", "CAMPAIGN", 192, 132, 104, 20, () =>
-      leaveBattle(),
+      if (seeds.length) lines.push("Seeds: " + seeds.join(" / "));
+      if (r.fertilizer) lines.push("Fertilizer +" + r.fertilizer);
+      lines.push(
+        r.garden_grew
+          ? "Planted crops grew +1 battle."
+          : "No crop growth this time.",
+      );
+      if (r.beds !== null) lines.push(r.beds + "/3 nursery beds survived.");
+      wrapped(lines.join("  "), 94, 135, 324, C.cream, 12, 5);
+    }
+    button(
+      "retry",
+      s.mode === "nursery" ? "DEFEND AGAIN" : won ? "NEXT STAGE" : "TRY AGAIN",
+      94,
+      202,
+      151,
+      23,
+      () => {
+        if (!resultApplied) return;
+        if (s.mode === "nursery") return startBattle("garden-defense");
+        const next = catalog.stages.find(
+          (x) => x.index === (stages[s.stage]?.index ?? 0) + 1,
+        );
+        if (won && next) startBattle(next.id);
+        else if (won) leaveBattle();
+        else startBattle(s.stage);
+      },
+      { disabled: !resultApplied },
+    );
+    button(
+      "results-campaign",
+      s.mode === "nursery" ? "SECT ESTATE" : "CAMPAIGN",
+      253,
+      202,
+      164,
+      23,
+      () => leaveBattle(),
+      { disabled: !resultApplied },
     );
   }
   function drawOverlay() {
@@ -1932,7 +2161,8 @@
     ctx.fillStyle = "rgba(6,12,19,.8)";
     ctx.fillRect(-(W - 384) / 2, -(H - 216) / 2, W, H);
     if (overlay === "map-intro") {
-      const region = state?.region || "wharf",
+      const region =
+          state?.mode === "nursery" ? "nursery" : state?.region || "wharf",
         pages = window.VanDaoBattleArt.briefings[region],
         page = pages[tutorialPage];
       panel(-55, -23, 494, 266, regionColor[region]);
@@ -2146,7 +2376,7 @@
     }
     if (overlay === "stage") {
       const s = stagePreview;
-      panel(55, 35, 274, 150, regionColor[s.region]);
+      panel(55, 28, 274, 178, regionColor[s.region]);
       text(
         "CHAPTER " + s.chapter + " / " + s.id.toUpperCase(),
         70,
@@ -2171,10 +2401,23 @@
         C.gold,
         0.9,
       );
-      button("start", "DEFEND THE GATE", 70, 155, 160, 20, () =>
+      const prep = profile.estate?.equipped;
+      text(
+        prep
+          ? (estateData?.recipes.find((r) => r.id === prep)?.name || prep) +
+              " x" +
+              (profile.estate.bag.pills[prep] || 0) +
+              " / 1 spent on entry"
+          : "Preparation: none / select in Sect Estate",
+        70,
+        155,
+        prep ? C.jade : C.muted,
+        0.8,
+      );
+      button("start", "DEFEND THE GATE", 70, 180, 160, 20, () =>
         startBattle(s.id),
       );
-      button("close", "BACK", 237, 155, 76, 20, () => (overlay = null));
+      button("close", "BACK", 237, 180, 76, 20, () => (overlay = null));
       return;
     }
     if (overlay === "settings") {
@@ -2362,8 +2605,13 @@
                 "LEAVE YOUR CURRENT BATTLE BEFORE SWITCHING.",
                 C.red,
               );
+            if (economyBusy || battleId)
+              return notify("Finish the current battle or save first.");
+            estateEpoch++;
             slot = i;
             profile = loadProfile(i);
+            estateData = null;
+            estateAction("inspect", {}, true);
             saveProfile();
             audio.update();
             notify("SLOT " + (i + 1) + " LOADED.", C.jade);
@@ -2391,7 +2639,12 @@
         () => (overlay = "saves"),
       );
       button("erase", "ERASE", 195, 116, 102, 21, () => {
+        if (economyBusy || battleId)
+          return notify("Finish the current battle or save first.");
+        estateEpoch++;
         profile = freshProfile();
+        estateData = null;
+        estateAction("inspect", {}, true);
         saveProfile();
         overlay = "saves";
         notify("THIS SAVE SLOT HAS BEEN RESET.");
@@ -2418,6 +2671,7 @@
     else if (scene === "campaign") drawCampaign();
     else if (scene === "roster") drawRoster();
     else if (scene === "archive") drawArchive();
+    else if (scene === "estate") drawEstate();
     else if (scene === "battle") drawBattle();
     if (overlay) buttons = [];
     if (overlay) {
@@ -2437,7 +2691,12 @@
       }
     }
     drawToast();
-    if (!overlay && voiceCaption && now < voiceCaption.until) {
+    if (
+      !overlay &&
+      voiceCaption &&
+      now < voiceCaption.until &&
+      (scene !== "battle" || isPlaying(state))
+    ) {
       const captionY = inspectUnit !== null ? 60 : 221;
       panel(126, captionY, 378, 17, C.edge, "#10232bef");
       text(voiceCaption.text, 132, captionY + 3, C.cream, 0.82);
@@ -2459,7 +2718,15 @@
       lane = Math.floor((p.y - B.y) / B.ch);
     return col >= 1 && col <= 9 && lane >= 0 && lane < 5 ? { col, lane } : null;
   }
-  function leaveBattle() {
+  async function leaveBattle() {
+    if (claimPromise) await claimPromise;
+    if (state && !isPlaying(state) && !resultApplied)
+      return notify(
+        "Save the battle outcome before leaving. Keep the Python server running.",
+        C.red,
+        6,
+      );
+    const nursery = state?.mode === "nursery";
     abilityBursts = [];
     audio.stopVoices();
     battleEpoch++;
@@ -2468,7 +2735,7 @@
     state = null;
     selectedHero = null;
     inspectUnit = null;
-    scene = "campaign";
+    scene = nursery ? "estate" : "campaign";
     overlay = null;
     sessionStorage.removeItem("vanDao.battle");
     if (old) fetch("/api/battle/" + old, { method: "DELETE" }).catch(() => {});
@@ -2503,6 +2770,14 @@
     return out;
   }
   async function startBattle(id) {
+    if (claimPromise) await claimPromise;
+    if (economyBusy) return notify("Wait for the sect ledger to save.");
+    if (state && !isPlaying(state) && !resultApplied)
+      return notify("Record this battle before starting another.", C.red);
+    if (!profile.estate) {
+      await estateAction("inspect", {}, true);
+      if (!profile.estate) return;
+    }
     audio.stopVoices();
     abilityBursts = [];
     const epoch = ++battleEpoch;
@@ -2515,6 +2790,7 @@
     lastEvent = 0;
     seenEffects = new Set();
     resultApplied = false;
+    resultReceipt = null;
     state = null;
     scene = "battle";
     try {
@@ -2525,6 +2801,7 @@
       const seed = (Date.now() ^ ((slot + 1) * 10739)) >>> 0;
       const out = await api("/api/battle", {
         stage: id,
+        profile,
         paused: true,
         seed,
         upgrades: profile.upgrades,
@@ -2535,6 +2812,12 @@
           () => {},
         );
         return;
+      }
+      if (out.profile) {
+        const settings = profile.settings;
+        profile = normalizeProfile(out.profile);
+        profile.settings = settings;
+        saveProfile();
       }
       battleId = out.battle_id;
       sessionStorage.setItem("vanDao.battle", battleId);
@@ -2794,30 +3077,19 @@
           });
       }
     }
-    if (!isPlaying(s) && !resultApplied) {
-      resultApplied = true;
-      if (["victory", "won"].includes(s.status)) {
-        const first = !profile.completed.includes(s.stage);
-        if (first) {
-          profile.completed.push(s.stage);
-          const reward = s.rewards || stages[s.stage]?.reward || {};
-          profile.stones += Number(reward.stones ?? reward.spirit_stones ?? 0);
-          profile.insight += Number(reward.insight || 0);
-        } else {
-          profile.stones += Number(s.rewards?.replay_stones || 0);
-        }
-        const old = profile.best[s.stage];
-        if (!old || s.time < old.time)
-          profile.best[s.stage] = {
-            time: s.time,
-            gate: s.gate,
-            kills: s.kills,
-          };
-        saveProfile();
-        audio.play("victory");
-      } else audio.play("defeat");
+    if (!isPlaying(s) && !resultApplied && !claimPromise) {
+      claimPromise = estateAction("claim_battle", { battle_id: battleId }, true)
+        .then((out) => {
+          if (out) {
+            resultApplied = true;
+            resultReceipt = out.outcome || null;
+            audio.play(s.status === "victory" ? "victory" : "defeat");
+          }
+        })
+        .finally(() => (claimPromise = null));
     }
   }
+
   function exportSave() {
     saveProfile();
     const blob = new Blob(
@@ -2839,13 +3111,19 @@
       if (file.size > 1000000) throw Error("Save file is too large.");
       const data = JSON.parse(await file.text());
       if (
-        data.version !== 1 ||
+        ![1, 2].includes(data.version) ||
         !Array.isArray(data.completed) ||
         !data.upgrades
       )
         throw Error("This is not a compatible VAN DAO save.");
+      if (battleId || economyBusy)
+        throw Error(
+          "Leave the current battle and finish saving before importing.",
+        );
+      estateEpoch++;
       profile = normalizeProfile(data);
       saveProfile();
+      await estateAction("inspect", {}, true);
       audio.update();
       notify("SAVE IMPORTED INTO SLOT " + (slot + 1) + ".", C.jade);
     } catch (e) {
@@ -3348,14 +3626,19 @@
       await document.fonts.load("13px VT323");
       await document.fonts.ready;
       catalog = await api("/api/catalog");
-      if (catalog.version !== "1.3.0")
+      if (catalog.version !== "1.4.0")
         throw Error("Stop the old Python server and run the updated run.py.");
       for (const key of ["heroes", "enemies", "stages", "relics"])
         if (!Array.isArray(catalog[key]))
           catalog[key] = Object.values(catalog[key] || {});
       heroes = Object.fromEntries(catalog.heroes.map((h) => [h.id, h]));
       enemies = Object.fromEntries(catalog.enemies.map((h) => [h.id, h]));
-      stages = Object.fromEntries(catalog.stages.map((s) => [s.id, s]));
+      stages = Object.fromEntries(
+        [...catalog.stages, ...(catalog.side_modes || [])].map((s) => [
+          s.id,
+          s,
+        ]),
+      );
       const names = [
         "title",
         "wharf",
@@ -3364,6 +3647,15 @@
         "sprites",
         "cultivators",
         "guardians",
+        "garden",
+        "crops",
+        "heroes_idle",
+        "heroes_attack",
+        "heroes_skill",
+        "heroes_ultimate",
+        "enemies_idle",
+        "enemies_attack",
+        "enemies_skill",
       ];
       const assets = await Promise.all(
         names.map((name) => loadImage("/assets/" + name + ".png")),
@@ -3376,6 +3668,9 @@
       } catch {}
       cultivators = await (await fetch("/assets/cultivators.json")).json();
       guardianAtlas = await (await fetch("/assets/guardians.json")).json();
+      actorArt = await (await fetch("/assets/actors.json")).json();
+      botany = await (await fetch("/assets/crops.json")).json();
+      await estateAction("inspect", {}, true);
       sceneArt = await (await fetch("/assets/scenes.json")).json();
       audio.voiceManifest = await (
         await fetch("/assets/audio/voices/voices.json")
@@ -3392,10 +3687,11 @@
       if (resume && !battleId) {
         try {
           const s = await api("/api/battle/" + resume);
-          if (isPlaying(s) && !battleId && scene === "title") {
+          if (!battleId && scene === "title") {
             battleId = resume;
             acceptState(s);
-            command({ action: "pause", paused: true });
+            if (isPlaying(s)) command({ action: "pause", paused: true });
+            else scene = "battle";
             polling = true;
             poll();
           }
@@ -3411,6 +3707,15 @@
   window.VanDao = {
     startBattle,
     command,
+    openEstate,
+    estateAction,
+    get estate() {
+      return {
+        catalogue: estateData,
+        busy: economyBusy,
+        tab: window.VanDaoEstate.tab,
+      };
+    },
     get state() {
       return state;
     },

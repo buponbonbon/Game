@@ -1,3 +1,3 @@
-VAN DAO raster assets: retained image-generated RPG scenes/artifacts and original procedural actors.
+VAN DAO raster assets: retained image-generated RPG scenes, artifacts, actors and botany; procedural fallback sprites and icons.
 Artwork is original. VT323 is separately bundled under its SIL Open Font License.
 See the repository license for redistribution terms.

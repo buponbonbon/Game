@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Create the game's original raster artwork using only Python's standard library.
 
-All shapes are plotted directly onto a small integer pixel grid.  No external
-images, fonts, machine-generated artwork or third-party packages are required.
+Procedural fallback sprites/icons use an integer grid. Authored RPG scenes,
+actor pose sheets and botany are retained PNG inputs copied without alteration.
+No third-party packages are required for this preservation/generation command.
 """
 from __future__ import annotations
 
@@ -847,7 +848,7 @@ def main():
     # High-resolution scene paintings are retained authoring inputs, never replaced
     # by the earlier recolored tile courtyards when regenerating procedural actors.
     retained=Path(__file__).resolve().parents[1]/'web/assets'
-    for name in ('wharf.png','terrace.png','tomb.png','scenes.json'):
+    for name in ('wharf.png','terrace.png','tomb.png','scenes.json','garden.png','crops.png','crops.json','actors.json','actors_manifest.json','heroes_idle.png','heroes_attack.png','heroes_skill.png','heroes_ultimate.png','enemies_idle.png','enemies_attack.png','enemies_skill.png'):
         source=retained/name;target=OUT/name
         if source.resolve()!=target.resolve():shutil.copyfile(source,target)
     title().save(OUT/'title.png')
@@ -894,7 +895,7 @@ def main():
     icons()
     detail.generate(art, OUT)
     (OUT / "ART_LICENSE.txt").write_text(
-        "VAN DAO raster assets: retained image-generated RPG scenes/artifacts and original procedural actors.\nArtwork is original. VT323 is separately bundled under its SIL Open Font License.\nSee the repository license for redistribution terms.\n"
+        "VAN DAO raster assets: retained image-generated RPG scenes, artifacts, actors and botany; procedural fallback sprites and icons.\nArtwork is original. VT323 is separately bundled under its SIL Open Font License.\nSee the repository license for redistribution terms.\n"
     )
     print(f"Generated original pixel artwork in {OUT}")
 

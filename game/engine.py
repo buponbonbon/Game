@@ -14,6 +14,7 @@ from collections import deque
 
 from .content import ENEMIES, HEROES, RELICS, STAGES
 from .rules import hero_data
+from .nursery import NURSERY
 
 HZ = 60
 STEP = 1 / HZ
@@ -35,9 +36,23 @@ def damage_amount(raw, armor=0, resistance=0, true=False):
 
 class Battle:
     def __init__(self, stage_id, seed=1, upgrades=None, realm=0):
-        if not isinstance(stage_id, str) or stage_id not in STAGES:
+        if (
+            not isinstance(stage_id, str)
+            or stage_id not in STAGES
+            and stage_id != "garden-defense"
+        ):
             raise ValueError("Unknown stage")
-        self.stage = copy.deepcopy(STAGES[stage_id])
+        self.stage = copy.deepcopy(
+            NURSERY if stage_id == "garden-defense" else STAGES[stage_id]
+        )
+        self.mode = "nursery" if stage_id == "garden-defense" else "campaign"
+        self.nursery_beds = (
+            [{"lane": lane, "hp": 2, "max_hp": 2} for lane in (1, 2, 3)]
+            if self.mode == "nursery"
+            else []
+        )
+        self.preparation = None
+        self._mist_protection_until = 0
         self.stage_id = stage_id
         self.region = self.stage.get("region", "wharf")
         self.seed = int(seed)
@@ -98,6 +113,11 @@ class Battle:
             "deaths": 0,
             "breaches": 0,
             "invalid": 0,
+            "kills_by_type": {},
+            "roles_used": [],
+            "hero_types_used": [],
+            "rituals_used": 0,
+            "nodes_purified": 0,
         }
         self._waves = sorted(
             self.stage.get("waves", []), key=lambda w: w.get("at", w.get("time", 0))
@@ -357,10 +377,15 @@ class Battle:
             self.qi -= 35
             self.metrics["spent"] += 35
             self.ritual_until = self.tick + ticks(30)
-            if self.region == "wharf":
+            self.metrics["rituals_used"] += 1
+            if self.mode == "nursery":
+                for h in self.heroes.values():
+                    self._shield(h, 35, 6)
+            elif self.region == "wharf":
                 self._calm_until = self.tick + ticks(12)
             elif self.region == "terrace":
                 for node in self.nodes:
+                    self.metrics["nodes_purified"] += int(node["corrupted"])
                     node.update(corrupted=False, channel=0, purify=0)
                 self._wind_lock = self.tick + ticks(10)
                 for h in self.heroes.values():
@@ -412,6 +437,10 @@ class Battle:
                 return self._response(
                     False,
                     "Column 0 holds a one-use guardian seal. Deploy in columns 1-9.",
+                )
+            if self.mode == "nursery" and lane not in (1, 2, 3):
+                return self._response(
+                    False, "Nursery Defense uses the three middle lanes."
                 )
             if self.realm < self._unlock(hero_id):
                 return self._response(False, "This hero is not unlocked yet.")
@@ -484,6 +513,21 @@ class Battle:
             unit["public_stats"] = copy.deepcopy(
                 {k: v for k, v in data.items() if k not in ("talents", "branches")}
             )
+            if (
+                self.preparation
+                and self.preparation["id"] == "spirit_tea"
+                and self.preparation["remaining"]
+            ):
+                self._mana(unit, 10)
+                self.preparation["remaining"] -= 1
+                self.preparation["used"] = self.preparation["remaining"] == 0
+                self._effect("heal", unit["x"], lane, "+10 MP", 1)
+            for key, value in (
+                ("roles_used", data["role"]),
+                ("hero_types_used", hero_id),
+            ):
+                if value not in self.metrics[key]:
+                    self.metrics[key].append(value)
             self.heroes[unit_id] = unit
             self.cards[hero_id] = self.tick + ticks(data.get("cooldown", 8))
             self._effect("deploy", unit["x"], lane, duration=0.8)
@@ -606,6 +650,7 @@ class Battle:
             self.metrics["spent"] += upkeep
         self.qi = min(self.qi, self._qi_cap())
         self._mechanic_tick()
+        self._preparation_tick()
         while (
             self._spawn_index < len(self._spawn_queue)
             and self._spawn_queue[self._spawn_index][0] <= self.tick
@@ -863,6 +908,7 @@ class Battle:
         if (
             self.region == "tomb"
             and self._hazard()["phase"] == "GRAVE MIST"
+            and self._mist_protection_until <= self.tick
             and hero["lane"] in self.stage.get("mist_lanes", [])
         ):
             regen *= 0.7
@@ -1354,6 +1400,9 @@ class Battle:
             return
         del self.enemies[enemy["id"]]
         self.kills += 1
+        if enemy["type"] != "altar":
+            counts = self.metrics["kills_by_type"]
+            counts[enemy["type"]] = counts.get(enemy["type"], 0) + 1
         for unit_id, hit_at in list(enemy["damage_owners"].items())[:3]:
             if self.tick - hit_at <= ticks(3) and unit_id in self.heroes:
                 self._resonance(self.heroes[unit_id], 10)
@@ -1937,7 +1986,12 @@ class Battle:
         if enemy["x"] <= 0.5 and ward["status"] == "sweeping":
             return
         if enemy["x"] <= 0.5:
-            self.gate = max(0, self.gate - (3 if data.get("boss") else 1))
+            if self.mode == "nursery":
+                bed = next(b for b in self.nursery_beds if b["lane"] == enemy["lane"])
+                bed["hp"] = max(0, bed["hp"] - 1)
+                self.gate = sum(b["hp"] for b in self.nursery_beds)
+            else:
+                self.gate = max(0, self.gate - (3 if data.get("boss") else 1))
             self.metrics["breaches"] += 1
             self.enemies.pop(enemy["id"], None)
             self._event(
@@ -2121,6 +2175,7 @@ class Battle:
                 node["channel"] = 0
                 node["purify"] += 1
                 if node["purify"] >= 3:
+                    self.metrics["nodes_purified"] += int(node["corrupted"])
                     node["corrupted"] = False
             else:
                 node["channel"] = 0
@@ -2135,7 +2190,68 @@ class Battle:
                     ):
                         e["hp"] = min(e["max_hp"], e["hp"] + e["max_hp"] * 0.03)
 
+    def apply_preparation(self, item):
+        from .estate_content import RECIPES
+
+        if item not in RECIPES or self.preparation or self.tick:
+            raise ValueError("Choose one preparation before a battle starts.")
+        self.preparation = {
+            "id": item,
+            "name": RECIPES[item]["name"],
+            "used": False,
+            "remaining": 3 if item == "spirit_tea" else 1,
+        }
+
+    def _preparation_tick(self):
+        p = self.preparation
+        if not p or p["used"] or p["id"] == "spirit_tea":
+            return
+        if p["id"] == "purifying_dew":
+            phase = self._hazard()["phase"]
+            if (
+                self.region == "wharf"
+                and self.mode != "nursery"
+                and phase == "HIGH TIDE"
+            ):
+                self._calm_until = self.tick + ticks(8)
+            elif self.region == "terrace" and any(n["corrupted"] for n in self.nodes):
+                node = next(n for n in self.nodes if n["corrupted"])
+                node.update(corrupted=False, channel=0, purify=0)
+                self.metrics["nodes_purified"] += 1
+                for hero in self.heroes.values():
+                    if (
+                        math.hypot(
+                            hero["lane"] - node["lane"], hero["col"] - node["col"]
+                        )
+                        <= 1
+                    ):
+                        self._mana(hero, 15)
+            elif self.region == "tomb" and phase == "GRAVE MIST":
+                self._mist_protection_until = self.tick + ticks(6)
+            else:
+                return
+        elif p["id"] == "soul_ward":
+            if not any(
+                h.get("curse_until", 0) > self.tick or h.get("curse", 0) >= 3
+                for h in self.heroes.values()
+            ):
+                return
+            for h in self.heroes.values():
+                h.update(curse=0, curse_until=0)
+            self._reveal_until = self.tick + ticks(5)
+        p.update(used=True, remaining=0)
+        self._event("preparation", p["name"] + " activated.")
+        self._effect("heal", 2.5, 2, p["name"], 1.5)
+
     def _hazard(self):
+        if self.mode == "nursery":
+            return {
+                "name": "Nursery Beds",
+                "phase": "PROTECT THREE BEDS",
+                "countdown": 0,
+                "tiles": [],
+                "description": "Only lanes 2-4 are active. Each bed withstands two breaches. More surviving beds yield more seeds.",
+            }
         if self.region == "wharf":
             if self._calm_until > self.tick:
                 return {
@@ -2307,6 +2423,9 @@ class Battle:
             next_wave = max(0, self._spawn_queue[self._spawn_index][0] - self.tick) / HZ
         return {
             "stage": self.stage_id,
+            "mode": self.mode,
+            "nursery_beds": copy.deepcopy(self.nursery_beds),
+            "preparation": copy.deepcopy(self.preparation),
             "region": self.region,
             "time": round(self.time, 3),
             "tick": self.tick,

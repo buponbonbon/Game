@@ -1,0 +1,16 @@
+{
+  "passed": true,
+  "checks": [
+    "v1 save migrated without lost wallet/progress/legacy talents",
+    "real canvas planting, watering, fertilizer, research, 9 plots and irrigation purchases",
+    "lost outcome response recovered by receipt replay; rewards/growth once",
+    "battle-grown herbs harvested and brewed/equipped into tea and regional dew",
+    "first-clear achievement and three bestiary rewards claimed through canvas",
+    "commission claimed from two full-health nursery wins",
+    "legacy respec refund and new talent purchase use central wallet",
+    "all eight authored cultivators, twelve enemies and altar rendered in a paused combat fixture",
+    "desktop + landscape touch rendered without JavaScript errors or external requests"
+  ],
+  "errors": [],
+  "external_requests": []
+}

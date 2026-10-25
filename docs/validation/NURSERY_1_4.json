@@ -1,0 +1,422 @@
+[
+  {
+    "stage": "garden-defense",
+    "seed": 1,
+    "realm": 0,
+    "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+    "upgrades_at_start": {},
+    "status": "victory",
+    "duration": 166.017,
+    "gate": 6,
+    "nursery_beds": [
+      {
+        "lane": 1,
+        "hp": 2,
+        "max_hp": 2
+      },
+      {
+        "lane": 2,
+        "hp": 2,
+        "max_hp": 2
+      },
+      {
+        "lane": 3,
+        "hp": 2,
+        "max_hp": 2
+      }
+    ],
+    "kills": 45,
+    "qi_remaining": 82,
+    "metrics": {
+      "damage": {
+        "sword": 6055,
+        "fire": 943
+      },
+      "healing": 0,
+      "altars_destroyed": 0,
+      "plates_broken": 0,
+      "qi": {
+        "starting": 150,
+        "gatherer": 560,
+        "passive": 390,
+        "ultimate": 96
+      },
+      "spent": 1114,
+      "deaths": 1,
+      "breaches": 0,
+      "invalid": 0,
+      "kills_by_type": {
+        "tide": 18,
+        "lantern": 6,
+        "drowned": 21
+      },
+      "roles_used": [
+        "economy",
+        "damage"
+      ],
+      "hero_types_used": [
+        "gatherer",
+        "sword",
+        "fire"
+      ],
+      "rituals_used": 0,
+      "nodes_purified": 0,
+      "peak_enemies": 15
+    },
+    "rewards": {
+      "stones": 0,
+      "insight": 0,
+      "stage": "garden-defense",
+      "kills": 45,
+      "replay_stones": 10
+    },
+    "placements": [
+      {
+        "time": 0.0,
+        "hero": "gatherer",
+        "lane": 2,
+        "col": 1
+      },
+      {
+        "time": 0.0,
+        "hero": "sword",
+        "lane": 2,
+        "col": 2
+      },
+      {
+        "time": 12.0,
+        "hero": "gatherer",
+        "lane": 1,
+        "col": 1
+      },
+      {
+        "time": 24.0,
+        "hero": "sword",
+        "lane": 1,
+        "col": 2
+      },
+      {
+        "time": 36.0,
+        "hero": "sword",
+        "lane": 3,
+        "col": 2
+      },
+      {
+        "time": 60.0,
+        "hero": "fire",
+        "lane": 3,
+        "col": 3
+      },
+      {
+        "time": 83.2,
+        "hero": "sword",
+        "lane": 3,
+        "col": 4
+      },
+      {
+        "time": 96.0,
+        "hero": "sword",
+        "lane": 3,
+        "col": 5
+      },
+      {
+        "time": 122.0,
+        "hero": "fire",
+        "lane": 2,
+        "col": 3
+      },
+      {
+        "time": 132.0,
+        "hero": "sword",
+        "lane": 2,
+        "col": 4
+      },
+      {
+        "time": 157.4,
+        "hero": "sword",
+        "lane": 1,
+        "col": 2
+      }
+    ]
+  },
+  {
+    "stage": "garden-defense",
+    "seed": 42,
+    "realm": 0,
+    "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+    "upgrades_at_start": {},
+    "status": "victory",
+    "duration": 166.017,
+    "gate": 6,
+    "nursery_beds": [
+      {
+        "lane": 1,
+        "hp": 2,
+        "max_hp": 2
+      },
+      {
+        "lane": 2,
+        "hp": 2,
+        "max_hp": 2
+      },
+      {
+        "lane": 3,
+        "hp": 2,
+        "max_hp": 2
+      }
+    ],
+    "kills": 45,
+    "qi_remaining": 82,
+    "metrics": {
+      "damage": {
+        "sword": 6055,
+        "fire": 943
+      },
+      "healing": 0,
+      "altars_destroyed": 0,
+      "plates_broken": 0,
+      "qi": {
+        "starting": 150,
+        "gatherer": 560,
+        "passive": 390,
+        "ultimate": 96
+      },
+      "spent": 1114,
+      "deaths": 1,
+      "breaches": 0,
+      "invalid": 0,
+      "kills_by_type": {
+        "tide": 18,
+        "lantern": 6,
+        "drowned": 21
+      },
+      "roles_used": [
+        "economy",
+        "damage"
+      ],
+      "hero_types_used": [
+        "gatherer",
+        "sword",
+        "fire"
+      ],
+      "rituals_used": 0,
+      "nodes_purified": 0,
+      "peak_enemies": 15
+    },
+    "rewards": {
+      "stones": 0,
+      "insight": 0,
+      "stage": "garden-defense",
+      "kills": 45,
+      "replay_stones": 10
+    },
+    "placements": [
+      {
+        "time": 0.0,
+        "hero": "gatherer",
+        "lane": 2,
+        "col": 1
+      },
+      {
+        "time": 0.0,
+        "hero": "sword",
+        "lane": 2,
+        "col": 2
+      },
+      {
+        "time": 12.0,
+        "hero": "gatherer",
+        "lane": 1,
+        "col": 1
+      },
+      {
+        "time": 24.0,
+        "hero": "sword",
+        "lane": 1,
+        "col": 2
+      },
+      {
+        "time": 36.0,
+        "hero": "sword",
+        "lane": 3,
+        "col": 2
+      },
+      {
+        "time": 60.0,
+        "hero": "fire",
+        "lane": 3,
+        "col": 3
+      },
+      {
+        "time": 83.2,
+        "hero": "sword",
+        "lane": 3,
+        "col": 4
+      },
+      {
+        "time": 96.0,
+        "hero": "sword",
+        "lane": 3,
+        "col": 5
+      },
+      {
+        "time": 122.0,
+        "hero": "fire",
+        "lane": 2,
+        "col": 3
+      },
+      {
+        "time": 132.0,
+        "hero": "sword",
+        "lane": 2,
+        "col": 4
+      },
+      {
+        "time": 157.4,
+        "hero": "sword",
+        "lane": 1,
+        "col": 2
+      }
+    ]
+  },
+  {
+    "stage": "garden-defense",
+    "seed": 4701,
+    "realm": 0,
+    "policy": "Two Yun, cover incoming lanes, fire reinforcement and charged arts",
+    "upgrades_at_start": {},
+    "status": "victory",
+    "duration": 166.017,
+    "gate": 6,
+    "nursery_beds": [
+      {
+        "lane": 1,
+        "hp": 2,
+        "max_hp": 2
+      },
+      {
+        "lane": 2,
+        "hp": 2,
+        "max_hp": 2
+      },
+      {
+        "lane": 3,
+        "hp": 2,
+        "max_hp": 2
+      }
+    ],
+    "kills": 45,
+    "qi_remaining": 82,
+    "metrics": {
+      "damage": {
+        "sword": 6055,
+        "fire": 943
+      },
+      "healing": 0,
+      "altars_destroyed": 0,
+      "plates_broken": 0,
+      "qi": {
+        "starting": 150,
+        "gatherer": 560,
+        "passive": 390,
+        "ultimate": 96
+      },
+      "spent": 1114,
+      "deaths": 1,
+      "breaches": 0,
+      "invalid": 0,
+      "kills_by_type": {
+        "tide": 18,
+        "lantern": 6,
+        "drowned": 21
+      },
+      "roles_used": [
+        "economy",
+        "damage"
+      ],
+      "hero_types_used": [
+        "gatherer",
+        "sword",
+        "fire"
+      ],
+      "rituals_used": 0,
+      "nodes_purified": 0,
+      "peak_enemies": 15
+    },
+    "rewards": {
+      "stones": 0,
+      "insight": 0,
+      "stage": "garden-defense",
+      "kills": 45,
+      "replay_stones": 10
+    },
+    "placements": [
+      {
+        "time": 0.0,
+        "hero": "gatherer",
+        "lane": 2,
+        "col": 1
+      },
+      {
+        "time": 0.0,
+        "hero": "sword",
+        "lane": 2,
+        "col": 2
+      },
+      {
+        "time": 12.0,
+        "hero": "gatherer",
+        "lane": 1,
+        "col": 1
+      },
+      {
+        "time": 24.0,
+        "hero": "sword",
+        "lane": 1,
+        "col": 2
+      },
+      {
+        "time": 36.0,
+        "hero": "sword",
+        "lane": 3,
+        "col": 2
+      },
+      {
+        "time": 60.0,
+        "hero": "fire",
+        "lane": 3,
+        "col": 3
+      },
+      {
+        "time": 83.2,
+        "hero": "sword",
+        "lane": 3,
+        "col": 4
+      },
+      {
+        "time": 96.0,
+        "hero": "sword",
+        "lane": 3,
+        "col": 5
+      },
+      {
+        "time": 122.0,
+        "hero": "fire",
+        "lane": 2,
+        "col": 3
+      },
+      {
+        "time": 132.0,
+        "hero": "sword",
+        "lane": 2,
+        "col": 4
+      },
+      {
+        "time": 157.4,
+        "hero": "sword",
+        "lane": 1,
+        "col": 2
+      }
+    ]
+  }
+]

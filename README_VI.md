@@ -38,6 +38,39 @@ nhận ra bản lưu.
 Đây là bản game chơi được, chuyển thể gọn từ tài liệu thiết kế bạn gửi; xem
 [tình trạng triển khai](docs/BUILD_STATUS.md) để biết phần đã kiểm thử và giới hạn.
 
+## Bản 1.4: Linh Điền và kinh tế môn phái
+
+Tại sảnh, chọn **Sect Estate / Linh Dien**:
+
+- **Garden:** bắt đầu với 3 ô, mở rộng lên 6 rồi 9 ô. Có Tụ Khí Thảo, Hà Liên,
+  Thanh Phong Trúc và Dẫn Hồn Chi; cây chín sau 1–3 trận hoàn tất. Tưới/bón phân
+  tăng sản lượng; nâng tưới tự động và nghiên cứu từng cây bằng Insight.
+  Cây không héo khi nghỉ chơi. Thắng trận tăng 1 lượt sinh trưởng; thua chỉ tính
+  khi qua nửa số wave **và** đủ 60 giây. Thoát trận không giúp cây lớn.
+- **Alchemy:** dùng nông sản luyện Spirit Tea, Five-Element Dew và Soul-Ward Elixir.
+  Mỗi trận chỉ mang **1 loại, tiêu hao 1 liều khi vào trận thành công**. Công thức
+  ghi rõ nguyên liệu, phí, phạm vi và điều kiện kích hoạt. Trang bị ở mục Alchemy.
+- **Merchant:** mua hạt giống/phân bón, bán nông sản dư; mua và bật/tắt đồ trang trí
+  sảnh, vườn và cung điện. Đồ trang trí không tăng sức mạnh.
+- **Missions / Goals / Research:** 3 ủy thác luân phiên, 8 thành tựu và các mốc
+  nghiên cứu quái. Bấm **Claim** để nhận thưởng. Không có giới hạn theo ngày.
+  Spirit Stones vẫn là tiền chính; Insight dùng nghiên cứu cây và công thức.
+  Qi chỉ dùng trong trận, không đổi thành tiền vĩnh viễn.
+- **Nursery Defense:** chế độ bảo vệ vườn riêng, 6 wave trong khoảng 2–3 phút,
+  chỉ dùng 3 lane giữa. Mỗi luống chịu được 2 lần lọt quái; giữ càng nhiều luống
+  càng nhận nhiều loại hạt giống. Có 3 trang hướng dẫn kèm hình trước trận.
+- **Reset Talents:** hoàn lại đúng số đá đã dùng để đổi hướng phát triển. Lần đầu
+  miễn phí, những lần sau trừ phí 10 đá vào khoản hoàn. Nhánh kiểu cũ vẫn tính
+  theo giá mua cũ 35 đá.
+- Thiết kế mới cho **8 cultivator và toàn bộ quái/thủ lĩnh**, thêm chi tiết trang
+  phục, vũ khí, bóng đổ. Có tư thế đứng/đánh/skill/ultimate riêng cho nhân vật,
+  và đứng/đánh/skill cho quái, kết hợp chuyển động trong game. Cảnh vườn và hình
+  từng giai đoạn cây cũng được đóng gói sẵn.
+
+Bản lưu cũ tự chuyển sang phiên bản 2; giữ tiền, ải, thiên phú và cài đặt.
+Phần thưởng trận được ghi một lần; nếu phản hồi mạng bị mất có thể nhận lại
+biên nhận mà không cộng đôi. Tiến trình vẫn lưu cục bộ trong trình duyệt.
+
 ## Bản 1.3
 
 - **Mỗi ải có nhạc riêng:** 9 chủ đề × 3 phối khí theo giai đoạn, cộng nhạc sảnh,

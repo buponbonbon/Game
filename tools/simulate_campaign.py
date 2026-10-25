@@ -31,7 +31,8 @@ def can_cast(hero, state):
 def play_stage(stage_id, seed, upgrades, realm, tactics=None):
     """Build economy, cover incoming lanes, then add fire and use charged arts."""
     late_tomb = stage_id in ("tomb-2", "tomb-3")
-    content = STAGES[stage_id]
+    from game.nursery import NURSERY
+    content = NURSERY if stage_id == "garden-defense" else STAGES[stage_id]
     battle = Battle(stage_id, seed=seed, upgrades=dict(upgrades), realm=realm)
     battle.command({"action": "auto_ultimate", "enabled": True})
     actions = []
@@ -199,6 +200,7 @@ def play_stage(stage_id, seed, upgrades, realm, tactics=None):
         "status": state["status"],
         "duration": state["time"],
         "gate": state["gate"],
+        "nursery_beds": state.get("nursery_beds",[]),
         "kills": state["kills"],
         "qi_remaining": state["qi"],
         "metrics": state["metrics"],

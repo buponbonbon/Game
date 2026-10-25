@@ -1,4 +1,25 @@
-# Art and audio — version 1.2
+# Art and audio — version 1.4
+
+## Authored actors and botany (1.4)
+
+The active renderer now uses seven transparent authored actor sheets, with
+21 identities and 71 poses: eight cultivators × idle/attack/skill/ultimate;
+twelve enemy archetypes plus the altar × idle/attack/skill. Hero sources are
+1536×1024; enemy sources are 1506×1044. They are original image-generated RPG
+style assets, retained unchanged. `actors.json` crops/anchors them at draw time;
+`actors_manifest.json` records dimensions and SHA-256 hashes. These are pose
+cutouts with runtime breathing, lunging and casting transforms plus event VFX,
+not a new set of hand-drawn frame-by-frame animation sheets.
+
+The new 1672×941 garden has an alchemy pavilion, merchant and soil terrace;
+`crops.png` is a transparent 1330×1182 sheet of four crops × four growth stages.
+`crops.json` provides source bounds. No image processing or asset download is
+needed at startup. The earlier 64×64/32×32 procedural atlases remain fallbacks.
+
+The asset generator preserves/copies **all** authored source PNGs and JSON
+metadata; it regenerates only fallback sprites, icons and the title. It cannot
+recreate these paintings from a seed. Native sources are larger and more
+detailed, while the game keeps its 512×288 logical grid and threefold canvas.
 
 ## Scenes and artifacts
 
@@ -16,8 +37,8 @@ nine-sword armillary altar and a bronze bell in a beast-headed ritual arch.
 energy particles animate the cutouts. Their battle behavior remains one rescue
 per lane; the illustrated briefing displays their designs and effects.
 
-`python tools/generate_assets.py` regenerates deterministic 64×64 cultivator
-state sheets, enemy sprites, icons and the title backdrop, and **preserves/copies**
+`python tools/generate_assets.py` regenerates deterministic fallback 64×64 cultivator
+state sheets, fallback enemy sprites, icons and the title backdrop, and **preserves/copies**
 the authored scene and artifact PNGs. It does not recreate image-generated art
 from a random seed. Tests decode RGB/RGBA PNGs, check scene checksums and atlas
 bounds/transparency, reproduce procedural assets, and preserve retained art inputs.
